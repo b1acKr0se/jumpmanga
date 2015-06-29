@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Jump Manga</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="home">Home</string>
+    <string name="favourite">Favourite</string>
+    <string name="downloaded">Downloaded</string>
+    <string name="more">More</string>
+    <string name="settings">Settings</string>
+    <string name="title_activity_detail">DetailActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="openDrawer">Open</string>
+
+    <string name="closeDrawer">Close</string>
+    <string name="example_description">
+        Thể loại:	Action, Adventure, Anime, Comedy, Drama, Fantasy, Shounen\nTác giả:	Eiichiro ODA\nTình trạng:	Ongoing\nNguồn:	Tổng hợp\nLượt xem:	87450509\nNgày đăng:	5 năm trước\n\n
+        Khi còn nhỏ, Luffy, nhân vật chính của chúng ta, ước mơ trở thành Vua Hải Tặc. Cuộc sống của cậu bé thay đổi khi cậu vô tình có được sức mạnh có thể co dãn như cao su, nhưng đổi lại, cậu không bao giờ có thể bơi được nữa. Giờ đây, Luffy cùng những người bạn hải tặc của mình ra khơi tìm kiếm kho báu One Piece, kho báu vĩ đại nhất trên thế giới.\n\n\n
+    Khi còn nhỏ, Luffy, nhân vật chính của chúng ta, ước mơ trở thành Vua Hải Tặc. Cuộc sống của cậu bé thay đổi khi cậu vô tình có được sức mạnh có thể co dãn như cao su, nhưng đổi lại, cậu không bao giờ có thể bơi được nữa. Giờ đây, Luffy cùng những người bạn hải tặc của mình ra khơi tìm kiếm kho báu One Piece, kho báu vĩ đại nhất trên thế giới.
+    Khi còn nhỏ, Luffy, nhân vật chính của chúng ta, ước mơ trở thành Vua Hải Tặc. Cuộc sống của cậu bé thay đổi khi cậu vô tình có được sức mạnh có thể co dãn như cao su, nhưng đổi lại, cậu không bao giờ có thể bơi được nữa. Giờ đây, Luffy cùng những người bạn hải tặc của mình ra khơi tìm kiếm kho báu One Piece, kho báu vĩ đại nhất trên thế giới. </string>
+</resources>

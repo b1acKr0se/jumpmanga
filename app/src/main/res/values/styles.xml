@@ -1,0 +1,25 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="BaseTheme">
+        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="BaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/teal</item>
+        <item name="colorPrimaryDark">@color/teal_dark</item>
+        <item name="colorControlHighlight">@color/yellow_translucent</item>
+        <item name="colorAccent">@color/yellow</item>
+        <item name="selectableItemBackground">@drawable/selectable_item_background</item>
+    </style>
+
+    <style name="FabStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="borderWidth">0dp</item>
+        <item name="elevation">10dp</item>
+        <item name="pressedTranslationZ">14dp</item>
+        <item name="rippleColor">@android:color/white</item>
+    </style>
+
+</resources>
