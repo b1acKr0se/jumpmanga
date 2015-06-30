@@ -18,13 +18,19 @@ import io.wyrmise.jumpmanga.Page;
  */
 public class DownloadUtils {
 
-    public DownloadUtils() {
+    private String url;
+    private Document document;
 
+    public DownloadUtils(String u) {
+        url = u;
+        try {
+            document = Jsoup.connect(url).get();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public int GetTotalNumberOfChapters(String url) {
-        try {
-            Document document = Jsoup.connect(url).get();
+    public int GetTotalNumberOfChapters() {
 
             Element table = document.select("table.table.chapt-table").first();
 
@@ -33,14 +39,43 @@ public class DownloadUtils {
             System.out.println("Total num of chaps: " + els.size());
 
             return els.size();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return -1;
-        }
     }
 
-    public ArrayList<Chapter> GetChapters(String url) {
+    public String GetMangaDetail() {
+        try {
+            String str = "";
+            Document document = Jsoup.connect(url).get();
+            Element table = document.select("div#manga-detail-tab-info.tab-pane.active.fade.in").select("table.table").first();
+            str = table.text();
+            System.out.println(str);
+            StringBuffer stringBuffer = new StringBuffer(str);
+            stringBuffer.insert(str.indexOf("Tác giả"), "\n");
+            stringBuffer.insert(str.indexOf("Tình trạng") + 1, "\n");
+            stringBuffer.insert(str.indexOf("Nguồn") + 2, "\n");
+            stringBuffer.insert(str.indexOf("Lượt xem") + 3, "\n");
+            stringBuffer.insert(str.indexOf("Ngày đăng") + 4, "\n");
+
+            System.out.println(stringBuffer.toString().trim());
+            return stringBuffer.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "Thể loại:\nTác giả:\nTình trạng:\nNguồn:\nLượt xem:\nNgày đăng:\n";
+    }
+
+    public String GetMangaSummary() {
+        Element element = document.select("div#manga-detail-info.row.detail-info").select("div").select("small").first();
+
+        String summary = element.text();
+        System.out.println(summary);
+
+        if(summary.startsWith(" "))
+            return summary.substring(1,summary.length());
+
+        return summary;
+    }
+
+    public ArrayList<Chapter> GetChapters() {
         ArrayList<Chapter> chapters = new ArrayList<>();
         try {
 
@@ -53,9 +88,7 @@ public class DownloadUtils {
             for (int i = 0; i < els.size(); i++) {
                 Chapter c = new Chapter();
                 c.setName(els.get(i).select("a[href]").text());
-                System.out.println(c.getName());
                 c.setUrl(els.get(i).select("a[href]").attr("abs:href"));
-                System.out.println(c.getUrl());
                 chapters.add(c);
             }
             return chapters;
@@ -65,7 +98,7 @@ public class DownloadUtils {
         }
     }
 
-    public ArrayList<Page> GetPages(String url) {
+    public ArrayList<Page> GetPages() {
         ArrayList<Page> pages = new ArrayList<>();
         try {
 

@@ -26,6 +26,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="io.wyrmise.jumpmanga.MainActivity" />
         </activity>
+        <activity
+            android:name=".DetailedActivity"
+            android:label="@string/title_activity_detailed"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="io.wyrmise.jumpmanga.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

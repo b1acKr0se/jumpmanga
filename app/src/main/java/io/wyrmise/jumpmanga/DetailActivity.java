@@ -1,11 +1,13 @@
 package io.wyrmise.jumpmanga;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -23,14 +25,23 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+
+import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
+
 public class DetailActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
+
+    private ListView listView;
+
+    private ArrayList<Chapter> chapters;
 
     private static final String EXTRA_IMAGE = "io.wyrmise.jumpmanga.extraImage";
     private static final String EXTRA_TITLE = "io.wyrmise.jumpmanga.extraTitle";
@@ -60,7 +71,7 @@ public class DetailActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        String itemTitle = getIntent().getStringExtra(EXTRA_TITLE);
+        final String itemTitle = getIntent().getStringExtra(EXTRA_TITLE);
         setTitle(itemTitle);
 
         final ImageView image = (ImageView) findViewById(R.id.image);
@@ -85,6 +96,18 @@ public class DetailActivity extends AppCompatActivity {
         TextView title = (TextView) findViewById(R.id.title);
         title.setText(itemTitle);
 
+        final String img_url = getIntent().getStringExtra(EXTRA_IMAGE);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(),DetailedActivity.class);
+                intent.putExtra("title",itemTitle);
+                intent.putExtra("url",img_url);
+                startActivity(intent);
+            }
+        });
 
     }
 
@@ -113,6 +136,8 @@ public class DetailActivity extends AppCompatActivity {
 
         fab.setRippleColor(lightMutedColor);
         fab.setBackgroundTintList(ColorStateList.valueOf(mutedColor));
+
+
     }
 
     private void initScrollFade(final ImageView image) {
@@ -185,4 +210,19 @@ public class DetailActivity extends AppCompatActivity {
         return true;
     }
 
+    public class GetChapNo extends AsyncTask<String, Void, ArrayList<Chapter>> {
+        public ArrayList<Chapter> doInBackground(String... params){
+            DownloadUtils download = new DownloadUtils("http://manga24h.com/59/One-Piece-Dao-Hai-Tac.html");
+            return download.GetChapters();
+        }
+        public void onPostExecute(ArrayList<Chapter> result) {
+            if(result!=null) {
+                chapters = result;
+                ChapterAdapter adapter = new ChapterAdapter(getApplicationContext(),R.layout.chapter_list_item,chapters);
+                listView.setAdapter(adapter);
+            }
+
+
+        }
+    }
 }

@@ -7,5 +7,6 @@
     <color name="yellow_translucent">#80FFEB3B</color>
     <color name="accent_bright">#FFF493</color>
     <color name="transparent">#80000000</color>
+    <color name="tabsScrollColor">#004D40</color>
 
 </resources>

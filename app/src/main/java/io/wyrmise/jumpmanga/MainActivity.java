@@ -1,5 +1,6 @@
 package io.wyrmise.jumpmanga;
 
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -50,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements MangaAdapter.OnIt
 
         Picasso.with(this).load(AVATAR_URL).transform(new CircleTransform()).into(avatar);
 
+        new GetChapNo().execute("bdfb");
     }
 
     @Override
@@ -127,16 +129,17 @@ public class MainActivity extends AppCompatActivity implements MangaAdapter.OnIt
     }
 
     @Override public void onItemClick(View view, Manga viewModel) {
+
         DetailActivity.navigate(this, view.findViewById(R.id.image), viewModel);
     }
 
 
-    public class GetChapNo extends AsyncTask<String, Void, Integer> {
-        public Integer doInBackground(String... params){
-            DownloadUtils download = new DownloadUtils();
-            download.GetTotalNumberOfChapters("http://manga24h.com/59/One-Piece-Dao-Hai-Tac.html");
-            download.GetPages("http://manga24h.com/88100/One-Piece-Dao-Hai-Tac-Chapter-750/");
+    public class GetChapNo extends AsyncTask<String, Void, ArrayList<Chapter>> {
+        public ArrayList<Chapter> doInBackground(String... params){
+            DownloadUtils download = new DownloadUtils("http://manga24h.com/66/Fairy-Tail.html");
+            download.GetMangaSummary();
             return null;
         }
     }
+
 }
