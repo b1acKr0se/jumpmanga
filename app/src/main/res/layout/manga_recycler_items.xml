@@ -24,6 +24,7 @@
             android:padding="@dimen/spacing_medium"
             android:layout_gravity="bottom"
             android:singleLine="true"
+            android:fontFamily="sans-serif-light"
             android:textColor="@android:color/white"
             android:background="@color/transparent"/>
 

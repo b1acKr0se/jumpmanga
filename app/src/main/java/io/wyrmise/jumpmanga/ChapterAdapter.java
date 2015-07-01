@@ -17,6 +17,7 @@ public class ChapterAdapter extends ArrayAdapter<Chapter> {
     private Context context;
     Holder holder;
 
+
     public ChapterAdapter(Context c, int textViewResourceId,ArrayList<Chapter> list) {
         super(c, textViewResourceId);
         arrayList = list;

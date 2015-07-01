@@ -1,6 +1,7 @@
 package io.wyrmise.jumpmanga;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -128,9 +129,12 @@ public class MainActivity extends AppCompatActivity implements MangaAdapter.OnIt
         actionBarDrawerToggle.syncState();
     }
 
-    @Override public void onItemClick(View view, Manga viewModel) {
-
-        DetailActivity.navigate(this, view.findViewById(R.id.image), viewModel);
+    @Override public void onItemClick(View view, Manga manga) {
+        Intent intent = new Intent(getApplicationContext(),DetailedActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.putExtra("title",manga.getName());
+        intent.putExtra("url",manga.getImage());
+        startActivity(intent);
     }
 
 

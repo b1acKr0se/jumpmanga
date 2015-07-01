@@ -1,12 +1,14 @@
 package io.wyrmise.jumpmanga;
 
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -24,6 +26,7 @@ public class ChapterFragment extends Fragment {
     private ListView listView;
     private ArrayList<Chapter> chapters;
     private ProgressBar progressBar;
+    private ChapterAdapter adapter;
 
 
     public ChapterFragment() {
@@ -39,6 +42,16 @@ public class ChapterFragment extends Fragment {
 
         listView = (ListView) view.findViewById(R.id.listView);
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent(getActivity().getApplicationContext(),ReaderActivity.class);
+                intent.putExtra("name",adapter.getItem(i).getName());
+                intent.putExtra("url",adapter.getItem(i).getUrl());
+                startActivity(intent);
+            }
+        });
+
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 
         new GetMangaDetails().execute("http://manga24h.com/66/Fairy-Tail.html");
@@ -52,14 +65,14 @@ public class ChapterFragment extends Fragment {
             listView.setVisibility(ListView.GONE);
         }
         public ArrayList<Chapter> doInBackground(String... params){
-            DownloadUtils download = new DownloadUtils("http://manga24h.com/59/One-Piece-Dao-Hai-Tac.html");
+            DownloadUtils download = new DownloadUtils("http://manga24h.com/68/Detective-Conan-Tham-Tu-Lung-Danh-Conan.html");
             return download.GetChapters();
         }
         public void onPostExecute(ArrayList<Chapter> arr) {
             if(arr!=null) {
                 chapters = arr;
 
-                ChapterAdapter adapter = new ChapterAdapter(getActivity().getApplicationContext(),R.layout.chapter_list_item,chapters);
+                adapter = new ChapterAdapter(getActivity().getApplicationContext(),R.layout.chapter_list_item,chapters);
 
                 listView.setAdapter(adapter);
 

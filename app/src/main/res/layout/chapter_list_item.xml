@@ -13,7 +13,7 @@
         android:layout_marginRight="@dimen/spacing_medium"
         android:layout_centerVertical="true"
         android:text="gdfbdfbfdbfdb"
-        android:fontFamily="sans-serif"
+        android:fontFamily="sans-serif-light"
         android:textSize="18sp"/>
 
 </RelativeLayout>
