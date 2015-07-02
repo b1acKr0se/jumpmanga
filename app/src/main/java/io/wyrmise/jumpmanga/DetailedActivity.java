@@ -3,8 +3,11 @@ package io.wyrmise.jumpmanga;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import io.wyrmise.jumpmanga.widget.SlidingTabLayout;
@@ -48,12 +51,16 @@ public class DetailedActivity extends AppCompatActivity {
     }
 
     public String getImage(){
+        return getIntent().getStringExtra("image");
+    }
+
+    public String getUrl() {
         return getIntent().getStringExtra("url");
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+
         return true;
     }
 
@@ -63,6 +70,12 @@ public class DetailedActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+
+        switch (id){
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }

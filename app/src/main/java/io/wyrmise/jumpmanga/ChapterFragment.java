@@ -5,7 +5,12 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -27,10 +32,14 @@ public class ChapterFragment extends Fragment {
     private ListView listView;
     private ArrayList<Chapter> chapters;
     private ProgressBar progressBar;
-    private ChapterAdapter adapter;
+    private static ChapterAdapter adapter;
 
     public ChapterFragment() {
         // Required empty public constructor
+    }
+
+    public static ChapterAdapter getAdapter(){
+        return adapter;
     }
 
 
@@ -40,6 +49,8 @@ public class ChapterFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_chapter, container, false);
 
+        setHasOptionsMenu(true);
+
         listView = (ListView) view.findViewById(R.id.listView);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -48,17 +59,53 @@ public class ChapterFragment extends Fragment {
                 Intent intent = new Intent(getActivity().getApplicationContext(),ReaderActivity.class);
                 intent.putExtra("name",adapter.getItem(i).getName());
                 intent.putExtra("url",adapter.getItem(i).getUrl());
-                intent.putExtra("position",i);
+                int position = chapters.indexOf(adapter.getItem(i));
+                intent.putExtra("position",position);
                 intent.putParcelableArrayListExtra("list",chapters);
+                System.out.println("Size: " + chapters.size() + " position: "+position);
                 startActivity(intent);
             }
         });
 
+        String url = ((DetailedActivity) getActivity()).getUrl();
+
+
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 
-        new GetMangaDetails().execute("http://manga24h.com/66/Fairy-Tail.html");
+        new GetMangaDetails().execute(url);
 
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_detailed, menu);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView actionSearchView = (SearchView) searchItem.getActionView();
+        actionSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Log.d("OnQuerySubmit", "onQueryTextChange");
+                ChapterFragment.getAdapter().getFilter().filter(newText);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Log.d("OnQuerySubmit", "onQueryTextSubmit");
+                //ListViewFragment.adapter.getFilter().filter(query);
+                return true;
+            }
+        });
+
+        actionSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                ChapterFragment.getAdapter().getFilter().filter("");
+                return false;
+            }
+        });
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     public class GetMangaDetails extends AsyncTask<String, Void, ArrayList<Chapter>> {
@@ -72,6 +119,7 @@ public class ChapterFragment extends Fragment {
         }
         public void onPostExecute(ArrayList<Chapter> arr) {
             if(arr!=null) {
+
                 chapters = arr;
 
                 adapter = new ChapterAdapter(getActivity().getApplicationContext(),R.layout.chapter_list_item,chapters);
@@ -81,6 +129,8 @@ public class ChapterFragment extends Fragment {
                 progressBar.setVisibility(ProgressBar.GONE);
 
                 listView.setVisibility(ListView.VISIBLE);
+
+                listView.setTextFilterEnabled(true);
 
             } else {
                 progressBar.setVisibility(ProgressBar.GONE);

@@ -161,12 +161,30 @@ public class ReaderActivity extends AppCompatActivity {
 
         progressBar = (ProgressBar) findViewById(R.id.progress);
 
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                pageIndicator.setText("Page " + (position + 1) + "/" + viewPager.getAdapter().getCount());
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
         next = (ImageView) findViewById(R.id.next);
 
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 nextChapter();
+                mHideHandler.removeCallbacks(hideControllerThread);
+                autoHideControllers();
             }
         });
 
@@ -175,10 +193,10 @@ public class ReaderActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 prevChapter();
+                mHideHandler.removeCallbacks(hideControllerThread);
+                autoHideControllers();
             }
         });
-
-
 
 
         control = findViewById(R.id.fullscreen_content_controls);
@@ -200,7 +218,7 @@ public class ReaderActivity extends AppCompatActivity {
     }
 
     public void nextChapter(){
-        if(chapters.get(chapter_position-1)!=null){
+        if((chapter_position-1)!=-1){
             chapter_position--;
             new RetrieveAllPages().execute(chapters.get(chapter_position).getUrl());
             getSupportActionBar().setTitle(chapters.get(chapter_position).getName());
@@ -210,7 +228,7 @@ public class ReaderActivity extends AppCompatActivity {
     }
 
     public void prevChapter(){
-        if(chapters.get(chapter_position+1)!=null){
+        if((chapter_position+1)!=chapters.size()){
             chapter_position++;
             new RetrieveAllPages().execute(chapters.get(chapter_position).getUrl());
             getSupportActionBar().setTitle(chapters.get(chapter_position).getName());
@@ -239,6 +257,12 @@ public class ReaderActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id){
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -268,42 +292,7 @@ public class ReaderActivity extends AppCompatActivity {
                 progressBar.setMax(adapter.getCount());
                 progressBar.setVisibility(View.VISIBLE);
 
-                viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-                    boolean firstPageChange = false;
-                    boolean lastPageChange = false;
-                    @Override
-                    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                        int lastPosition = adapter.getCount()-1;
-                        if(firstPageChange && position==0){
-                            System.out.println("First page");
-                        } else if(lastPageChange && position==lastPosition){
-                            System.out.println("Last page");
-                        }
-                    }
 
-                    @Override
-                    public void onPageSelected(int position) {
-                        pageIndicator.setText("Page " + (position + 1) + "/" + viewPager.getAdapter().getCount());
-                    }
-
-                    @Override
-                    public void onPageScrollStateChanged(int state) {
-                        int lastPosition = adapter.getCount()-1;
-
-                        int currentPosition = viewPager.getCurrentItem();
-
-                        if(currentPosition==lastPosition && state==1) {
-                            lastPageChange = true;
-                            firstPageChange = false;
-                        } else if(currentPosition==0 && state==1) {
-                            lastPageChange = false;
-                            firstPageChange = true;
-                        } else {
-                            lastPageChange = false;
-                            firstPageChange = false;
-                        }
-                    }
-                });
             }
         }
     }

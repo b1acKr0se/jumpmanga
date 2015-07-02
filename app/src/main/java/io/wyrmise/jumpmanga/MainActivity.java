@@ -31,18 +31,19 @@ public class MainActivity extends AppCompatActivity implements MangaAdapter.OnIt
 
     public static final String AVATAR_URL = "http://lorempixel.com/200/200/people/1/";
 
-    private List<Manga> items = new ArrayList<>();
+    private ArrayList<Manga> mangas = new ArrayList<>();
 
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private View content;
+
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        initRecyclerView();
         initToolbar();
         setupDrawerLayout();
 
@@ -52,7 +53,10 @@ public class MainActivity extends AppCompatActivity implements MangaAdapter.OnIt
 
         Picasso.with(this).load(AVATAR_URL).transform(new CircleTransform()).into(avatar);
 
-        new GetChapNo().execute("bdfb");
+        recyclerView = (RecyclerView) findViewById(R.id.recycler);
+
+
+        new GetMangas().execute("http://manga24h.com/status/hot.html");
     }
 
     @Override
@@ -69,21 +73,6 @@ public class MainActivity extends AppCompatActivity implements MangaAdapter.OnIt
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private void initRecyclerView() {
-        items.add(new Manga("One Piece - Đảo Hải Tặc", "http://up.manga24h.com/tct/manga/1430630038_1.jpg"));
-        items.add(new Manga("Naruto", "http://up.manga24h.com/tct/manga/1430630046_naruto-manga-volume-66.jpg"));
-        items.add(new Manga("Fairy Tail", "http://up.manga24h.com/tct/manga/1430630049_1.jpg"));
-        items.add(new Manga("Detective Conan - Thám Tử Lừng Danh Conan", "http://up.manga24h.com/tct/manga/1430630057_1.jpg"));
-        items.add(new Manga("Bleach", "http://up.manga24h.com/tct/manga/1430630047_1.jpg"));
-        items.add(new Manga("Hiệp Khách Giang Hồ", "http://up.manga24h.com/tct/manga/1430630107_1.jpg"));
-
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-        MangaAdapter adapter = new MangaAdapter(items);
-        adapter.setOnItemClickListener(this);
-        recyclerView.setAdapter(adapter);
     }
 
     private void initToolbar() {
@@ -106,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements MangaAdapter.OnIt
             }
         });
 
-        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this,drawerLayout,toolbar,R.string.openDrawer, R.string.closeDrawer){
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.openDrawer, R.string.closeDrawer) {
 
             @Override
             public void onDrawerClosed(View drawerView) {
@@ -129,20 +118,39 @@ public class MainActivity extends AppCompatActivity implements MangaAdapter.OnIt
         actionBarDrawerToggle.syncState();
     }
 
-    @Override public void onItemClick(View view, Manga manga) {
-        Intent intent = new Intent(getApplicationContext(),DetailedActivity.class);
+    @Override
+    public void onItemClick(View view, Manga manga) {
+        Intent intent = new Intent(getApplicationContext(), DetailedActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        intent.putExtra("title",manga.getName());
-        intent.putExtra("url",manga.getImage());
+        intent.putExtra("title", manga.getName());
+        intent.putExtra("url",manga.getUrl());
+        intent.putExtra("image", manga.getImage());
         startActivity(intent);
     }
 
 
-    public class GetChapNo extends AsyncTask<String, Void, ArrayList<Chapter>> {
-        public ArrayList<Chapter> doInBackground(String... params){
-            DownloadUtils download = new DownloadUtils("http://manga24h.com/66/Fairy-Tail.html");
-            download.GetMangaSummary();
-            return null;
+    public class GetMangas extends AsyncTask<String, Void, ArrayList<Manga>> {
+
+        @Override
+        public void onPreExecute() {
+
+        }
+
+        @Override
+        public ArrayList<Manga> doInBackground(String... params) {
+            DownloadUtils download = new DownloadUtils(params[0]);
+            return download.GetMangas(10);
+        }
+
+        @Override
+        public void onPostExecute(ArrayList<Manga> result) {
+            if (result != null) {
+                mangas = result;
+                recyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this, 2));
+                MangaAdapter adapter = new MangaAdapter(mangas);
+                adapter.setOnItemClickListener(MainActivity.this);
+                recyclerView.setAdapter(adapter);
+            }
         }
     }
 

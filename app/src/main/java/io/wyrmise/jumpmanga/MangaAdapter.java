@@ -38,10 +38,19 @@ public class MangaAdapter extends RecyclerView.Adapter<MangaAdapter.ViewHolder> 
         return new ViewHolder(v);
     }
 
-    @Override public void onBindViewHolder(ViewHolder holder, int position) {
+    @Override public void onBindViewHolder(final ViewHolder holder, int position) {
         Manga item = items.get(position);
         holder.text.setText(item.getName());
+        holder.latest.setText(item.getLatest());
+        holder.text.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(holder.latest.getVisibility()==TextView.GONE) holder.latest.setVisibility(TextView.VISIBLE);
+                else holder.latest.setVisibility(TextView.GONE);
+            }
+        });
         holder.image.setImageBitmap(null);
+
         Picasso.with(holder.image.getContext()).load(item.getImage())
                 .into(holder.image, new Callback() {
                     @Override
@@ -51,7 +60,7 @@ public class MangaAdapter extends RecyclerView.Adapter<MangaAdapter.ViewHolder> 
 
                     @Override
                     public void onError() {
-                        Log.d("Picasso","LoadError");
+
                     }
                 });
         holder.itemView.setTag(item);
@@ -74,12 +83,13 @@ public class MangaAdapter extends RecyclerView.Adapter<MangaAdapter.ViewHolder> 
 
     protected static class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView image;
-        public TextView text;
+        public TextView text, latest;
 
         public ViewHolder(View itemView) {
             super(itemView);
             image = (ImageView) itemView.findViewById(R.id.image);
             text = (TextView) itemView.findViewById(R.id.text);
+            latest = (TextView) itemView.findViewById(R.id.latest);
         }
     }
 

@@ -45,10 +45,14 @@ public class InfoFragment extends Fragment{
 
         String image = ((DetailedActivity) getActivity()).getImage();
 
+        String url = ((DetailedActivity) getActivity()).getUrl();
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_info, container, false);
 
-        new GetMangaDetails().execute("http://manga24h.com/66/Fairy-Tail.html");
+        setHasOptionsMenu(false);
+
+        new GetMangaDetails().execute(url);
 
         ImageView img = (ImageView) view.findViewById(R.id.image);
 

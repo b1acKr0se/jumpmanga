@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import io.wyrmise.jumpmanga.model.Chapter;
+import io.wyrmise.jumpmanga.model.Manga;
 import io.wyrmise.jumpmanga.model.Page;
 
 /**
@@ -30,13 +31,37 @@ public class DownloadUtils {
 
     public int GetTotalNumberOfChapters() {
 
-            Element table = document.select("table.table.chapt-table").first();
+        Element table = document.select("table.table.chapt-table").first();
 
-            Elements els = table.select("tr.item-odd,tr.item-even");
+        Elements els = table.select("tr.item-odd,tr.item-even");
 
-            System.out.println("Total num of chaps: " + els.size());
+        System.out.println("Total num of chaps: " + els.size());
 
-            return els.size();
+        return els.size();
+    }
+
+    public ArrayList<Manga> GetMangas(int number_of_entries) {
+        ArrayList<Manga> mangas = new ArrayList<>();
+        try {
+            Document document = Jsoup.connect(url).get();
+            Elements elements = document.select("div.col-md-12.box").select("div");
+            Element content = elements.get(2);
+            Elements mangaList = content.select("div.panel-featured-row.panel-featured-row-small");
+
+            for (Element e : mangaList.select("div.col-md-4.col-xs-12.col-sm-12").select("div.featured-item-small")
+                    ) {
+                String img = e.select("a.featured-item-small-a").select("img").attr("data-original");
+                String name = e.select("h4").select("a[href]").text();
+                String url = e.select("h4").select("a[href]").attr("abs:href");
+                String latest = e.select("span.featured-item-new-chapt").select("a[href]").text();
+                Manga manga = new Manga(name,url,img,latest);
+                mangas.add(manga);
+            }
+            return mangas;
+        } catch (IOException e) {
+
+        }
+        return null;
     }
 
     public String GetMangaDetail() {
@@ -67,8 +92,8 @@ public class DownloadUtils {
         String summary = element.text();
         System.out.println(summary);
 
-        if(summary.startsWith(" "))
-            return summary.substring(1,summary.length());
+        if (summary.startsWith(" "))
+            return summary.substring(1, summary.length());
 
         return summary;
     }

@@ -10,8 +10,6 @@ import io.wyrmise.jumpmanga.model.Chapter;
 public class Manga {
     private String name;
     private String url;
-    private int no_of_chapters;
-    private String author;
     private String description;
     private String image;
     private String latest;
@@ -39,14 +37,13 @@ public class Manga {
         image = i;
     }
 
-    public Manga(String n, String u, int no, String a, String d, ArrayList<Chapter> c) {
+    public Manga(String n, String u, String i, String l) {
         name = n;
         url = u;
-        no_of_chapters = no;
-        author = a;
-        description = d;
-        chapters = c;
+        image = i;
+        latest = l;
     }
+
 
     public String getName() {
         return name;
@@ -62,22 +59,6 @@ public class Manga {
 
     public void setUrl(String url) {
         this.url = url;
-    }
-
-    public int getNo_of_chapters() {
-        return no_of_chapters;
-    }
-
-    public void setNo_of_chapters(int no_of_chapters) {
-        this.no_of_chapters = no_of_chapters;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
     }
 
     public String getDescription() {

@@ -34,14 +34,6 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
     }
 
-    public Fragment newInstance(String url) {
-        InfoFragment infoFragment = new InfoFragment();
-        Bundle args = new Bundle();
-        args.putString("image_url", url);
-        infoFragment.setArguments(args);
-        return infoFragment;
-    }
-
     @Override
     public CharSequence getPageTitle(int position) {
         return titles[position];

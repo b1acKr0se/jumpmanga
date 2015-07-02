@@ -5,6 +5,7 @@
     android:layout_margin="@dimen/spacing_medium"
     tools:context="io.wyrmise.jumpmanga.ChapterFragment">
 
+
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
