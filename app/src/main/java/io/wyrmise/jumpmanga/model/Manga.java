@@ -1,6 +1,8 @@
-package io.wyrmise.jumpmanga;
+package io.wyrmise.jumpmanga.model;
 
 import java.util.ArrayList;
+
+import io.wyrmise.jumpmanga.model.Chapter;
 
 /**
  * Created by Thanh on 6/29/2015.

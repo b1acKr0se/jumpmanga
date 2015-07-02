@@ -16,6 +16,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
+import io.wyrmise.jumpmanga.model.Chapter;
 
 
 /**
@@ -27,7 +28,6 @@ public class ChapterFragment extends Fragment {
     private ArrayList<Chapter> chapters;
     private ProgressBar progressBar;
     private ChapterAdapter adapter;
-
 
     public ChapterFragment() {
         // Required empty public constructor
@@ -48,6 +48,8 @@ public class ChapterFragment extends Fragment {
                 Intent intent = new Intent(getActivity().getApplicationContext(),ReaderActivity.class);
                 intent.putExtra("name",adapter.getItem(i).getName());
                 intent.putExtra("url",adapter.getItem(i).getUrl());
+                intent.putExtra("position",i);
+                intent.putParcelableArrayListExtra("list",chapters);
                 startActivity(intent);
             }
         });
@@ -65,7 +67,7 @@ public class ChapterFragment extends Fragment {
             listView.setVisibility(ListView.GONE);
         }
         public ArrayList<Chapter> doInBackground(String... params){
-            DownloadUtils download = new DownloadUtils("http://manga24h.com/68/Detective-Conan-Tham-Tu-Lung-Danh-Conan.html");
+            DownloadUtils download = new DownloadUtils(params[0]);
             return download.GetChapters();
         }
         public void onPostExecute(ArrayList<Chapter> arr) {
@@ -86,5 +88,4 @@ public class ChapterFragment extends Fragment {
             }
         }
     }
-
 }

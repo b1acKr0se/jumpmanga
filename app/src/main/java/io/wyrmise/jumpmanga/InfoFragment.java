@@ -73,7 +73,7 @@ public class InfoFragment extends Fragment{
     public class GetMangaDetails extends AsyncTask<String, Void, String[]> {
         public String[] doInBackground(String... params) {
             str = new String[2];
-            DownloadUtils download = new DownloadUtils("http://manga24h.com/68/Detective-Conan-Tham-Tu-Lung-Danh-Conan.html");
+            DownloadUtils download = new DownloadUtils(params[0]);
             str[0] = download.GetMangaDetail();
             str[1] = download.GetMangaSummary();
 

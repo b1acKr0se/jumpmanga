@@ -18,6 +18,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import io.wyrmise.jumpmanga.model.Manga;
+
 public class MangaAdapter extends RecyclerView.Adapter<MangaAdapter.ViewHolder> implements View.OnClickListener {
     private List<Manga> items;
     private OnItemClickListener onItemClickListener;

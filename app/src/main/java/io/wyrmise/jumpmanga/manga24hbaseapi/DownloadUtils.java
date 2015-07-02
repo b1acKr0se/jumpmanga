@@ -7,11 +7,9 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
-import io.wyrmise.jumpmanga.Chapter;
-import io.wyrmise.jumpmanga.Page;
+import io.wyrmise.jumpmanga.model.Chapter;
+import io.wyrmise.jumpmanga.model.Page;
 
 /**
  * Created by Thanh on 6/29/2015.
@@ -116,7 +114,6 @@ public class DownloadUtils {
                 Page p = new Page();
                 p.setPage_num(i + 1);
                 p.setUrl(images[i]);
-                System.out.println(images[i]);
                 pages.add(p);
             }
 

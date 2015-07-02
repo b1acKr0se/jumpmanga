@@ -1,4 +1,4 @@
-package io.wyrmise.jumpmanga;
+package io.wyrmise.jumpmanga.model;
 
 /**
  * Created by Thanh on 6/29/2015.

@@ -1,6 +1,5 @@
 package io.wyrmise.jumpmanga;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -8,7 +7,6 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -24,6 +22,8 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.wyrmise.jumpmanga.model.Chapter;
+import io.wyrmise.jumpmanga.model.Manga;
 import io.wyrmise.jumpmanga.picasso.CircleTransform;
 import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
 

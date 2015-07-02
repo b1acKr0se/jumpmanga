@@ -1,6 +1,5 @@
 package io.wyrmise.jumpmanga;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
@@ -34,6 +33,8 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
+import io.wyrmise.jumpmanga.model.Chapter;
+import io.wyrmise.jumpmanga.model.Manga;
 
 public class DetailActivity extends AppCompatActivity {
 

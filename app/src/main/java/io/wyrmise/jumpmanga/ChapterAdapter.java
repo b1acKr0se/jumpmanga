@@ -9,6 +9,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import io.wyrmise.jumpmanga.model.Chapter;
+
 /**
  * Created by Thanh on 6/30/2015.
  */
@@ -23,6 +25,12 @@ public class ChapterAdapter extends ArrayAdapter<Chapter> {
         arrayList = list;
         context = c;
 
+    }
+
+    public boolean hasItem(int position) {
+        if(arrayList.get(position)!=null)
+            return true;
+        return false;
     }
 
     @Override
