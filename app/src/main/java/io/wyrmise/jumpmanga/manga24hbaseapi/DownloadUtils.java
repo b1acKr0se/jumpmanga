@@ -35,7 +35,6 @@ public class DownloadUtils {
 
         Elements els = table.select("tr.item-odd,tr.item-even");
 
-        System.out.println("Total num of chaps: " + els.size());
 
         return els.size();
     }
@@ -51,7 +50,6 @@ public class DownloadUtils {
             for (Element e : mangaList.select("div.col-md-4.col-xs-12.col-sm-12").select("div.featured-item-small")
                     ) {
                 String img = e.select("a.featured-item-small-a").select("img").attr("data-original");
-                System.out.println("Image url: "+img);
                 String name = e.select("h4").select("a[href]").text();
                 String url = e.select("h4").select("a[href]").attr("abs:href");
                 String latest = e.select("span.featured-item-new-chapt").select("a[href]").text();

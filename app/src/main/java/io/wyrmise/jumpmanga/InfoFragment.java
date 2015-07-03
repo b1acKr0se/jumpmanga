@@ -20,6 +20,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import io.wyrmise.jumpmanga.animation.AnimationHelper;
 import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
 
 
@@ -33,6 +34,7 @@ public class InfoFragment extends Fragment {
     private TextView detail, summary;
     private CardView descriptionCardView, plotCardView;
     private FloatingActionButton fab;
+    private AnimationHelper anim;
 
     public InfoFragment() {
         // Required empty public constructor
@@ -51,6 +53,8 @@ public class InfoFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_info, container, false);
 
         setHasOptionsMenu(false);
+
+        anim = new AnimationHelper(getActivity().getApplicationContext());
 
         new GetMangaDetails().execute(url);
 
@@ -91,41 +95,21 @@ public class InfoFragment extends Fragment {
             detail.setText(str[0]);
             summary.setText(str[1]);
 
-            slideIn(descriptionCardView);
+            anim.slideIn(descriptionCardView);
 
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    slideIn(plotCardView);
+                    anim.slideIn(plotCardView);
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            fadeIn(fab);
+                            anim.fadeIn(fab);
                         }
                     }, 500);
                 }
             }, 300);
 
-        }
-    }
-
-    public void fadeIn(View view) {
-        try {
-            Animation in = AnimationUtils.loadAnimation(getActivity().getApplicationContext(), android.R.anim.fade_in);
-            view.startAnimation(in);
-            view.setVisibility(View.VISIBLE);
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void slideIn(View view) {
-        try {
-            Animation in = AnimationUtils.loadAnimation(getActivity().getApplicationContext(), android.R.anim.slide_in_left);
-            view.startAnimation(in);
-            view.setVisibility(View.VISIBLE);
-        } catch (NullPointerException e) {
-            e.printStackTrace();
         }
     }
 

@@ -19,9 +19,11 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import io.wyrmise.jumpmanga.animation.AnimationHelper;
 import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
 import io.wyrmise.jumpmanga.model.Chapter;
 import io.wyrmise.jumpmanga.model.Page;
+import io.wyrmise.jumpmanga.widget.TouchImageView;
 
 public class ReaderActivity extends AppCompatActivity {
 
@@ -49,6 +51,8 @@ public class ReaderActivity extends AppCompatActivity {
 
     Handler mHideHandler = new Handler();
 
+    private AnimationHelper anim;
+
     private void hideSystemUI() {
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(
@@ -71,8 +75,8 @@ public class ReaderActivity extends AppCompatActivity {
     private Runnable hideControllerThread = new Runnable() {
         public void run() {
             hideSystemUI();
-            slideOutFromBottom(control);
-            slideOutFromTop(toolbar);
+            anim.slideOutFromBottom(control);
+            anim.slideOutFromTop(toolbar);
         }
     };
 
@@ -82,8 +86,8 @@ public class ReaderActivity extends AppCompatActivity {
 
     public void showControllers() {
         showSystemUI();
-        slideInFromBottom(control);
-        slideInFromTop(toolbar);
+        anim.slideInFromBottom(control);
+        anim.slideInFromTop(toolbar);
         mHideHandler.removeCallbacks(hideControllerThread);
         autoHideControllers();
     }
@@ -99,49 +103,10 @@ public class ReaderActivity extends AppCompatActivity {
 
     public void hideControllers() {
         hideSystemUI();
-        slideOutFromBottom(control);
-        slideOutFromTop(toolbar);
+        anim.slideOutFromBottom(control);
+        anim.slideOutFromTop(toolbar);
     }
 
-    public void slideInFromBottom(View view) {
-        try {
-            Animation in = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.abc_slide_in_bottom);
-            view.startAnimation(in);
-            view.setVisibility(View.VISIBLE);
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void slideOutFromBottom(View view) {
-        try {
-            Animation in = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.abc_slide_out_bottom);
-            view.startAnimation(in);
-            view.setVisibility(View.GONE);
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void slideInFromTop(View view) {
-        try {
-            Animation in = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.abc_slide_in_top);
-            view.startAnimation(in);
-            view.setVisibility(View.VISIBLE);
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void slideOutFromTop(View view) {
-        try {
-            Animation in = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.abc_slide_out_top);
-            view.startAnimation(in);
-            view.setVisibility(View.GONE);
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,6 +119,8 @@ public class ReaderActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        anim = new AnimationHelper(this);
 
         viewPager = (ViewPager) findViewById(R.id.viewPager);
 
@@ -169,6 +136,21 @@ public class ReaderActivity extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
                 pageIndicator.setText("Page " + (position + 1) + "/" + viewPager.getAdapter().getCount());
+
+                if (position > 0) {
+                    View view = viewPager.getChildAt(position -1);
+                    if (view != null) {
+                        TouchImageView img = (TouchImageView) view.findViewById(R.id.img);
+                        img.resetZoom();
+                    }
+                }
+                if (position < viewPager.getChildCount() - 1) {
+                    View view = viewPager.getChildAt(position + 1);
+                    if (view != null) {
+                        TouchImageView img = (TouchImageView) view.findViewById(R.id.img);
+                        img.resetZoom();
+                    }
+                }
             }
 
             @Override
@@ -223,7 +205,7 @@ public class ReaderActivity extends AppCompatActivity {
             new RetrieveAllPages().execute(chapters.get(chapter_position).getUrl());
             getSupportActionBar().setTitle(chapters.get(chapter_position).getName());
         } else {
-            Toast.makeText(getApplicationContext(),"No next chapter",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),"This is the last chapter",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -233,7 +215,7 @@ public class ReaderActivity extends AppCompatActivity {
             new RetrieveAllPages().execute(chapters.get(chapter_position).getUrl());
             getSupportActionBar().setTitle(chapters.get(chapter_position).getName());
         } else {
-            Toast.makeText(getApplicationContext(),"No previous chapter",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),"This is the first chapter",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -268,6 +250,11 @@ public class ReaderActivity extends AppCompatActivity {
     }
 
     public class RetrieveAllPages extends AsyncTask<String, Void, ArrayList<Page>> {
+        public void onPreExecute() {
+            next.setVisibility(ImageView.INVISIBLE);
+            previous.setVisibility(ImageView.INVISIBLE);
+            Toast.makeText(getApplicationContext(), "Loading new chapter, please wait",Toast.LENGTH_SHORT).show();
+        }
         public ArrayList<Page> doInBackground(String... params) {
             DownloadUtils download = new DownloadUtils(params[0]);
             ArrayList<Page> arr;
@@ -291,9 +278,9 @@ public class ReaderActivity extends AppCompatActivity {
                 increment = 0;
                 progressBar.setMax(adapter.getCount());
                 progressBar.setVisibility(View.VISIBLE);
-
-
             }
+            next.setVisibility(ImageView.VISIBLE);
+            previous.setVisibility(ImageView.VISIBLE);
         }
     }
 }

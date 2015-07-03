@@ -54,9 +54,9 @@ public class FullScreenImageAdapter extends PagerAdapter {
             }
         });
 
-        imageView.resetZoom();
 
-        Picasso.with(activity.getApplicationContext()).load(pages.get(position).getUrl()).into(imageView, new Callback() {
+        Picasso.with(activity.getApplicationContext()).load(pages.get(position).getUrl()).placeholder(R.drawable.page_placeholder)
+                .error(R.drawable.page_error).into(imageView, new Callback() {
 
             @Override
             public void onSuccess() {
@@ -68,6 +68,8 @@ public class FullScreenImageAdapter extends PagerAdapter {
 
             }
         });
+
+        imageView.resetZoom();
 
         ((ViewPager) container).addView(layout);
 

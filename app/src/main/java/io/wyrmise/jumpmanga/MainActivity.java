@@ -154,7 +154,6 @@ public class MainActivity extends AppCompatActivity implements MangaAdapter.OnIt
             if (result != null) {
                 moreManga = result;
                 page++;
-                System.out.println(page);
                 for (int i = 0; i < moreManga.size(); i++) {
                     mangas.add(moreManga.get(i));
                     adapter.notifyItemInserted(mangas.size());
