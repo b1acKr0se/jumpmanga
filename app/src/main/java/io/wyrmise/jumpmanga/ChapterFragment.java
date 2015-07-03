@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import io.wyrmise.jumpmanga.database.DatabaseHelper;
 import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
 import io.wyrmise.jumpmanga.model.Chapter;
 
@@ -29,16 +30,19 @@ import io.wyrmise.jumpmanga.model.Chapter;
  */
 public class ChapterFragment extends Fragment {
 
+    private DatabaseHelper db;
     private ListView listView;
     private ArrayList<Chapter> chapters;
     private ProgressBar progressBar;
     private static ChapterAdapter adapter;
 
+    private String name;
+
     public ChapterFragment() {
         // Required empty public constructor
     }
 
-    public static ChapterAdapter getAdapter(){
+    public static ChapterAdapter getAdapter() {
         return adapter;
     }
 
@@ -49,6 +53,9 @@ public class ChapterFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_chapter, container, false);
 
+        db = new DatabaseHelper(getActivity().getApplicationContext());
+
+
         setHasOptionsMenu(true);
 
         listView = (ListView) view.findViewById(R.id.listView);
@@ -56,19 +63,26 @@ public class ChapterFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(getActivity().getApplicationContext(),ReaderActivity.class);
-                intent.putExtra("name",adapter.getItem(i).getName());
-                intent.putExtra("url",adapter.getItem(i).getUrl());
+                Intent intent = new Intent(getActivity().getApplicationContext(), ReaderActivity.class);
+                if (!adapter.getItem(i).isRead()) {
+                    db.insertChapter(adapter.getItem(i), name);
+                    adapter.getItem(i).setIsRead(true);
+                    adapter.notifyDataSetChanged();
+                }
+                intent.putExtra("manga", name);
+                intent.putExtra("name", adapter.getItem(i).getName());
+                intent.putExtra("url", adapter.getItem(i).getUrl());
                 int position = chapters.indexOf(adapter.getItem(i));
-                intent.putExtra("position",position);
-                intent.putParcelableArrayListExtra("list",chapters);
-                System.out.println("Size: " + chapters.size() + " position: "+position);
+                intent.putExtra("position", position);
+                intent.putParcelableArrayListExtra("list", chapters);
                 startActivity(intent);
+
             }
         });
 
-        String url = ((DetailedActivity) getActivity()).getUrl();
+        name = ((DetailedActivity) getActivity()).getManga().getName();
 
+        String url = ((DetailedActivity) getActivity()).getManga().getUrl();
 
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 
@@ -109,20 +123,27 @@ public class ChapterFragment extends Fragment {
     }
 
     public class GetMangaDetails extends AsyncTask<String, Void, ArrayList<Chapter>> {
-        public void onPreExecute(){
+        public void onPreExecute() {
             progressBar.setVisibility(ProgressBar.VISIBLE);
             listView.setVisibility(ListView.GONE);
         }
-        public ArrayList<Chapter> doInBackground(String... params){
+
+        public ArrayList<Chapter> doInBackground(String... params) {
+
             DownloadUtils download = new DownloadUtils(params[0]);
-            return download.GetChapters();
+            ArrayList<Chapter> arr = download.GetChapters();
+            for (Chapter c : arr) {
+                if (db.isChapterRead(c, name.replaceAll("'", "''"))) c.setIsRead(true);
+            }
+            return arr;
         }
+
         public void onPostExecute(ArrayList<Chapter> arr) {
-            if(arr!=null) {
+            if (arr != null) {
 
                 chapters = arr;
 
-                adapter = new ChapterAdapter(getActivity().getApplicationContext(),R.layout.chapter_list_item,chapters);
+                adapter = new ChapterAdapter(getActivity().getApplicationContext(), R.layout.chapter_list_item, chapters);
 
                 listView.setAdapter(adapter);
 
@@ -134,7 +155,7 @@ public class ChapterFragment extends Fragment {
 
             } else {
                 progressBar.setVisibility(ProgressBar.GONE);
-                Toast.makeText(getActivity().getApplicationContext(),"Cannot retrieve the chapters, please check your network",Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity().getApplicationContext(), "Cannot retrieve the chapters, please check your network", Toast.LENGTH_LONG).show();
             }
         }
     }

@@ -10,10 +10,19 @@
         android:layout_height="wrap_content"
         android:textColor="@android:color/black"
         android:layout_marginLeft="@dimen/spacing_medium"
-        android:layout_marginRight="@dimen/spacing_medium"
+        android:layout_marginRight="65dp"
         android:layout_centerVertical="true"
-        android:text="gdfbdfbfdbfdb"
         android:fontFamily="sans-serif-light"
         android:textSize="18sp"/>
+
+    <ImageView
+        android:id="@+id/status_read"
+        android:layout_width="50dp"
+        android:layout_height="25dp"
+        android:layout_marginRight="@dimen/spacing_medium"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/read"
+        android:visibility="invisible"/>
 
 </RelativeLayout>

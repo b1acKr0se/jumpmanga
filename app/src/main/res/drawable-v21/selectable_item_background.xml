@@ -2,5 +2,5 @@
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
     android:color="?attr/colorControlHighlight">
     <item android:id="@android:id/mask"
-        android:drawable="@color/red" />
+        android:drawable="@color/yellow" />
 </ripple>

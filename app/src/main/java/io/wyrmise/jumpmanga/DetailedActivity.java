@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import io.wyrmise.jumpmanga.model.Manga;
 import io.wyrmise.jumpmanga.widget.SlidingTabLayout;
 
 public class DetailedActivity extends AppCompatActivity {
@@ -31,7 +32,7 @@ public class DetailedActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        setTitle(getIntent().getStringExtra("title"));
+        setTitle(getManga().getName());
 
         adapter =  new ViewPagerAdapter(getSupportFragmentManager(),Titles,Numboftabs);
         pager = (ViewPager) findViewById(R.id.pager);
@@ -50,13 +51,10 @@ public class DetailedActivity extends AppCompatActivity {
         tabs.setViewPager(pager);
     }
 
-    public String getImage(){
-        return getIntent().getStringExtra("image");
+    public Manga getManga() {
+        return getIntent().getParcelableExtra("manga");
     }
 
-    public String getUrl() {
-        return getIntent().getStringExtra("url");
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

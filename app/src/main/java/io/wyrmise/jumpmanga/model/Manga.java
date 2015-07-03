@@ -1,22 +1,23 @@
 package io.wyrmise.jumpmanga.model;
 
-import java.util.ArrayList;
-
-import io.wyrmise.jumpmanga.model.Chapter;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 /**
  * Created by Thanh on 6/29/2015.
  */
-public class Manga {
+public class Manga implements Parcelable {
     private String name;
     private String url;
     private String description;
     private String image;
     private String latest;
+    private boolean isFav;
 
     public Manga(String n, String i) {
         name = n;
         image = i;
+        isFav = false;
     }
 
     public Manga(String n, String u, String i, String l) {
@@ -24,6 +25,15 @@ public class Manga {
         url = u;
         image = i;
         latest = l;
+        isFav = false;
+    }
+
+    public boolean isFav() {
+        return isFav;
+    }
+
+    public void setIsFav(boolean isFav) {
+        this.isFav = isFav;
     }
 
     public String getImage() {
@@ -42,7 +52,6 @@ public class Manga {
         this.latest = latest;
     }
 
-    private ArrayList<Chapter> chapters;
 
 
     public String getName() {
@@ -69,13 +78,6 @@ public class Manga {
         this.description = description;
     }
 
-    public ArrayList<Chapter> getChapters() {
-        return chapters;
-    }
-
-    public void setChapters(ArrayList<Chapter> chapters) {
-        this.chapters = chapters;
-    }
 
     @Override
     public String toString() {
@@ -86,4 +88,41 @@ public class Manga {
                 ", name='" + name + '\'' +
                 '}';
     }
+
+    protected Manga(Parcel in) {
+        name = in.readString();
+        url = in.readString();
+        description = in.readString();
+        image = in.readString();
+        latest = in.readString();
+        isFav = in.readByte() != 0x00;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeString(url);
+        dest.writeString(description);
+        dest.writeString(image);
+        dest.writeString(latest);
+        dest.writeByte((byte) (isFav ? 0x01 : 0x00));
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<Manga> CREATOR = new Parcelable.Creator<Manga>() {
+        @Override
+        public Manga createFromParcel(Parcel in) {
+            return new Manga(in);
+        }
+
+        @Override
+        public Manga[] newArray(int size) {
+            return new Manga[size];
+        }
+    };
 }

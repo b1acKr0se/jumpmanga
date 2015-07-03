@@ -1,53 +1,32 @@
 package io.wyrmise.jumpmanga;
 
-import android.content.Intent;
-import android.os.AsyncTask;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import io.wyrmise.jumpmanga.model.Chapter;
-import io.wyrmise.jumpmanga.model.Manga;
 import io.wyrmise.jumpmanga.picasso.CircleTransform;
-import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
 
-public class MainActivity extends AppCompatActivity implements MangaAdapter.OnItemClickListener {
+public class MainActivity extends AppCompatActivity {
 
     public static final String AVATAR_URL = "http://lorempixel.com/200/200/people/1/";
-
-    private ArrayList<Manga> mangas = new ArrayList<>();
 
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private View content;
 
-    private MangaAdapter adapter;
-
-    private RecyclerView recyclerView;
-
-    private int page = 2;
-
-    private ArrayList<Manga> moreManga;
-
-    protected Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,11 +42,34 @@ public class MainActivity extends AppCompatActivity implements MangaAdapter.OnIt
 
         Picasso.with(this).load(AVATAR_URL).transform(new CircleTransform()).into(avatar);
 
-        recyclerView = (RecyclerView) findViewById(R.id.recycler);
+        if(savedInstanceState==null)
+            GetHotMangas();
 
-        handler = new Handler();
+    }
 
-        new GetMangas().execute("http://manga24h.com/status/hot.html");
+
+    private void GetHotMangas() {
+        MainFragment fragment = new MainFragment();
+        Bundle args = new Bundle();
+        args.putInt("manga_type", 1);
+        fragment.setArguments(args);
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.content_frame, fragment, "HOT");
+        fragmentTransaction.commit();
+        getSupportActionBar().setTitle("Jump Manga");
+    }
+
+    private void GetFavoriteMangas() {
+        MainFragment fragment = new MainFragment();
+        Bundle args = new Bundle();
+        args.putInt("manga_type", 2);
+        fragment.setArguments(args);
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.content_frame, fragment, "FAVORITE");
+        fragmentTransaction.commit();
+        getSupportActionBar().setTitle("Favorite");
     }
 
     @Override
@@ -99,7 +101,14 @@ public class MainActivity extends AppCompatActivity implements MangaAdapter.OnIt
         view.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
-                Snackbar.make(content, menuItem.getTitle() + " pressed", Snackbar.LENGTH_LONG).show();
+                switch (menuItem.getItemId()) {
+                    case R.id.drawer_home:
+                        GetHotMangas();
+                        break;
+                    case R.id.drawer_favourite:
+                        GetFavoriteMangas();
+                        break;
+                }
                 menuItem.setChecked(true);
                 drawerLayout.closeDrawers();
                 return true;
@@ -129,78 +138,5 @@ public class MainActivity extends AppCompatActivity implements MangaAdapter.OnIt
         actionBarDrawerToggle.syncState();
     }
 
-    @Override
-    public void onItemClick(View view, Manga manga) {
-        Intent intent = new Intent(getApplicationContext(), DetailedActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        intent.putExtra("title", manga.getName());
-        intent.putExtra("url", manga.getUrl());
-        intent.putExtra("image", manga.getImage());
-        startActivity(intent);
-    }
-
-    public class LoadMoreManga extends AsyncTask<String, Void, ArrayList<Manga>> {
-        @Override
-        public ArrayList<Manga> doInBackground(String... params) {
-            DownloadUtils download = new DownloadUtils(params[0]);
-            ArrayList<Manga> result = download.GetMangas(10);
-            return result;
-        }
-
-        public void onPostExecute(ArrayList<Manga> result) {
-            mangas.remove(mangas.size() - 1);
-            adapter.notifyItemRemoved(mangas.size());
-
-            if (result != null) {
-                moreManga = result;
-                page++;
-                for (int i = 0; i < moreManga.size(); i++) {
-                    mangas.add(moreManga.get(i));
-                    adapter.notifyItemInserted(mangas.size());
-                }
-            } else {
-                Toast.makeText(MainActivity.this,"There's something wrong with your network, please check",Toast.LENGTH_LONG).show();
-            }
-            adapter.setLoaded();
-        }
-    }
-
-
-    public class GetMangas extends AsyncTask<String, Void, ArrayList<Manga>> {
-
-        @Override
-        public void onPreExecute() {
-
-        }
-
-        @Override
-        public ArrayList<Manga> doInBackground(String... params) {
-            DownloadUtils download = new DownloadUtils(params[0]);
-            return download.GetMangas(10);
-        }
-
-        @Override
-        public void onPostExecute(ArrayList<Manga> result) {
-            if (result != null) {
-                mangas = result;
-                recyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this, 2));
-                adapter = new MangaAdapter(MainActivity.this,mangas, recyclerView);
-                adapter.setOnItemClickListener(MainActivity.this);
-                adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
-                    @Override
-                    public void onLoadMore() {
-                        mangas.add(null);
-                        adapter.notifyItemInserted(mangas.size() - 1);
-                        new LoadMoreManga().execute("http://manga24h.com/status/hot.html/" + page);
-
-                    }
-                });
-                recyclerView.setAdapter(adapter);
-            }
-            else {
-                Toast.makeText(MainActivity.this,"There's something wrong with your network, please check",Toast.LENGTH_LONG).show();
-            }
-        }
-    }
 
 }

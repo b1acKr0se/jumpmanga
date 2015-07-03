@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -54,6 +55,7 @@ public class ChapterAdapter extends ArrayAdapter<Chapter> implements Filterable 
             convertView1 = vi.inflate(R.layout.chapter_list_item, container,
                     false);
             holder.chapter_name = (TextView) convertView1.findViewById(R.id.name);
+            holder.read_status = (ImageView) convertView1.findViewById(R.id.status_read);
             convertView1.setTag(holder);
         } else {
             holder = (Holder) convertView1.getTag();
@@ -62,6 +64,10 @@ public class ChapterAdapter extends ArrayAdapter<Chapter> implements Filterable 
         Chapter chapter = getItem(position);
 
         holder.chapter_name.setText(chapter.getName());
+
+        if(chapter.isRead())
+            holder.read_status.setVisibility(ImageView.VISIBLE);
+        else holder.read_status.setVisibility(ImageView.INVISIBLE);
 
         return convertView1;
     }
@@ -108,6 +114,7 @@ public class ChapterAdapter extends ArrayAdapter<Chapter> implements Filterable 
 
     private class Holder {
         public TextView chapter_name;
+        public ImageView read_status;
     }
 
 }

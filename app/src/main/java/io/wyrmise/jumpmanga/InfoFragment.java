@@ -1,11 +1,14 @@
 package io.wyrmise.jumpmanga;
 
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
@@ -21,7 +24,9 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 import io.wyrmise.jumpmanga.animation.AnimationHelper;
+import io.wyrmise.jumpmanga.database.DatabaseHelper;
 import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
+import io.wyrmise.jumpmanga.model.Manga;
 
 
 /**
@@ -29,12 +34,14 @@ import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
  */
 public class InfoFragment extends Fragment {
 
-    public static final String ARG_IMAGE_URL = "image_url";
+    private DatabaseHelper db;
+    private Context context;
     private String[] str;
     private TextView detail, summary;
     private CardView descriptionCardView, plotCardView;
     private FloatingActionButton fab;
     private AnimationHelper anim;
+    private Manga manga;
 
     public InfoFragment() {
         // Required empty public constructor
@@ -45,25 +52,31 @@ public class InfoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        String image = ((DetailedActivity) getActivity()).getImage();
+        final String image = ((DetailedActivity) getActivity()).getManga().getImage();
 
-        String url = ((DetailedActivity) getActivity()).getUrl();
+        final String url = ((DetailedActivity) getActivity()).getManga().getUrl();
+
+        manga = ((DetailedActivity) getActivity()).getManga();
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_info, container, false);
 
+        context = getActivity().getApplicationContext();
+
+        db = new DatabaseHelper(context);
+
         setHasOptionsMenu(false);
 
-        anim = new AnimationHelper(getActivity().getApplicationContext());
+        anim = new AnimationHelper(context);
 
         new GetMangaDetails().execute(url);
 
         ImageView img = (ImageView) view.findViewById(R.id.image);
 
         if (!image.equals("") && image != null) {
-            Picasso.with(getActivity().getApplicationContext()).load(image).into(img);
+            Picasso.with(context).load(image).into(img);
         } else {
-            img.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.error));
+            img.setImageDrawable(context.getResources().getDrawable(R.drawable.error));
         }
 
         detail = (TextView) view.findViewById(R.id.detail);
@@ -75,6 +88,27 @@ public class InfoFragment extends Fragment {
         plotCardView = (CardView) view.findViewById(R.id.cardView2);
 
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
+
+        if (manga.isFav())
+            fab.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_favorite_dark));
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(manga.isFav()) {
+                    fab.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_favorite_white));
+                    Snackbar.make(getView(),"Manga unfavorited",Snackbar.LENGTH_SHORT).show();
+                    manga.setIsFav(false);
+                    db.unfavoritedManga(manga.getName());
+                } else {
+                    fab.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_favorite_dark));
+                    Snackbar.make(getView(),"Manga favorited",Snackbar.LENGTH_SHORT).show();
+                    db.insertManga(manga);
+                    manga.setIsFav(true);
+                }
+
+            }
+        });
 
         return view;
     }

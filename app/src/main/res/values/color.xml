@@ -2,9 +2,9 @@
 <resources>
     <color name="blue">#2196f3</color>
     <color name="blue_dark">#1976d2</color>
-    <color name="red">#f44336</color>
-    <color name="red_translucent">#80f44336</color>
-    <color name="accent_bright">#ffb99e</color>
+    <color name="yellow">#ffeb3b</color>
+    <color name="yellow_translucent">#80ffeb3b</color>
+    <color name="accent_bright">#fffe9b</color>
     <color name="transparent" >#80000000</color>
     <color name="tabsScrollColor">#0d47a1</color>
 

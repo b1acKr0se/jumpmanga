@@ -20,12 +20,15 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import io.wyrmise.jumpmanga.animation.AnimationHelper;
+import io.wyrmise.jumpmanga.database.DatabaseHelper;
 import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
 import io.wyrmise.jumpmanga.model.Chapter;
 import io.wyrmise.jumpmanga.model.Page;
 import io.wyrmise.jumpmanga.widget.TouchImageView;
 
 public class ReaderActivity extends AppCompatActivity {
+
+    private DatabaseHelper db;
 
     private FullScreenImageAdapter adapter;
 
@@ -43,9 +46,11 @@ public class ReaderActivity extends AppCompatActivity {
 
     private ImageView next, previous;
 
-    int increment = 0;
+    private int increment = 0;
 
-    int chapter_position;
+    private int chapter_position;
+
+    private String manga;
 
     private ArrayList<Chapter> chapters;
 
@@ -114,6 +119,8 @@ public class ReaderActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_reader);
 
+        db = new DatabaseHelper(ReaderActivity.this);
+
         toolbar = (Toolbar) findViewById(R.id.toolbar);
 
         setSupportActionBar(toolbar);
@@ -138,7 +145,7 @@ public class ReaderActivity extends AppCompatActivity {
                 pageIndicator.setText("Page " + (position + 1) + "/" + viewPager.getAdapter().getCount());
 
                 if (position > 0) {
-                    View view = viewPager.getChildAt(position -1);
+                    View view = viewPager.getChildAt(position - 1);
                     if (view != null) {
                         TouchImageView img = (TouchImageView) view.findViewById(R.id.img);
                         img.resetZoom();
@@ -185,9 +192,10 @@ public class ReaderActivity extends AppCompatActivity {
 
 
         Intent intent = getIntent();
+        manga = intent.getStringExtra("manga");
         String url = intent.getStringExtra("url");
         String name = intent.getStringExtra("name");
-        chapter_position = intent.getIntExtra("position",-1);
+        chapter_position = intent.getIntExtra("position", -1);
         chapters = intent.getParcelableArrayListExtra("list");
 
         setTitle(name);
@@ -199,30 +207,38 @@ public class ReaderActivity extends AppCompatActivity {
         new RetrieveAllPages().execute(url);
     }
 
-    public void nextChapter(){
-        if((chapter_position-1)!=-1){
+    public void nextChapter() {
+        if ((chapter_position - 1) != -1) {
             chapter_position--;
+            if (!chapters.get(chapter_position).isRead()) {
+                db.insertChapter(chapters.get(chapter_position), manga);
+                chapters.get(chapter_position).setIsRead(true);
+            }
             new RetrieveAllPages().execute(chapters.get(chapter_position).getUrl());
             getSupportActionBar().setTitle(chapters.get(chapter_position).getName());
         } else {
-            Toast.makeText(getApplicationContext(),"This is the last chapter",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "This is the last chapter", Toast.LENGTH_SHORT).show();
         }
     }
 
-    public void prevChapter(){
-        if((chapter_position+1)!=chapters.size()){
+    public void prevChapter() {
+        if ((chapter_position + 1) != chapters.size()) {
             chapter_position++;
+            if (!chapters.get(chapter_position).isRead()) {
+                db.insertChapter(chapters.get(chapter_position), manga);
+                chapters.get(chapter_position).setIsRead(true);
+            }
             new RetrieveAllPages().execute(chapters.get(chapter_position).getUrl());
             getSupportActionBar().setTitle(chapters.get(chapter_position).getName());
         } else {
-            Toast.makeText(getApplicationContext(),"This is the first chapter",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "This is the first chapter", Toast.LENGTH_SHORT).show();
         }
     }
 
     public void updateProgress() {
         increment++;
         progressBar.setProgress(increment);
-        if(progressBar.getProgress()==progressBar.getMax())
+        if (progressBar.getProgress() == progressBar.getMax())
             progressBar.setVisibility(View.INVISIBLE);
     }
 
@@ -240,7 +256,7 @@ public class ReaderActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        switch (id){
+        switch (id) {
             case android.R.id.home:
                 onBackPressed();
                 return true;
@@ -253,8 +269,9 @@ public class ReaderActivity extends AppCompatActivity {
         public void onPreExecute() {
             next.setVisibility(ImageView.INVISIBLE);
             previous.setVisibility(ImageView.INVISIBLE);
-            Toast.makeText(getApplicationContext(), "Loading new chapter, please wait",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Loading new chapter, please wait", Toast.LENGTH_SHORT).show();
         }
+
         public ArrayList<Page> doInBackground(String... params) {
             DownloadUtils download = new DownloadUtils(params[0]);
             ArrayList<Page> arr;
@@ -273,6 +290,7 @@ public class ReaderActivity extends AppCompatActivity {
                 adapter = new FullScreenImageAdapter(ReaderActivity.this, pages);
                 viewPager.setAdapter(adapter);
                 viewPager.setCurrentItem(0);
+                viewPager.setOffscreenPageLimit(4);
                 pageIndicator.setText("Page 1/" + adapter.getCount());
                 progressBar.setProgress(0);
                 increment = 0;

@@ -9,14 +9,21 @@ import android.os.Parcelable;
 public class Chapter implements Parcelable {
     private String name;
     private String url;
+    private boolean isRead;
 
-    public Chapter(){
+    public Chapter() {
 
+    }
+
+    public Chapter(String n){
+        name = n;
+        isRead = false;
     }
 
     public Chapter(String n, String u) {
         name = n;
         url = u;
+        isRead = false;
     }
 
     public String getName() {
@@ -35,10 +42,19 @@ public class Chapter implements Parcelable {
         this.url = url;
     }
 
+    public boolean isRead() {
+        return isRead;
+    }
+
+    public void setIsRead(boolean isRead) {
+        this.isRead = isRead;
+    }
+
 
     protected Chapter(Parcel in) {
         name = in.readString();
         url = in.readString();
+        isRead = in.readByte() != 0x00;
     }
 
     @Override
@@ -50,6 +66,7 @@ public class Chapter implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);
         dest.writeString(url);
+        dest.writeByte((byte) (isRead ? 0x01 : 0x00));
     }
 
     @SuppressWarnings("unused")
