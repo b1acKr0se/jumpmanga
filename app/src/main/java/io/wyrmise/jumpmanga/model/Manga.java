@@ -14,6 +14,18 @@ public class Manga {
     private String image;
     private String latest;
 
+    public Manga(String n, String i) {
+        name = n;
+        image = i;
+    }
+
+    public Manga(String n, String u, String i, String l) {
+        name = n;
+        url = u;
+        image = i;
+        latest = l;
+    }
+
     public String getImage() {
         return image;
     }
@@ -31,18 +43,6 @@ public class Manga {
     }
 
     private ArrayList<Chapter> chapters;
-
-    public Manga(String n, String i){
-        name = n;
-        image = i;
-    }
-
-    public Manga(String n, String u, String i, String l) {
-        name = n;
-        url = u;
-        image = i;
-        latest = l;
-    }
 
 
     public String getName() {
@@ -75,5 +75,15 @@ public class Manga {
 
     public void setChapters(ArrayList<Chapter> chapters) {
         this.chapters = chapters;
+    }
+
+    @Override
+    public String toString() {
+        return "Manga{" +
+                "latest='" + latest + '\'' +
+                ", image='" + image + '\'' +
+                ", url='" + url + '\'' +
+                ", name='" + name + '\'' +
+                '}';
     }
 }

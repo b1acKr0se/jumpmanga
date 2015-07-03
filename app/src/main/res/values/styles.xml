@@ -6,10 +6,10 @@
     </style>
 
     <style name="BaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/teal</item>
-        <item name="colorPrimaryDark">@color/teal_dark</item>
-        <item name="colorControlHighlight">@color/yellow_translucent</item>
-        <item name="colorAccent">@color/yellow</item>
+        <item name="colorPrimary">@color/indigo</item>
+        <item name="colorPrimaryDark">@color/indigo_dark</item>
+        <item name="colorControlHighlight">@color/pink_translucent</item>
+        <item name="colorAccent">@color/pink</item>
         <item name="selectableItemBackground">@drawable/selectable_item_background</item>
     </style>
 

@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="teal">#009688</color>
-    <color name="teal_dark">#00796B</color>
-    <color name="deep_orange">#FF5722</color>
-    <color name="yellow">#FFEB3B</color>
-    <color name="yellow_translucent">#80FFEB3B</color>
-    <color name="accent_bright">#FFF493</color>
+    <color name="indigo">#3f51b5</color>
+    <color name="indigo_dark">#303f9f</color>
+    <color name="pink">#ff768c</color>
+    <color name="pink_translucent">#80ff768c</color>
+    <color name="accent_bright">#f8bbd0</color>
     <color name="transparent">#80000000</color>
-    <color name="tabsScrollColor">#004D40</color>
+    <color name="tabsScrollColor">#04094d</color>
 
 </resources>

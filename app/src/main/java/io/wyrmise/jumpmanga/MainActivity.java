@@ -3,6 +3,7 @@ package io.wyrmise.jumpmanga;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
@@ -16,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -37,7 +39,15 @@ public class MainActivity extends AppCompatActivity implements MangaAdapter.OnIt
     private DrawerLayout drawerLayout;
     private View content;
 
+    private MangaAdapter adapter;
+
     private RecyclerView recyclerView;
+
+    private int page = 2;
+
+    private ArrayList<Manga> moreManga;
+
+    protected Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements MangaAdapter.OnIt
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler);
 
+        handler = new Handler();
 
         new GetMangas().execute("http://manga24h.com/status/hot.html");
     }
@@ -123,9 +134,36 @@ public class MainActivity extends AppCompatActivity implements MangaAdapter.OnIt
         Intent intent = new Intent(getApplicationContext(), DetailedActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         intent.putExtra("title", manga.getName());
-        intent.putExtra("url",manga.getUrl());
+        intent.putExtra("url", manga.getUrl());
         intent.putExtra("image", manga.getImage());
         startActivity(intent);
+    }
+
+    public class LoadMoreManga extends AsyncTask<String, Void, ArrayList<Manga>> {
+        @Override
+        public ArrayList<Manga> doInBackground(String... params) {
+            DownloadUtils download = new DownloadUtils(params[0]);
+            ArrayList<Manga> result = download.GetMangas(10);
+            return result;
+        }
+
+        public void onPostExecute(ArrayList<Manga> result) {
+            mangas.remove(mangas.size() - 1);
+            adapter.notifyItemRemoved(mangas.size());
+
+            if (result != null) {
+                moreManga = result;
+                page++;
+                System.out.println(page);
+                for (int i = 0; i < moreManga.size(); i++) {
+                    mangas.add(moreManga.get(i));
+                    adapter.notifyItemInserted(mangas.size());
+                }
+            } else {
+                Toast.makeText(MainActivity.this,"There's something wrong with your network, please check",Toast.LENGTH_LONG).show();
+            }
+            adapter.setLoaded();
+        }
     }
 
 
@@ -147,9 +185,21 @@ public class MainActivity extends AppCompatActivity implements MangaAdapter.OnIt
             if (result != null) {
                 mangas = result;
                 recyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this, 2));
-                MangaAdapter adapter = new MangaAdapter(mangas);
+                adapter = new MangaAdapter(MainActivity.this,mangas, recyclerView);
                 adapter.setOnItemClickListener(MainActivity.this);
+                adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
+                    @Override
+                    public void onLoadMore() {
+                        mangas.add(null);
+                        adapter.notifyItemInserted(mangas.size() - 1);
+                        new LoadMoreManga().execute("http://manga24h.com/status/hot.html/" + page);
+
+                    }
+                });
                 recyclerView.setAdapter(adapter);
+            }
+            else {
+                Toast.makeText(MainActivity.this,"There's something wrong with your network, please check",Toast.LENGTH_LONG).show();
             }
         }
     }

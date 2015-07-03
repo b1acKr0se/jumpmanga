@@ -51,6 +51,7 @@ public class DownloadUtils {
             for (Element e : mangaList.select("div.col-md-4.col-xs-12.col-sm-12").select("div.featured-item-small")
                     ) {
                 String img = e.select("a.featured-item-small-a").select("img").attr("data-original");
+                System.out.println("Image url: "+img);
                 String name = e.select("h4").select("a[href]").text();
                 String url = e.select("h4").select("a[href]").attr("abs:href");
                 String latest = e.select("span.featured-item-new-chapt").select("a[href]").text();
@@ -87,15 +88,18 @@ public class DownloadUtils {
     }
 
     public String GetMangaSummary() {
-        Element element = document.select("div#manga-detail-info.row.detail-info").select("div").select("small").first();
+        try {
+            Element element = document.select("div#manga-detail-info.row.detail-info").select("div").select("small").first();
+            String summary = element.text();
+            System.out.println(summary);
 
-        String summary = element.text();
-        System.out.println(summary);
+            if (summary.startsWith(" "))
+                return summary.substring(1, summary.length());
 
-        if (summary.startsWith(" "))
-            return summary.substring(1, summary.length());
-
-        return summary;
+            return summary;
+        }catch (NullPointerException e) {
+            return null;
+        }
     }
 
     public ArrayList<Chapter> GetChapters() {

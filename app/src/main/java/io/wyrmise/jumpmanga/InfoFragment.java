@@ -26,7 +26,7 @@ import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class InfoFragment extends Fragment{
+public class InfoFragment extends Fragment {
 
     public static final String ARG_IMAGE_URL = "image_url";
     private String[] str;
@@ -56,11 +56,13 @@ public class InfoFragment extends Fragment{
 
         ImageView img = (ImageView) view.findViewById(R.id.image);
 
-        Picasso.with(getActivity().getApplicationContext()).load(image).into(img);
-
+        if (!image.equals("") && image != null) {
+            Picasso.with(getActivity().getApplicationContext()).load(image).into(img);
+        } else {
+            img.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.error));
+        }
 
         detail = (TextView) view.findViewById(R.id.detail);
-
 
         summary = (TextView) view.findViewById(R.id.description);
 

@@ -3,6 +3,7 @@
     package="io.wyrmise.jumpmanga" >
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -17,6 +18,7 @@
         <activity
             android:name=".DetailedActivity"
             android:label="@string/title_activity_detailed"
+            android:windowSoftInputMode="adjustPan"
             android:parentActivityName=".MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
