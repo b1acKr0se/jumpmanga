@@ -9,37 +9,42 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-
-        android:launchMode="singleTop">
+        android:launchMode="singleTop"
+        android:theme="@style/AppTheme" >
         <activity
             android:name=".MainActivity"
-            android:screenOrientation="portrait"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".DetailedActivity"
-            android:label="@string/title_activity_detailed"
+            android:name=".DetailActivity"
+            android:label="@string/title_activity_detail"
+            android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan"
-            android:parentActivityName=".MainActivity" >
+            android:windowSoftInputMode="adjustPan" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="io.wyrmise.jumpmanga.MainActivity" />
         </activity>
         <activity
-            android:name=".ReaderActivity"
-            android:screenOrientation="portrait"
-            android:label="@string/title_activity_reader" >
+            android:name=".ReadActivity"
+            android:label="@string/title_activity_read"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".SplashScreenActivity"
-            android:screenOrientation="portrait"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".ExceptionActivity"
+            android:label="@string/title_activity_exception" >
         </activity>
     </application>
 

@@ -25,13 +25,13 @@ import io.wyrmise.jumpmanga.model.Chapter;
 import io.wyrmise.jumpmanga.model.Page;
 import io.wyrmise.jumpmanga.widget.TouchImageView;
 
-public class ReaderActivity extends AppCompatActivity {
+public class ReadActivity extends AppCompatActivity {
 
     private DatabaseHelper db;
 
     private FullScreenImageAdapter adapter;
 
-    private ViewPager viewPager;
+    private CustomViewPager viewPager;
 
     private ArrayList<Page> pages;
 
@@ -126,9 +126,11 @@ public class ReaderActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_reader);
+        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
 
-        db = new DatabaseHelper(ReaderActivity.this);
+        setContentView(R.layout.activity_read);
+
+        db = new DatabaseHelper(ReadActivity.this);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
 
@@ -138,7 +140,7 @@ public class ReaderActivity extends AppCompatActivity {
 
         anim = new AnimationHelper(this);
 
-        viewPager = (ViewPager) findViewById(R.id.viewPager);
+        viewPager = (CustomViewPager) findViewById(R.id.viewPager);
 
         seekBar = (SeekBar) findViewById(R.id.seekBar);
 
@@ -146,7 +148,6 @@ public class ReaderActivity extends AppCompatActivity {
 
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
             }
 
             @Override
@@ -154,7 +155,6 @@ public class ReaderActivity extends AppCompatActivity {
                 pageIndicator.setText("Page " + (position + 1) + "/" + viewPager.getAdapter().getCount());
 
                 seekBar.setProgress(position);
-
 
                 if (position > 0) {
                     View view = viewPager.getChildAt(position - 1);
@@ -174,7 +174,18 @@ public class ReaderActivity extends AppCompatActivity {
 
             @Override
             public void onPageScrollStateChanged(int state) {
+            }
+        });
 
+        viewPager.setOnSwipeOutListener(new CustomViewPager.OnSwipeOutListener() {
+            @Override
+            public void onSwipeOutAtStart() {
+                prevChapter();
+            }
+
+            @Override
+            public void onSwipeOutAtEnd() {
+                nextChapter();
             }
         });
 
@@ -322,8 +333,28 @@ public class ReaderActivity extends AppCompatActivity {
         public void onPostExecute(ArrayList<Page> result) {
             if (result != null) {
                 pages = result;
-                adapter = new FullScreenImageAdapter(ReaderActivity.this, pages);
+                adapter = new FullScreenImageAdapter(ReadActivity.this, pages);
                 viewPager.setAdapter(adapter);
+
+                viewPager.setOnSwipeOutListener(new CustomViewPager.OnSwipeOutListener() {
+                    boolean callHappened = false;
+                    @Override
+                    public void onSwipeOutAtStart() {
+                        if(!callHappened) {
+                            callHappened = true;
+                            prevChapter();
+                        }
+                    }
+
+                    @Override
+                    public void onSwipeOutAtEnd() {
+                        if(!callHappened) {
+                            callHappened = true;
+                            nextChapter();
+                        }
+                    }
+                });
+
                 viewPager.setCurrentItem(0);
                 viewPager.setOffscreenPageLimit(3);
                 viewPager.setPageMargin(calculatedPixel);
@@ -334,7 +365,7 @@ public class ReaderActivity extends AppCompatActivity {
                 progressBar.setVisibility(View.VISIBLE);
 
                 seekBar.setProgress(0);
-                seekBar.setMax(adapter.getCount());
+                seekBar.setMax(adapter.getCount()-1);
 
             }
             next.setVisibility(ImageView.VISIBLE);

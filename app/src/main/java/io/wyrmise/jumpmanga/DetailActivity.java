@@ -3,17 +3,14 @@ package io.wyrmise.jumpmanga;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import io.wyrmise.jumpmanga.model.Manga;
 import io.wyrmise.jumpmanga.widget.SlidingTabLayout;
 
-public class DetailedActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity {
 
     Toolbar toolbar;
     ViewPager pager;
@@ -26,7 +23,8 @@ public class DetailedActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detailed);
+        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
+        setContentView(R.layout.activity_detail);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

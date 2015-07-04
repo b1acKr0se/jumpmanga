@@ -1,6 +1,7 @@
 package io.wyrmise.jumpmanga;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -36,6 +37,8 @@ public class ChapterFragment extends Fragment {
     private ProgressBar progressBar;
     public static ChapterAdapter adapter;
 
+    private Context context;
+
     private String name;
 
     public ChapterFragment() {
@@ -53,8 +56,9 @@ public class ChapterFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_chapter, container, false);
 
-        db = new DatabaseHelper(getActivity().getApplicationContext());
+        context = getActivity().getApplicationContext();
 
+        db = new DatabaseHelper(context);
 
         setHasOptionsMenu(true);
 
@@ -63,7 +67,7 @@ public class ChapterFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(getActivity().getApplicationContext(), ReaderActivity.class);
+                Intent intent = new Intent(context, ReadActivity.class);
                 if (!adapter.getItem(i).isRead()) {
                     db.insertChapter(adapter.getItem(i), name);
                     adapter.getItem(i).setIsRead(true);
@@ -80,9 +84,9 @@ public class ChapterFragment extends Fragment {
             }
         });
 
-        name = ((DetailedActivity) getActivity()).getManga().getName();
+        name = ((DetailActivity) getActivity()).getManga().getName();
 
-        String url = ((DetailedActivity) getActivity()).getManga().getUrl();
+        String url = ((DetailActivity) getActivity()).getManga().getUrl();
 
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 
@@ -93,7 +97,7 @@ public class ChapterFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_detailed, menu);
+        inflater.inflate(R.menu.menu_detail, menu);
         MenuItem searchItem = menu.findItem(R.id.action_search);
         SearchView actionSearchView = (SearchView) searchItem.getActionView();
         actionSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -152,7 +156,7 @@ public class ChapterFragment extends Fragment {
 
                 chapters = arr;
 
-                adapter = new ChapterAdapter(getActivity().getApplicationContext(), R.layout.chapter_list_item, chapters);
+                adapter = new ChapterAdapter(context, R.layout.chapter_list_item, chapters);
 
                 listView.setAdapter(adapter);
 
@@ -164,7 +168,7 @@ public class ChapterFragment extends Fragment {
 
             } else {
                 progressBar.setVisibility(ProgressBar.GONE);
-                Toast.makeText(getActivity().getApplicationContext(), "Cannot retrieve the chapters, please check your network", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, "Cannot retrieve the chapters, please check your network", Toast.LENGTH_LONG).show();
             }
         }
     }

@@ -79,7 +79,7 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
 
     @Override
     public void onItemClick(View view, Manga manga) {
-        Intent intent = new Intent(context, DetailedActivity.class);
+        Intent intent = new Intent(context, DetailActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         intent.putExtra("manga",manga);
         startActivity(intent);

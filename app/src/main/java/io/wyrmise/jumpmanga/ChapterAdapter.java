@@ -72,12 +72,8 @@ public class ChapterAdapter extends ArrayAdapter<Chapter> implements Filterable 
         return convertView1;
     }
 
-    public ArrayList<Chapter> getChapters(){
-        ArrayList<Chapter> clone = chapters;
-        return clone;
-    }
-
     @Override
+    @SuppressWarnings("unchecked")
     public Filter getFilter() {
         return new Filter() {
             @Override

@@ -2,8 +2,6 @@ package io.wyrmise.jumpmanga;
 
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,15 +12,11 @@ import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
-
-import java.util.ArrayList;
 
 import io.wyrmise.jumpmanga.animation.AnimationHelper;
 import io.wyrmise.jumpmanga.database.DatabaseHelper;
@@ -53,11 +47,11 @@ public class InfoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        final String image = ((DetailedActivity) getActivity()).getManga().getImage();
+        final String image = ((DetailActivity) getActivity()).getManga().getImage();
 
-        final String url = ((DetailedActivity) getActivity()).getManga().getUrl();
+        final String url = ((DetailActivity) getActivity()).getManga().getUrl();
 
-        manga = ((DetailedActivity) getActivity()).getManga();
+        manga = ((DetailActivity) getActivity()).getManga();
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_info, container, false);

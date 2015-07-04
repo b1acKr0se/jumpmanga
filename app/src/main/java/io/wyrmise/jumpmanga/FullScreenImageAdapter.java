@@ -50,7 +50,7 @@ public class FullScreenImageAdapter extends PagerAdapter {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((ReaderActivity) activity).onClick(view);
+                ((ReadActivity) activity).onClick(view);
             }
         });
 
@@ -60,7 +60,7 @@ public class FullScreenImageAdapter extends PagerAdapter {
 
             @Override
             public void onSuccess() {
-                ((ReaderActivity) activity).updateProgress();
+                ((ReadActivity) activity).updateProgress();
             }
 
             @Override
