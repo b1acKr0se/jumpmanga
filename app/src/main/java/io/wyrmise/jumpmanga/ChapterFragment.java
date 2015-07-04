@@ -34,7 +34,7 @@ public class ChapterFragment extends Fragment {
     private ListView listView;
     private ArrayList<Chapter> chapters;
     private ProgressBar progressBar;
-    private static ChapterAdapter adapter;
+    public static ChapterAdapter adapter;
 
     private String name;
 
@@ -120,6 +120,15 @@ public class ChapterFragment extends Fragment {
             }
         });
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        if(adapter!=null){
+            System.out.println("notifyDataSetChanged");
+            adapter.notifyDataSetChanged();
+        }
     }
 
     public class GetMangaDetails extends AsyncTask<String, Void, ArrayList<Chapter>> {

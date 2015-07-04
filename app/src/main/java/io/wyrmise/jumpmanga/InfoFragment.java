@@ -18,6 +18,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -95,14 +96,14 @@ public class InfoFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(manga.isFav()) {
+                if (manga.isFav()) {
                     fab.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_favorite_white));
-                    Snackbar.make(getView(),"Manga unfavorited",Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(getView(), "Manga unfavorited", Snackbar.LENGTH_SHORT).show();
                     manga.setIsFav(false);
                     db.unfavoritedManga(manga.getName());
                 } else {
                     fab.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_favorite_dark));
-                    Snackbar.make(getView(),"Manga favorited",Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(getView(), "Manga favorited", Snackbar.LENGTH_SHORT).show();
                     db.insertManga(manga);
                     manga.setIsFav(true);
                 }
@@ -118,32 +119,38 @@ public class InfoFragment extends Fragment {
         public String[] doInBackground(String... params) {
             str = new String[2];
             DownloadUtils download = new DownloadUtils(params[0]);
-            str[0] = download.GetMangaDetail();
-            str[1] = download.GetMangaSummary();
-
-
-            return str;
+            String detail = download.GetMangaDetail();
+            String plot = download.GetMangaSummary();
+            if (detail != null && plot != null) {
+                str[0] = detail;
+                str[1] = plot;
+                return str;
+            }
+            return null;
         }
 
         public void onPostExecute(String[] str) {
-            detail.setText(str[0]);
-            summary.setText(str[1]);
+            if (str != null) {
+                detail.setText(str[0]);
+                summary.setText(str[1]);
 
-            anim.slideIn(descriptionCardView);
+                anim.slideIn(descriptionCardView);
 
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    anim.slideIn(plotCardView);
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            anim.fadeIn(fab);
-                        }
-                    }, 500);
-                }
-            }, 300);
-
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        anim.slideIn(plotCardView);
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                anim.fadeIn(fab);
+                            }
+                        }, 500);
+                    }
+                }, 300);
+            } else {
+                Toast.makeText(context, "Failed to retrieve manga info!", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

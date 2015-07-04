@@ -1,4 +1,4 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -30,24 +30,21 @@
             tools:ignore="UselessParent"
             android:animateLayoutChanges="true">
 
-            <ProgressBar
-                android:id="@+id/progress"
-                style="?android:attr/progressBarStyleHorizontal"
+            <SeekBar
+                android:id="@+id/seekBar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/spacing_medium"
-                android:layout_marginRight="@dimen/spacing_medium"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true" />
+                android:layout_height="wrap_content"/>
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:paddingBottom="15dp">
                 <ImageView
                     android:id="@+id/previous"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="40dp"
+                    android:layout_height="45dp"
                     android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
                     android:src="@drawable/ic_action_previous"/>
                 <TextView
                     android:id="@+id/indicator"
@@ -59,15 +56,26 @@
                     android:layout_centerInParent="true"/>
                 <ImageView
                     android:id="@+id/next"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="40dp"
+                    android:layout_height="45dp"
                     android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
                     android:src="@drawable/ic_action_next"/>
 
             </RelativeLayout>
 
         </LinearLayout>
     </FrameLayout>
+
+    <ProgressBar
+        android:id="@+id/progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/transparent"
+        android:paddingLeft="@dimen/spacing_medium"
+        android:paddingRight="@dimen/spacing_medium"
+        android:layout_below="@id/toolbar"/>
 
     <android.support.v7.widget.Toolbar
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -81,4 +89,4 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         android:fitsSystemWindows="true"/>
 
-</FrameLayout>
+</RelativeLayout>

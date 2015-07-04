@@ -10,10 +10,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,6 +43,8 @@ public class ReaderActivity extends AppCompatActivity {
 
     private ProgressBar progressBar;
 
+    private SeekBar seekBar;
+
     private ImageView next, previous;
 
     private int increment = 0;
@@ -57,6 +58,8 @@ public class ReaderActivity extends AppCompatActivity {
     Handler mHideHandler = new Handler();
 
     private AnimationHelper anim;
+
+    private int calculatedPixel;
 
     private void hideSystemUI() {
         View decorView = getWindow().getDecorView();
@@ -82,6 +85,8 @@ public class ReaderActivity extends AppCompatActivity {
             hideSystemUI();
             anim.slideOutFromBottom(control);
             anim.slideOutFromTop(toolbar);
+            if (progressBar.getVisibility() != ProgressBar.INVISIBLE)
+                anim.slideOutFromTop(progressBar);
         }
     };
 
@@ -93,6 +98,8 @@ public class ReaderActivity extends AppCompatActivity {
         showSystemUI();
         anim.slideInFromBottom(control);
         anim.slideInFromTop(toolbar);
+        if (progressBar.getVisibility() != ProgressBar.INVISIBLE)
+            anim.slideInFromTop(progressBar);
         mHideHandler.removeCallbacks(hideControllerThread);
         autoHideControllers();
     }
@@ -110,6 +117,8 @@ public class ReaderActivity extends AppCompatActivity {
         hideSystemUI();
         anim.slideOutFromBottom(control);
         anim.slideOutFromTop(toolbar);
+        if (progressBar.getVisibility() != ProgressBar.INVISIBLE)
+            anim.slideOutFromTop(progressBar);
     }
 
 
@@ -131,18 +140,21 @@ public class ReaderActivity extends AppCompatActivity {
 
         viewPager = (ViewPager) findViewById(R.id.viewPager);
 
-        pageIndicator = (TextView) findViewById(R.id.indicator);
-
-        progressBar = (ProgressBar) findViewById(R.id.progress);
+        seekBar = (SeekBar) findViewById(R.id.seekBar);
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
             }
 
             @Override
             public void onPageSelected(int position) {
                 pageIndicator.setText("Page " + (position + 1) + "/" + viewPager.getAdapter().getCount());
+
+                seekBar.setProgress(position);
+
 
                 if (position > 0) {
                     View view = viewPager.getChildAt(position - 1);
@@ -165,6 +177,29 @@ public class ReaderActivity extends AppCompatActivity {
 
             }
         });
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                viewPager.setCurrentItem(i,true);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        pageIndicator = (TextView) findViewById(R.id.indicator);
+
+        progressBar = (ProgressBar) findViewById(R.id.progress);
+
+        calculatedPixel = convertToPx(20);
 
         next = (ImageView) findViewById(R.id.next);
 
@@ -212,7 +247,7 @@ public class ReaderActivity extends AppCompatActivity {
             chapter_position--;
             if (!chapters.get(chapter_position).isRead()) {
                 db.insertChapter(chapters.get(chapter_position), manga);
-                chapters.get(chapter_position).setIsRead(true);
+                ChapterFragment.adapter.getItem(chapter_position).setIsRead(true);
             }
             new RetrieveAllPages().execute(chapters.get(chapter_position).getUrl());
             getSupportActionBar().setTitle(chapters.get(chapter_position).getName());
@@ -226,7 +261,7 @@ public class ReaderActivity extends AppCompatActivity {
             chapter_position++;
             if (!chapters.get(chapter_position).isRead()) {
                 db.insertChapter(chapters.get(chapter_position), manga);
-                chapters.get(chapter_position).setIsRead(true);
+                ChapterFragment.adapter.getItem(chapter_position).setIsRead(true);
             }
             new RetrieveAllPages().execute(chapters.get(chapter_position).getUrl());
             getSupportActionBar().setTitle(chapters.get(chapter_position).getName());
@@ -290,15 +325,27 @@ public class ReaderActivity extends AppCompatActivity {
                 adapter = new FullScreenImageAdapter(ReaderActivity.this, pages);
                 viewPager.setAdapter(adapter);
                 viewPager.setCurrentItem(0);
-                viewPager.setOffscreenPageLimit(4);
+                viewPager.setOffscreenPageLimit(3);
+                viewPager.setPageMargin(calculatedPixel);
                 pageIndicator.setText("Page 1/" + adapter.getCount());
                 progressBar.setProgress(0);
                 increment = 0;
                 progressBar.setMax(adapter.getCount());
                 progressBar.setVisibility(View.VISIBLE);
+
+                seekBar.setProgress(0);
+                seekBar.setMax(adapter.getCount());
+
             }
             next.setVisibility(ImageView.VISIBLE);
             previous.setVisibility(ImageView.VISIBLE);
         }
+    }
+
+    public int convertToPx(int dp) {
+        // Get the screen's density scale
+        final float scale = getResources().getDisplayMetrics().density;
+        // Convert the dps to pixels, based on density scale
+        return (int) (dp * scale + 0.5f);
     }
 }

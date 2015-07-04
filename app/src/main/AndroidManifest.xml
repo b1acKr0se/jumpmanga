@@ -10,15 +10,17 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
-        android:screenOrientation="portrait"
+
         android:launchMode="singleTop">
         <activity
             android:name=".MainActivity"
+            android:screenOrientation="portrait"
             android:label="@string/app_name" >
         </activity>
         <activity
             android:name=".DetailedActivity"
             android:label="@string/title_activity_detailed"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"
             android:parentActivityName=".MainActivity" >
             <meta-data
@@ -27,10 +29,12 @@
         </activity>
         <activity
             android:name=".ReaderActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_reader" >
         </activity>
         <activity
             android:name=".SplashScreenActivity"
+            android:screenOrientation="portrait"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
