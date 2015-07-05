@@ -4,6 +4,9 @@ import android.content.Context;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.View;
+
+import io.wyrmise.jumpmanga.widget.TouchImageView;
 
 /**
  * Created by Thanh on 7/4/2015.
@@ -35,9 +38,21 @@ public class CustomViewPager extends ViewPager {
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (mStartDragX < x && getCurrentItem() == 0) {
-                    mListener.onSwipeOutAtStart();
+                    View view = findViewWithTag(0);
+                    if (view != null) {
+                        TouchImageView img = (TouchImageView) view.findViewById(R.id.img);
+                        if (!img.isZoomed()) {
+                            mListener.onSwipeOutAtStart();
+                        }
+                    }
                 } else if (mStartDragX > x && getCurrentItem() == getAdapter().getCount() - 1) {
-                    mListener.onSwipeOutAtEnd();
+                    View view = findViewWithTag(getAdapter().getCount() - 1);
+                    if (view != null) {
+                        TouchImageView img = (TouchImageView) view.findViewById(R.id.img);
+                        if (!img.isZoomed()) {
+                            mListener.onSwipeOutAtEnd();
+                        }
+                    }
                 }
                 break;
         }
@@ -46,6 +61,7 @@ public class CustomViewPager extends ViewPager {
 
     public interface OnSwipeOutListener {
         void onSwipeOutAtStart();
+
         void onSwipeOutAtEnd();
     }
 

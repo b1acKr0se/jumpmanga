@@ -47,6 +47,10 @@ public class FullScreenImageAdapter extends PagerAdapter {
         View layout = layoutInflater.inflate(R.layout.fullscreen_image_slider, container, false);
         imageView = (TouchImageView) layout.findViewById(R.id.img);
 
+        layout.setTag(position);
+
+        imageView.resetZoom();
+
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

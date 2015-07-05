@@ -4,7 +4,6 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -31,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
+//        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
         setContentView(R.layout.activity_main);
 
         initToolbar();
@@ -73,9 +72,25 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Favorite");
     }
 
+    private void GetRecentList() {
+        RecentFragment fragment = new RecentFragment();
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.content_frame, fragment, "RECENT");
+        fragmentTransaction.commit();
+        getSupportActionBar().setTitle("Recent");
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         return true;
+    }
+
+    @Override
+    public void onBackPressed(){
+        if(drawerLayout.isDrawerOpen(GravityCompat.START))
+            drawerLayout.closeDrawers();
+        else super.onBackPressed();
     }
 
     @Override
@@ -108,6 +123,9 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.drawer_favourite:
                         GetFavoriteMangas();
+                        break;
+                    case R.id.drawer_recent:
+                        GetRecentList();
                         break;
                 }
                 menuItem.setChecked(true);

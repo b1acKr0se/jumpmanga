@@ -22,6 +22,7 @@ import io.wyrmise.jumpmanga.animation.AnimationHelper;
 import io.wyrmise.jumpmanga.database.DatabaseHelper;
 import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
 import io.wyrmise.jumpmanga.model.Chapter;
+import io.wyrmise.jumpmanga.model.Manga;
 import io.wyrmise.jumpmanga.model.Page;
 import io.wyrmise.jumpmanga.widget.TouchImageView;
 
@@ -51,7 +52,11 @@ public class ReadActivity extends AppCompatActivity {
 
     private int chapter_position;
 
-    private String manga;
+    private Manga manga;
+
+    private String name;
+
+    private String img;
 
     private ArrayList<Chapter> chapters;
 
@@ -126,7 +131,7 @@ public class ReadActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
+//        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
 
         setContentView(R.layout.activity_read);
 
@@ -146,6 +151,7 @@ public class ReadActivity extends AppCompatActivity {
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
+
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
             }
@@ -157,14 +163,14 @@ public class ReadActivity extends AppCompatActivity {
                 seekBar.setProgress(position);
 
                 if (position > 0) {
-                    View view = viewPager.getChildAt(position - 1);
+                    View view = viewPager.findViewWithTag(position - 1);
                     if (view != null) {
                         TouchImageView img = (TouchImageView) view.findViewById(R.id.img);
                         img.resetZoom();
                     }
                 }
-                if (position < viewPager.getChildCount() - 1) {
-                    View view = viewPager.getChildAt(position + 1);
+                if (position < viewPager.getAdapter().getCount() - 1) {
+                    View view = viewPager.findViewWithTag(position + 1);
                     if (view != null) {
                         TouchImageView img = (TouchImageView) view.findViewById(R.id.img);
                         img.resetZoom();
@@ -174,6 +180,7 @@ public class ReadActivity extends AppCompatActivity {
 
             @Override
             public void onPageScrollStateChanged(int state) {
+
             }
         });
 
@@ -192,7 +199,7 @@ public class ReadActivity extends AppCompatActivity {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                viewPager.setCurrentItem(i,true);
+                viewPager.setCurrentItem(i, true);
             }
 
             @Override
@@ -236,9 +243,11 @@ public class ReadActivity extends AppCompatActivity {
 
         control = findViewById(R.id.fullscreen_content_controls);
 
-
         Intent intent = getIntent();
-        manga = intent.getStringExtra("manga");
+
+        manga = intent.getParcelableExtra("manga");
+        name = manga.getName();
+        img = manga.getImage();
         String url = intent.getStringExtra("url");
         String name = intent.getStringExtra("name");
         chapter_position = intent.getIntExtra("position", -1);
@@ -257,9 +266,12 @@ public class ReadActivity extends AppCompatActivity {
         if ((chapter_position - 1) != -1) {
             chapter_position--;
             if (!chapters.get(chapter_position).isRead()) {
-                db.insertChapter(chapters.get(chapter_position), manga);
-                ChapterFragment.adapter.getItem(chapter_position).setIsRead(true);
+                db.insertChapter(chapters.get(chapter_position), name);
+                if (ChapterFragment.getAdapter() != null)
+                    ChapterFragment.getAdapter().getItem(chapter_position).setIsRead(true);
+                else chapters.get(chapter_position).setIsRead(true);
             }
+            db.insertRecentChapter(manga, chapters.get(chapter_position));
             new RetrieveAllPages().execute(chapters.get(chapter_position).getUrl());
             getSupportActionBar().setTitle(chapters.get(chapter_position).getName());
         } else {
@@ -271,9 +283,12 @@ public class ReadActivity extends AppCompatActivity {
         if ((chapter_position + 1) != chapters.size()) {
             chapter_position++;
             if (!chapters.get(chapter_position).isRead()) {
-                db.insertChapter(chapters.get(chapter_position), manga);
-                ChapterFragment.adapter.getItem(chapter_position).setIsRead(true);
+                db.insertChapter(chapters.get(chapter_position), name);
+                if (ChapterFragment.getAdapter() != null)
+                    ChapterFragment.getAdapter().getItem(chapter_position).setIsRead(true);
+                else chapters.get(chapter_position).setIsRead(true);
             }
+            db.insertRecentChapter(manga, chapters.get(chapter_position));
             new RetrieveAllPages().execute(chapters.get(chapter_position).getUrl());
             getSupportActionBar().setTitle(chapters.get(chapter_position).getName());
         } else {
@@ -290,6 +305,7 @@ public class ReadActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_read, menu);
         return true;
     }
 
@@ -306,9 +322,16 @@ public class ReadActivity extends AppCompatActivity {
             case android.R.id.home:
                 onBackPressed();
                 return true;
+            case R.id.action_refresh:
+                refresh();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void refresh() {
+        viewPager.setAdapter(adapter);
     }
 
     public class RetrieveAllPages extends AsyncTask<String, Void, ArrayList<Page>> {
@@ -338,9 +361,10 @@ public class ReadActivity extends AppCompatActivity {
 
                 viewPager.setOnSwipeOutListener(new CustomViewPager.OnSwipeOutListener() {
                     boolean callHappened = false;
+
                     @Override
                     public void onSwipeOutAtStart() {
-                        if(!callHappened) {
+                        if (!callHappened) {
                             callHappened = true;
                             prevChapter();
                         }
@@ -348,7 +372,7 @@ public class ReadActivity extends AppCompatActivity {
 
                     @Override
                     public void onSwipeOutAtEnd() {
-                        if(!callHappened) {
+                        if (!callHappened) {
                             callHappened = true;
                             nextChapter();
                         }
@@ -365,7 +389,7 @@ public class ReadActivity extends AppCompatActivity {
                 progressBar.setVisibility(View.VISIBLE);
 
                 seekBar.setProgress(0);
-                seekBar.setMax(adapter.getCount()-1);
+                seekBar.setMax(adapter.getCount() - 1);
 
             }
             next.setVisibility(ImageView.VISIBLE);

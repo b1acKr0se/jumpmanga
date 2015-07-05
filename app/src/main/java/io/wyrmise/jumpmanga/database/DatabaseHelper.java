@@ -20,11 +20,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //Log tag
     private static final String LOG = "DatabaseHelper";
 
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static final String DATABASE_NAME = "JumpManga";
 
     private static final String TABLE_MANGA = "manga";
     private static final String TABLE_CHAPTER = "chapter";
+    private static final String TABLE_RECENT = "recent";
 
 
     private static final String KEY_NAME = "name";
@@ -36,12 +37,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String KEY_MANGA_NAME = "manga_name";
 
+    private static final String KEY_RECENT_READ_CHAPTER = "chapter_name";
+
+    private static final String KEY_RECENT_CHAPTER_URL = "chapter_url";
+
+    private static final String KEY_RECENT_MANGA_IMAGE = "manga_image";
+
+    private static final String KEY_RECENT_MANGA_URL = "manga_url";
+
     private static final String CREATE_TABLE_MANGA = "CREATE TABLE " + TABLE_MANGA +
             "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_NAME + " TEXT," + KEY_MANGA_IMAGE + " TEXT," + KEY_MANGA_URL + " TEXT,"
             + KEY_MANGA_LATEST + " TEXT)";
 
     private static final String CREATE_TABLE_CHAPTER = "CREATE TABLE " + TABLE_CHAPTER +
             "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_NAME + " TEXT, " + KEY_MANGA_NAME + " TEXT)";
+
+    private static final String CREATE_TABLE_RECENT = "CREATE TABLE " + TABLE_RECENT + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+            KEY_RECENT_MANGA_IMAGE + " TEXT, " + KEY_MANGA_NAME + " TEXT, " + KEY_RECENT_MANGA_URL + " TEXT, " + KEY_RECENT_READ_CHAPTER + " TEXT, " + KEY_RECENT_CHAPTER_URL + " TEXT)";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -50,8 +62,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         // creating required tables
+
+        System.out.println("CREATE ALL TABLE");
         db.execSQL(CREATE_TABLE_MANGA);
         db.execSQL(CREATE_TABLE_CHAPTER);
+        db.execSQL(CREATE_TABLE_RECENT);
     }
 
     @Override
@@ -59,6 +74,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // on upgrade drop older tables
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_MANGA);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CHAPTER);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_RECENT);
 
         // create new tables
         onCreate(db);
@@ -76,7 +92,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.insertOrThrow(TABLE_MANGA, null, contentValues);
         } catch (SQLiteConstraintException e) {
             e.printStackTrace();
-            System.out.println("Failed to insert" );
+            System.out.println("Failed to insert");
             return false;
         }
         System.out.println("inserted");
@@ -117,8 +133,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         int rowsAffected = db.delete(TABLE_MANGA, KEY_NAME + " = ?",
                 new String[]{mangaName});
-        if (rowsAffected > 0){
-            System.out.println("unfavorited");
+        if (rowsAffected > 0) {
             return true;
         }
         return false;
@@ -193,4 +208,59 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return null;
     }
+
+    public boolean insertRecentChapter(Manga manga, Chapter chapter) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        deleteRecentChapter(manga.getName());
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(KEY_MANGA_NAME, manga.getName());
+        contentValues.put(KEY_RECENT_MANGA_IMAGE, manga.getImage());
+        contentValues.put(KEY_RECENT_MANGA_URL, manga.getUrl());
+        contentValues.put(KEY_RECENT_READ_CHAPTER, chapter.getName());
+        contentValues.put(KEY_RECENT_CHAPTER_URL, chapter.getUrl());
+
+        try {
+            db.insertOrThrow(TABLE_RECENT, null, contentValues);
+        } catch (SQLiteConstraintException e) {
+            e.printStackTrace();
+            System.out.println("recent not inserted");
+            return false;
+        }
+        System.out.println("recent inserted");
+        return true;
+    }
+
+    public boolean deleteRecentChapter(String mangaName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int rowsAffected = db.delete(TABLE_RECENT, KEY_MANGA_NAME + " = ?", new String[]{mangaName});
+        return rowsAffected > 0;
+    }
+
+    public ArrayList<Manga> getRecentChapters() {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT * FROM " + TABLE_RECENT + " ORDER BY " + KEY_ID + " DESC LIMIT 10";
+
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor.getCount() > 0) {
+            ArrayList<Manga> mangas = new ArrayList<>();
+            while (cursor.moveToNext()) {
+                String manga_name = cursor.getString(cursor.getColumnIndex(KEY_MANGA_NAME));
+                String manga_image = cursor.getString(cursor.getColumnIndex(KEY_RECENT_MANGA_IMAGE));
+                String manga_url = cursor.getString(cursor.getColumnIndex(KEY_RECENT_MANGA_URL));
+                String chapter_name = cursor.getString(cursor.getColumnIndex(KEY_RECENT_READ_CHAPTER));
+                String chapter_url = cursor.getString(cursor.getColumnIndex(KEY_RECENT_CHAPTER_URL));
+                Chapter c = new Chapter(chapter_name, chapter_url);
+                Manga m = new Manga(manga_name, manga_image, c);
+                m.setUrl(manga_url);
+                mangas.add(m);
+            }
+
+            return mangas;
+        }
+        return null;
+    }
+
 }

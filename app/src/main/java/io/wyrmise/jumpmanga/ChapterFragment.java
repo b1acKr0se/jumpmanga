@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import io.wyrmise.jumpmanga.database.DatabaseHelper;
 import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
 import io.wyrmise.jumpmanga.model.Chapter;
+import io.wyrmise.jumpmanga.model.Manga;
 
 
 /**
@@ -35,11 +36,11 @@ public class ChapterFragment extends Fragment {
     private ListView listView;
     private ArrayList<Chapter> chapters;
     private ProgressBar progressBar;
-    public static ChapterAdapter adapter;
+    private static ChapterAdapter adapter;
 
     private Context context;
 
-    private String name;
+    private Manga manga;
 
     public ChapterFragment() {
         // Required empty public constructor
@@ -69,11 +70,11 @@ public class ChapterFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent(context, ReadActivity.class);
                 if (!adapter.getItem(i).isRead()) {
-                    db.insertChapter(adapter.getItem(i), name);
+                    db.insertChapter(adapter.getItem(i), manga.getName());
                     adapter.getItem(i).setIsRead(true);
-                    adapter.notifyDataSetChanged();
                 }
-                intent.putExtra("manga", name);
+                db.insertRecentChapter(manga,adapter.getItem(i));
+                intent.putExtra("manga", manga);
                 intent.putExtra("name", adapter.getItem(i).getName());
                 intent.putExtra("url", adapter.getItem(i).getUrl());
                 int position = chapters.indexOf(adapter.getItem(i));
@@ -84,7 +85,8 @@ public class ChapterFragment extends Fragment {
             }
         });
 
-        name = ((DetailActivity) getActivity()).getManga().getName();
+
+        manga = ((DetailActivity) getActivity()).getManga();
 
         String url = ((DetailActivity) getActivity()).getManga().getUrl();
 
@@ -94,6 +96,7 @@ public class ChapterFragment extends Fragment {
 
         return view;
     }
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -130,7 +133,6 @@ public class ChapterFragment extends Fragment {
     public void onResume(){
         super.onResume();
         if(adapter!=null){
-            System.out.println("notifyDataSetChanged");
             adapter.notifyDataSetChanged();
         }
     }
@@ -142,11 +144,10 @@ public class ChapterFragment extends Fragment {
         }
 
         public ArrayList<Chapter> doInBackground(String... params) {
-
             DownloadUtils download = new DownloadUtils(params[0]);
             ArrayList<Chapter> arr = download.GetChapters();
             for (Chapter c : arr) {
-                if (db.isChapterRead(c, name.replaceAll("'", "''"))) c.setIsRead(true);
+                if (db.isChapterRead(c, manga.getName().replaceAll("'", "''"))) c.setIsRead(true);
             }
             return arr;
         }

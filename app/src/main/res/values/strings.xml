@@ -4,7 +4,7 @@
     <string name="home">Home</string>
     <string name="favourite">Favourite</string>
     <string name="downloaded">Downloaded</string>
-    <string name="more">More</string>
+    <string name="recent">Recent</string>
     <string name="settings">Settings</string>
 
     <string name="openDrawer">Open</string>
@@ -23,4 +23,7 @@
 
     <string name="send">Send this report</string>
     <string name="quit">Exit the app</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
