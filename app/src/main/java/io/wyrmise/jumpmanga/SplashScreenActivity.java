@@ -24,6 +24,7 @@ public class SplashScreenActivity extends Activity {
 
         setContentView(R.layout.activity_splash_screen);
 
+
         new Handler().postDelayed(new Runnable() {
 
 
@@ -36,6 +37,10 @@ public class SplashScreenActivity extends Activity {
                 startActivity(i);
 
                 finish();
+
+                overridePendingTransition(R.anim.activity_fade_in,
+                        R.anim.splash_fade_out);
+
             }
         }, SPLASH_TIME_OUT);
     }

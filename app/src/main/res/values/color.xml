@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!--The base color theme-->
     <color name="blue">#2196f3</color>
     <color name="blue_dark">#1976d2</color>
     <color name="yellow">#fff53a</color>
     <color name="yellow_translucent">#9cfff53a</color>
-    <color name="accent_bright">#fffe9b</color>
-    <color name="transparent" >#80000000</color>
-    <color name="tabsScrollColor">#0d47a1</color>
+    <color name="transparent">#80000000</color>
+
+    <color name="tabsScrollColor">#4b752b</color>
+
+    <color name="green">#4CAF50</color>
+    <color name="green_dark">#388E3C</color>
+    <color name="amber">#FFC107</color>
+    <color name="amber_translucent">#9cFFC107</color>
+
 
 </resources>

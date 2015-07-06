@@ -99,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Recent");
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         return true;

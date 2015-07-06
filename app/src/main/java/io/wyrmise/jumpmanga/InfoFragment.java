@@ -64,12 +64,6 @@ public class InfoFragment extends Fragment {
 
         anim = new AnimationHelper(context);
 
-        if (savedInstanceState != null) {
-            str = savedInstanceState.getStringArray("info");
-            detail.setText(str[0]);
-            summary.setText(str[1]);
-        } else
-            new GetMangaDetails().execute(url);
 
         ImageView img = (ImageView) view.findViewById(R.id.image);
 
@@ -86,6 +80,8 @@ public class InfoFragment extends Fragment {
         descriptionCardView = (CardView) view.findViewById(R.id.cardView);
 
         plotCardView = (CardView) view.findViewById(R.id.cardView2);
+
+
 
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
 
@@ -109,6 +105,16 @@ public class InfoFragment extends Fragment {
 
             }
         });
+
+        if (savedInstanceState != null) {
+            str = savedInstanceState.getStringArray("info");
+            detail.setText(str[0]);
+            summary.setText(str[1]);
+            descriptionCardView.setVisibility(CardView.VISIBLE);
+            plotCardView.setVisibility(CardView.VISIBLE);
+            fab.setVisibility(FloatingActionButton.VISIBLE);
+        } else
+            new GetMangaDetails().execute(url);
 
 
         return view;

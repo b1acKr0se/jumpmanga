@@ -42,6 +42,8 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
     private MangaAdapter adapter;
     private int page = 2;
 
+    private int i;
+
 
     public MainFragment() {
         // Required empty public constructor
@@ -52,7 +54,7 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        int i = getArguments().getInt(TYPE);
+        i = getArguments().getInt(TYPE);
 
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 
@@ -91,29 +93,37 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
         recyclerView.setVisibility(RecyclerView.VISIBLE);
         mangas = savedInstanceState.getParcelableArrayList("list");
         page = savedInstanceState.getInt("page");
-        int orientation = getActivity().getResources().getConfiguration().orientation;
-        if (orientation == Configuration.ORIENTATION_PORTRAIT)
+        if (getActivity() != null) {
+            int orientation = getActivity().getResources().getConfiguration().orientation;
+            if (orientation == Configuration.ORIENTATION_PORTRAIT)
+                recyclerView.setLayoutManager(new GridLayoutManager(context, 2));
+            else
+                recyclerView.setLayoutManager(new GridLayoutManager(context, 4));
+        } else {
             recyclerView.setLayoutManager(new GridLayoutManager(context, 2));
-        else
-            recyclerView.setLayoutManager(new GridLayoutManager(context, 3));
+        }
         adapter = new MangaAdapter(context, mangas, recyclerView);
         adapter.setOnItemClickListener(MainFragment.this);
-        adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
-            @Override
-            public void onLoadMore() {
-                mangas.add(null);
-                adapter.notifyItemInserted(mangas.size() - 1);
-                new LoadMoreManga().execute("http://manga24h.com/status/hot.html/" + page);
+        if (savedInstanceState.getInt("fragment") == RETRIEVE_HOT_MANGA) {
+            adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
+                @Override
+                public void onLoadMore() {
+                    mangas.add(null);
+                    adapter.notifyItemInserted(mangas.size() - 1);
+                    new LoadMoreManga().execute("http://manga24h.com/status/hot.html/" + page);
 
-            }
-        });
+                }
+            });
+        }
         recyclerView.setAdapter(adapter);
+
     }
 
     @Override
     public void onSaveInstanceState(Bundle bundle) {
         bundle.putParcelableArrayList("list", mangas);
         bundle.putInt("page", page);
+        bundle.putInt("fragment", i);
         super.onSaveInstanceState(bundle);
 
     }
@@ -166,12 +176,12 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
         public ArrayList<Manga> doInBackground(String... params) {
             DownloadUtils download = new DownloadUtils(params[0]);
             ArrayList<Manga> arrayList = download.GetMangas(10);
-
-            for (Manga m : arrayList) {
-                if (db.isMangaFavorited(m.getName().replaceAll("'", "''")))
-                    m.setIsFav(true);
+            if (arrayList != null) {
+                for (Manga m : arrayList) {
+                    if (db.isMangaFavorited(m.getName().replaceAll("'", "''")))
+                        m.setIsFav(true);
+                }
             }
-
             return arrayList;
         }
 
@@ -186,7 +196,7 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
                 if (orientation == Configuration.ORIENTATION_PORTRAIT)
                     recyclerView.setLayoutManager(new GridLayoutManager(context, 2));
                 else
-                    recyclerView.setLayoutManager(new GridLayoutManager(context, 3));
+                    recyclerView.setLayoutManager(new GridLayoutManager(context, 4));
                 adapter = new MangaAdapter(context, mangas, recyclerView);
                 adapter.setOnItemClickListener(MainFragment.this);
                 adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
@@ -231,7 +241,7 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
                 if (orientation == Configuration.ORIENTATION_PORTRAIT)
                     recyclerView.setLayoutManager(new GridLayoutManager(context, 2));
                 else
-                    recyclerView.setLayoutManager(new GridLayoutManager(context, 3));
+                    recyclerView.setLayoutManager(new GridLayoutManager(context, 4));
                 adapter = new MangaAdapter(context, mangas, recyclerView);
                 adapter.setOnItemClickListener(MainFragment.this);
                 recyclerView.setAdapter(adapter);

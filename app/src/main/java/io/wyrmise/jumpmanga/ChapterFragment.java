@@ -92,13 +92,10 @@ public class ChapterFragment extends Fragment {
 
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 
-        if (savedInstanceState != null) {
+        if (savedInstanceState != null && savedInstanceState.containsKey("list")) {
             chapters = savedInstanceState.getParcelableArrayList("list");
-
             adapter = new ChapterAdapter(context, R.layout.chapter_list_item, chapters);
-
             listView.setAdapter(adapter);
-
             progressBar.setVisibility(ProgressBar.GONE);
 
             listView.setVisibility(ListView.VISIBLE);
@@ -168,9 +165,11 @@ public class ChapterFragment extends Fragment {
         public ArrayList<Chapter> doInBackground(String... params) {
             DownloadUtils download = new DownloadUtils(params[0]);
             ArrayList<Chapter> arr = download.GetChapters();
-            for (Chapter c : arr) {
-                if (db.isChapterRead(c, manga.getName().replaceAll("'", "''"))) c.setIsRead(true);
-            }
+            if (arr != null)
+                for (Chapter c : arr) {
+                    if (db.isChapterRead(c, manga.getName().replaceAll("'", "''")))
+                        c.setIsRead(true);
+                }
             return arr;
         }
 

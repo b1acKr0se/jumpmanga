@@ -75,7 +75,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Plot"
-                android:textColor="@color/blue"
+                android:textColor="@color/green"
                 android:fontFamily="sans-serif-light"
                 android:textSize="25sp" />
 
