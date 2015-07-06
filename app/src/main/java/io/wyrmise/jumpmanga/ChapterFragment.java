@@ -73,7 +73,7 @@ public class ChapterFragment extends Fragment {
                     db.insertChapter(adapter.getItem(i), manga.getName());
                     adapter.getItem(i).setIsRead(true);
                 }
-                db.insertRecentChapter(manga,adapter.getItem(i));
+                db.insertRecentChapter(manga, adapter.getItem(i));
                 intent.putExtra("manga", manga);
                 intent.putExtra("name", adapter.getItem(i).getName());
                 intent.putExtra("url", adapter.getItem(i).getUrl());
@@ -92,7 +92,20 @@ public class ChapterFragment extends Fragment {
 
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 
-        new GetMangaDetails().execute(url);
+        if (savedInstanceState != null) {
+            chapters = savedInstanceState.getParcelableArrayList("list");
+
+            adapter = new ChapterAdapter(context, R.layout.chapter_list_item, chapters);
+
+            listView.setAdapter(adapter);
+
+            progressBar.setVisibility(ProgressBar.GONE);
+
+            listView.setVisibility(ListView.VISIBLE);
+
+            listView.setTextFilterEnabled(true);
+        } else
+            new GetMangaDetails().execute(url);
 
         return view;
     }
@@ -130,11 +143,20 @@ public class ChapterFragment extends Fragment {
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
-        if(adapter!=null){
+        if (adapter != null) {
             adapter.notifyDataSetChanged();
         }
+    }
+
+
+    @Override
+    public void onSaveInstanceState(Bundle bundle) {
+        if (chapters != null)
+            bundle.putParcelableArrayList("list", chapters);
+        super.onSaveInstanceState(bundle);
+
     }
 
     public class GetMangaDetails extends AsyncTask<String, Void, ArrayList<Chapter>> {

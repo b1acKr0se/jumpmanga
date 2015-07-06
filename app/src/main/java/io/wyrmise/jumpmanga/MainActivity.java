@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private View content;
 
+    private int savedMenuId = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +45,24 @@ public class MainActivity extends AppCompatActivity {
 
         if(savedInstanceState==null)
             GetHotMangas();
+        else {
+            getSupportActionBar().setTitle(savedInstanceState.getString("title"));
+            NavigationView view = (NavigationView) findViewById(R.id.navigation_view);
+            Menu menu = view.getMenu();
+            for(int i = 0; i < menu.size(); i++) {
+                MenuItem item = menu.getItem(i);
+                if(item.getItemId()==savedInstanceState.getInt("menu"))
+                    item.setChecked(true);
+            }
+        }
 
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle bundle) {
+        bundle.putString("title",getSupportActionBar().getTitle().toString());
+        bundle.putInt("menu",savedMenuId);
+        super.onSaveInstanceState(bundle);
     }
 
 
@@ -67,9 +85,9 @@ public class MainActivity extends AppCompatActivity {
         fragment.setArguments(args);
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.content_frame, fragment, "FAVORITE");
+        fragmentTransaction.replace(R.id.content_frame, fragment, "FAVOURITE");
         fragmentTransaction.commit();
-        getSupportActionBar().setTitle("Favorite");
+        getSupportActionBar().setTitle("Favourite");
     }
 
     private void GetRecentList() {
@@ -114,9 +132,11 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         NavigationView view = (NavigationView) findViewById(R.id.navigation_view);
+
         view.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
+                savedMenuId = menuItem.getItemId();
                 switch (menuItem.getItemId()) {
                     case R.id.drawer_home:
                         GetHotMangas();

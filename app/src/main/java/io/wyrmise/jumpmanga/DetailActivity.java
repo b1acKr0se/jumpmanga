@@ -49,6 +49,11 @@ public class DetailActivity extends AppCompatActivity {
         tabs.setViewPager(pager);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle bundle) {
+        super.onSaveInstanceState(bundle);
+    }
+
     public Manga getManga() {
         return getIntent().getParcelableExtra("manga");
     }

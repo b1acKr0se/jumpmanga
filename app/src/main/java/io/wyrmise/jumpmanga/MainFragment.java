@@ -3,6 +3,7 @@ package io.wyrmise.jumpmanga;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -65,23 +66,63 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
 
         empty = (TextView) view.findViewById(R.id.empty);
 
-        switch (i){
+        switch (i) {
             case RETRIEVE_HOT_MANGA:
-                new GetMangas().execute("http://manga24h.com/status/hot.html");
+                if (savedInstanceState == null)
+                    new GetMangas().execute("http://manga24h.com/status/hot.html");
+                else {
+                    setUpAdapter(savedInstanceState);
+                }
                 break;
             case RETRIEVE_FAVORITE_MANGA:
-                new GetFavoriteManga().execute();
+                if (savedInstanceState == null)
+                    new GetFavoriteManga().execute();
+                else {
+                    setUpAdapter(savedInstanceState);
+                }
                 break;
         }
 
         return view;
     }
 
+    public void setUpAdapter(Bundle savedInstanceState) {
+        progressBar.setVisibility(ProgressBar.GONE);
+        recyclerView.setVisibility(RecyclerView.VISIBLE);
+        mangas = savedInstanceState.getParcelableArrayList("list");
+        page = savedInstanceState.getInt("page");
+        int orientation = getActivity().getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT)
+            recyclerView.setLayoutManager(new GridLayoutManager(context, 2));
+        else
+            recyclerView.setLayoutManager(new GridLayoutManager(context, 3));
+        adapter = new MangaAdapter(context, mangas, recyclerView);
+        adapter.setOnItemClickListener(MainFragment.this);
+        adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
+            @Override
+            public void onLoadMore() {
+                mangas.add(null);
+                adapter.notifyItemInserted(mangas.size() - 1);
+                new LoadMoreManga().execute("http://manga24h.com/status/hot.html/" + page);
+
+            }
+        });
+        recyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle bundle) {
+        bundle.putParcelableArrayList("list", mangas);
+        bundle.putInt("page", page);
+        super.onSaveInstanceState(bundle);
+
+    }
+
     @Override
     public void onItemClick(View view, Manga manga) {
         Intent intent = new Intent(context, DetailActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        intent.putExtra("manga",manga);
+        intent.putExtra("manga", manga);
         startActivity(intent);
     }
 
@@ -126,8 +167,8 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
             DownloadUtils download = new DownloadUtils(params[0]);
             ArrayList<Manga> arrayList = download.GetMangas(10);
 
-            for(Manga m : arrayList) {
-                if(db.isMangaFavorited(m.getName().replaceAll("'","''")))
+            for (Manga m : arrayList) {
+                if (db.isMangaFavorited(m.getName().replaceAll("'", "''")))
                     m.setIsFav(true);
             }
 
@@ -141,7 +182,11 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
 
             if (result != null) {
                 mangas = result;
-                recyclerView.setLayoutManager(new GridLayoutManager(context, 2));
+                int orientation = getActivity().getResources().getConfiguration().orientation;
+                if (orientation == Configuration.ORIENTATION_PORTRAIT)
+                    recyclerView.setLayoutManager(new GridLayoutManager(context, 2));
+                else
+                    recyclerView.setLayoutManager(new GridLayoutManager(context, 3));
                 adapter = new MangaAdapter(context, mangas, recyclerView);
                 adapter.setOnItemClickListener(MainFragment.this);
                 adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
@@ -182,7 +227,11 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
 
             if (result != null) {
                 mangas = result;
-                recyclerView.setLayoutManager(new GridLayoutManager(context, 2));
+                int orientation = getActivity().getResources().getConfiguration().orientation;
+                if (orientation == Configuration.ORIENTATION_PORTRAIT)
+                    recyclerView.setLayoutManager(new GridLayoutManager(context, 2));
+                else
+                    recyclerView.setLayoutManager(new GridLayoutManager(context, 3));
                 adapter = new MangaAdapter(context, mangas, recyclerView);
                 adapter.setOnItemClickListener(MainFragment.this);
                 recyclerView.setAdapter(adapter);

@@ -64,7 +64,12 @@ public class InfoFragment extends Fragment {
 
         anim = new AnimationHelper(context);
 
-        new GetMangaDetails().execute(url);
+        if (savedInstanceState != null) {
+            str = savedInstanceState.getStringArray("info");
+            detail.setText(str[0]);
+            summary.setText(str[1]);
+        } else
+            new GetMangaDetails().execute(url);
 
         ImageView img = (ImageView) view.findViewById(R.id.image);
 
@@ -105,7 +110,16 @@ public class InfoFragment extends Fragment {
             }
         });
 
+
         return view;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle bundle) {
+        if (str != null)
+            bundle.putStringArray("info", str);
+        super.onSaveInstanceState(bundle);
+
     }
 
 
