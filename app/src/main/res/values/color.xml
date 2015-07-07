@@ -8,12 +8,12 @@
     <color name="yellow_translucent">#9cfff53a</color>
     <color name="transparent">#80000000</color>
 
-    <color name="tabsScrollColor">#4b752b</color>
+    <color name="tabsScrollColor">#388E3C</color>
 
     <color name="green">#4CAF50</color>
     <color name="green_dark">#388E3C</color>
-    <color name="amber">#FFC107</color>
-    <color name="amber_translucent">#9cFFC107</color>
+    <color name="grey">#BDBDBD</color>
+    <color name="grey_translucent">#78BDBDBD</color>
 
 
 </resources>

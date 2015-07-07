@@ -51,8 +51,10 @@ public class MainActivity extends AppCompatActivity {
             Menu menu = view.getMenu();
             for(int i = 0; i < menu.size(); i++) {
                 MenuItem item = menu.getItem(i);
-                if(item.getItemId()==savedInstanceState.getInt("menu"))
+                if(item.getItemId()==savedInstanceState.getInt("menu")) {
+                    savedMenuId = savedInstanceState.getInt("menu");
                     item.setChecked(true);
+                }
             }
         }
 
@@ -62,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
     public void onSaveInstanceState(Bundle bundle) {
         bundle.putString("title",getSupportActionBar().getTitle().toString());
         bundle.putInt("menu",savedMenuId);
+
         super.onSaveInstanceState(bundle);
     }
 

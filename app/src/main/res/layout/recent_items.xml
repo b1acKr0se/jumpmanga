@@ -1,46 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/news_card_view"
     android:layout_width="match_parent"
-    android:layout_height="80dp"
-    android:layout_margin="@dimen/spacing_medium">
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
+    android:elevation="2dp"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:layout_marginLeft="@dimen/spacing_xsmall"
+    android:layout_marginRight="@dimen/spacing_xsmall"
+    card_view:cardCornerRadius="2dp"
+    card_view:cardUseCompatPadding="true">
 
-    <ImageView
-        android:id="@+id/manga_thumbnail"
-        android:layout_width="40dp"
-        android:layout_height="60dp"
-        android:layout_centerVertical="true"
-        android:scaleType="centerCrop"
-        android:layout_marginLeft="@dimen/spacing_medium"
-        android:src="@drawable/default_avatar" />
-
-    <RelativeLayout
-        android:layout_width="wrap_content"
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="@dimen/spacing_medium"
-        android:layout_toRightOf="@id/manga_thumbnail">
+        android:layout_margin="@dimen/spacing_medium">
 
-        <TextView
-            android:id="@+id/manga_name"
+        <ImageView
+            android:id="@+id/manga_thumbnail"
+            android:layout_width="40dp"
+            android:layout_height="60dp"
+            android:layout_centerVertical="true"
+            android:scaleType="centerCrop"
+            android:src="@drawable/default_avatar" />
+
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-light"
-            android:singleLine="true"
-            android:text="Fairy Tail"
-            android:layout_marginRight="@dimen/spacing_medium"
-            android:textColor="@android:color/black"
-            android:textSize="20sp" />
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/spacing_medium"
+            android:layout_toRightOf="@id/manga_thumbnail">
 
-        <TextView
-            android:id="@+id/chapter_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/manga_name"
-            android:layout_marginTop="@dimen/spacing_xsmall"
-            android:fontFamily="sans-serif-light"
-            android:text="Chapter 391"
-            android:textColor="@android:color/black"
-            android:textSize="15sp" />
+            <TextView
+                android:id="@+id/manga_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/spacing_medium"
+                android:fontFamily="sans-serif-light"
+                android:text="Fairy Tail"
+                android:textColor="@android:color/black"
+                android:textSize="20sp" />
 
+            <TextView
+                android:id="@+id/chapter_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/manga_name"
+                android:layout_marginTop="@dimen/spacing_xsmall"
+                android:fontFamily="sans-serif-light"
+                android:text="Chapter 391"
+                android:textSize="15sp" />
+
+        </RelativeLayout>
     </RelativeLayout>
-</RelativeLayout>
+</android.support.v7.widget.CardView>

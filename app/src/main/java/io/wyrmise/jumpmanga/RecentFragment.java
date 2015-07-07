@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,7 +29,7 @@ import io.wyrmise.jumpmanga.model.Manga;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RecentFragment extends Fragment {
+public class RecentFragment extends Fragment implements MangaAdapter.OnItemClickListener{
 
     private DatabaseHelper db;
 
@@ -35,7 +37,7 @@ public class RecentFragment extends Fragment {
 
     private ArrayList<Manga> mangas;
 
-    private ListView listView;
+    private RecyclerView recyclerView;
 
     private RecentAdapter adapter;
 
@@ -58,7 +60,7 @@ public class RecentFragment extends Fragment {
 
         db = new DatabaseHelper(context);
 
-        listView = (ListView) view.findViewById(R.id.recent_list);
+        recyclerView = (RecyclerView) view.findViewById(R.id.list);
 
         empty = (TextView) view.findViewById(R.id.empty);
 
@@ -67,28 +69,28 @@ public class RecentFragment extends Fragment {
         progressDialog.setIndeterminate(true);
         progressDialog.setCancelable(true);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                GetChapterList task = new GetChapterList(adapter.getItem(i), progressDialog);
-                task.execute(adapter.getItem(i).getUrl());
-            }
-        });
-
         return view;
+    }
+
+    @Override
+    public void onItemClick(View view, Manga manga) {
+        GetChapterList task = new GetChapterList(manga, progressDialog);
+        task.execute(manga.getUrl());
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(getClass().getPackage().getName(), "On resume");
         mangas = db.getRecentChapters();
-        if (mangas != null) {
-            adapter = new RecentAdapter(context, R.layout.recent_items, mangas);
-            listView.setVisibility(View.VISIBLE);
-            listView.setAdapter(adapter);
+        if (mangas != null && context!=null) {
+            adapter = new RecentAdapter(context, mangas);
+            adapter.setOnItemClickListener(RecentFragment.this);
+            recyclerView.setVisibility(View.VISIBLE);
+            recyclerView.setLayoutManager(new LinearLayoutManager(context));
+            recyclerView.setAdapter(adapter);
+            empty.setVisibility(View.GONE);
         } else {
-            listView.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.GONE);
             empty.setVisibility(View.VISIBLE);
         }
     }
@@ -130,7 +132,6 @@ public class RecentFragment extends Fragment {
                     if (c.getName().equals(manga.getRecent().getName()))
                         position = arr.indexOf(c);
                 }
-                System.out.println("Position: " + position);
                 intent.putExtra("position", position);
                 intent.putParcelableArrayListExtra("list", arr);
                 startActivity(intent);

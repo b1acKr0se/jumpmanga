@@ -4,10 +4,13 @@
     android:layout_height="match_parent"
     tools:context="io.wyrmise.jumpmanga.RecentFragment">
 
-    <ListView
-        android:id="@+id/recent_list"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:paddingTop="@dimen/spacing_xsmall"
+        android:clipToPadding="false"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/empty"

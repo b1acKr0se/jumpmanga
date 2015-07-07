@@ -188,9 +188,9 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
         @Override
         public void onPostExecute(ArrayList<Manga> result) {
             progressBar.setVisibility(ProgressBar.GONE);
-            recyclerView.setVisibility(RecyclerView.VISIBLE);
 
             if (result != null) {
+                recyclerView.setVisibility(RecyclerView.VISIBLE);
                 mangas = result;
                 int orientation = getActivity().getResources().getConfiguration().orientation;
                 if (orientation == Configuration.ORIENTATION_PORTRAIT)
@@ -210,6 +210,7 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
                 });
                 recyclerView.setAdapter(adapter);
             } else {
+                recyclerView.setVisibility(RecyclerView.GONE);
                 empty.setVisibility(TextView.VISIBLE);
                 Toast.makeText(context, "There's something wrong with your network, please check", Toast.LENGTH_LONG).show();
             }
@@ -233,9 +234,9 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
         @Override
         public void onPostExecute(ArrayList<Manga> result) {
             progressBar.setVisibility(ProgressBar.GONE);
-            recyclerView.setVisibility(RecyclerView.VISIBLE);
 
             if (result != null) {
+                recyclerView.setVisibility(RecyclerView.VISIBLE);
                 mangas = result;
                 int orientation = getActivity().getResources().getConfiguration().orientation;
                 if (orientation == Configuration.ORIENTATION_PORTRAIT)
@@ -246,6 +247,7 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
                 adapter.setOnItemClickListener(MainFragment.this);
                 recyclerView.setAdapter(adapter);
             } else {
+                recyclerView.setVisibility(RecyclerView.GONE);
                 empty.setVisibility(TextView.VISIBLE);
                 Toast.makeText(context, "No favorite manga", Toast.LENGTH_LONG).show();
             }
