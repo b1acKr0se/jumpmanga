@@ -225,7 +225,7 @@ public class ReadActivity extends AppCompatActivity {
         calculatedPixel = convertToPx(20);
 
         progressDialog = new ProgressDialog(ReadActivity.this);
-        progressDialog.setMessage("Changing chapter, please wait...");
+        progressDialog.setMessage("Loading chapter, please wait...");
         progressDialog.setIndeterminate(true);
         progressDialog.setCancelable(false);
 
@@ -339,7 +339,8 @@ public class ReadActivity extends AppCompatActivity {
     }
 
     private void refresh() {
-        viewPager.setAdapter(adapter);
+        ChangeChapter task = new ChangeChapter(progressDialog);
+        task.execute(chapters.get(chapter_position).getUrl());
     }
 
     public class RetrieveAllPages extends AsyncTask<String, Void, ArrayList<Page>> {
