@@ -2,6 +2,7 @@ package io.wyrmise.jumpmanga;
 
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -107,25 +108,31 @@ public class InfoFragment extends Fragment {
             }
         });
 
-        if (savedInstanceState != null) {
-            str = savedInstanceState.getStringArray("info");
-            detail.setText(str[0]);
-            summary.setText(str[1]);
-            descriptionCardView.setVisibility(CardView.VISIBLE);
-            plotCardView.setVisibility(CardView.VISIBLE);
-            fab.setVisibility(FloatingActionButton.VISIBLE);
-        } else
+//        if (savedInstanceState != null) {
+//            str = savedInstanceState.getStringArray("info");
+//            detail.setText(str[0]);
+//            summary.setText(str[1]);
+//            descriptionCardView.setVisibility(CardView.VISIBLE);
+//            plotCardView.setVisibility(CardView.VISIBLE);
+//            fab.setVisibility(FloatingActionButton.VISIBLE);
+//        } else
             new GetMangaDetails().execute(url);
 
 
         return view;
     }
 
+//    @Override
+//    public void onSaveInstanceState(Bundle bundle) {
+//        if (str != null)
+//            bundle.putStringArray("info", str);
+//        super.onSaveInstanceState(bundle);
+//
+//    }
+
     @Override
-    public void onSaveInstanceState(Bundle bundle) {
-        if (str != null)
-            bundle.putStringArray("info", str);
-        super.onSaveInstanceState(bundle);
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
 
     }
 

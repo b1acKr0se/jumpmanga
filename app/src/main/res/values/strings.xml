@@ -24,6 +24,4 @@
     <string name="send">Send this report</string>
     <string name="quit">Exit the app</string>
 
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -1,5 +1,6 @@
 package io.wyrmise.jumpmanga;
 
+import android.content.res.Configuration;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -50,9 +51,15 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle bundle) {
-        super.onSaveInstanceState(bundle);
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
     }
+
+//    @Override
+//    public void onSaveInstanceState(Bundle bundle) {
+//        super.onSaveInstanceState(bundle);
+//    }
 
     public Manga getManga() {
         return getIntent().getParcelableExtra("manga");

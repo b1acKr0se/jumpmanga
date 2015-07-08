@@ -2,6 +2,7 @@ package io.wyrmise.jumpmanga;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -24,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
-    private View content;
+    private View view_placeholder;
 
     private int savedMenuId = -1;
 
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         initToolbar();
         setupDrawerLayout();
 
-        content = findViewById(R.id.content);
+        view_placeholder = (View) findViewById(R.id.appbar_bottom);
 
         final ImageView avatar = (ImageView) findViewById(R.id.avatar);
 
@@ -101,6 +102,12 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
         getSupportActionBar().setTitle("Recent");
     }
+
+//    @Override
+//    public void onConfigurationChanged(Configuration newConfig) {
+//        super.onConfigurationChanged(newConfig);
+//
+//    }
 
 
     @Override

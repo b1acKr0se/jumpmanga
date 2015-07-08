@@ -3,6 +3,7 @@ package io.wyrmise.jumpmanga;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -107,22 +108,28 @@ public class ChapterFragment extends Fragment {
             }
         });
 
-        if (savedInstanceState != null && savedInstanceState.containsKey("list")) {
-            chapters = savedInstanceState.getParcelableArrayList("list");
-            adapter = new ChapterAdapter(context, R.layout.chapter_list_item, chapters);
-            listView.setAdapter(adapter);
-            progressBar.setVisibility(ProgressBar.GONE);
-
-            listView.setVisibility(ListView.VISIBLE);
-
-            listView.setTextFilterEnabled(true);
-        } else {
+//        if (savedInstanceState != null && savedInstanceState.containsKey("list")) {
+//            chapters = savedInstanceState.getParcelableArrayList("list");
+//            adapter = new ChapterAdapter(context, R.layout.chapter_list_item, chapters);
+//            listView.setAdapter(adapter);
+//            progressBar.setVisibility(ProgressBar.GONE);
+//
+//            listView.setVisibility(ListView.VISIBLE);
+//
+//            listView.setTextFilterEnabled(true);
+//        } else {
             progressBar.setVisibility(ProgressBar.VISIBLE);
             listView.setVisibility(ListView.GONE);
             new GetMangaDetails().execute(url);
 
-        }
+//        }
         return view;
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
     }
 
 
@@ -166,13 +173,13 @@ public class ChapterFragment extends Fragment {
     }
 
 
-    @Override
-    public void onSaveInstanceState(Bundle bundle) {
-        if (chapters != null)
-            bundle.putParcelableArrayList("list", chapters);
-        super.onSaveInstanceState(bundle);
-
-    }
+//    @Override
+//    public void onSaveInstanceState(Bundle bundle) {
+//        if (chapters != null)
+//            bundle.putParcelableArrayList("list", chapters);
+//        super.onSaveInstanceState(bundle);
+//
+//    }
 
     public class GetMangaDetails extends AsyncTask<String, Void, ArrayList<Chapter>> {
         public void onPreExecute() {
