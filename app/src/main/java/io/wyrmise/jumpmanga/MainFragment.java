@@ -7,6 +7,7 @@ import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -93,15 +94,11 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
         recyclerView.setVisibility(RecyclerView.VISIBLE);
         mangas = savedInstanceState.getParcelableArrayList("list");
         page = savedInstanceState.getInt("page");
-        if (getActivity() != null) {
-            int orientation = getActivity().getResources().getConfiguration().orientation;
-            if (orientation == Configuration.ORIENTATION_PORTRAIT)
-                recyclerView.setLayoutManager(new GridLayoutManager(context, 2));
-            else
-                recyclerView.setLayoutManager(new GridLayoutManager(context, 4));
-        } else {
+        int orientation = context.getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT)
             recyclerView.setLayoutManager(new GridLayoutManager(context, 2));
-        }
+        else
+            recyclerView.setLayoutManager(new GridLayoutManager(context, 4));
         adapter = new MangaAdapter(context, mangas, recyclerView);
         adapter.setOnItemClickListener(MainFragment.this);
         if (savedInstanceState.getInt("fragment") == RETRIEVE_HOT_MANGA) {
@@ -110,7 +107,10 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
                 public void onLoadMore() {
                     mangas.add(null);
                     adapter.notifyItemInserted(mangas.size() - 1);
-                    new LoadMoreManga().execute("http://manga24h.com/status/hot.html/" + page);
+                    if (page <= 75)
+                        new LoadMoreManga().execute("http://manga24h.com/status/hot.html/" + page);
+                    else
+                        Toast.makeText(context, "Reach the end of page!", Toast.LENGTH_LONG).show();
 
                 }
             });
@@ -192,7 +192,7 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
             if (result != null) {
                 recyclerView.setVisibility(RecyclerView.VISIBLE);
                 mangas = result;
-                int orientation = getActivity().getResources().getConfiguration().orientation;
+                int orientation = context.getResources().getConfiguration().orientation;
                 if (orientation == Configuration.ORIENTATION_PORTRAIT)
                     recyclerView.setLayoutManager(new GridLayoutManager(context, 2));
                 else
@@ -238,7 +238,7 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
             if (result != null) {
                 recyclerView.setVisibility(RecyclerView.VISIBLE);
                 mangas = result;
-                int orientation = getActivity().getResources().getConfiguration().orientation;
+                int orientation = context.getResources().getConfiguration().orientation;
                 if (orientation == Configuration.ORIENTATION_PORTRAIT)
                     recyclerView.setLayoutManager(new GridLayoutManager(context, 2));
                 else

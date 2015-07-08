@@ -7,28 +7,22 @@
         <item
             android:id="@+id/drawer_home"
             android:checked="true"
-            android:icon="@drawable/ic_home_black_24dp"
+            android:icon="@drawable/ic_action_home"
             android:title="@string/home"/>
 
         <item
             android:id="@+id/drawer_favourite"
-            android:icon="@drawable/ic_favorite_black_24dp"
+            android:icon="@drawable/ic_action_favorite_black"
             android:title="@string/favourite"/>
 
         <item
             android:id="@+id/drawer_recent"
-            android:icon="@drawable/ic_more_horiz_black_24dp"
+            android:icon="@drawable/ic_action_recent"
             android:title="@string/recent"/>
 
         <item
-            android:id="@+id/drawer_downloaded"
-            android:icon="@drawable/ic_file_download_black_24dp"
-            android:title="@string/downloaded"/>
-
-
-        <item
             android:id="@+id/drawer_settings"
-            android:icon="@drawable/ic_settings_black_24dp"
+            android:icon="@drawable/ic_action_settings"
             android:title="@string/settings"/>
 
     </group>

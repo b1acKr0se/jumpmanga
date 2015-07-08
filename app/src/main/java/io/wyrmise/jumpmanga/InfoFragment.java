@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -70,7 +71,7 @@ public class InfoFragment extends Fragment {
         if (!image.equals("") && image != null) {
             Picasso.with(context).load(image).into(img);
         } else {
-            img.setImageDrawable(context.getResources().getDrawable(R.drawable.error));
+            img.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.error));
         }
 
         detail = (TextView) view.findViewById(R.id.detail);
@@ -86,18 +87,18 @@ public class InfoFragment extends Fragment {
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
 
         if (manga.isFav())
-            fab.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_favorite_dark));
+            fab.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.ic_action_favorite));
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (manga.isFav()) {
-                    fab.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_favorite_white));
+                    fab.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.ic_action_unfavorite));
                     Snackbar.make(getView(), "Manga unfavorited", Snackbar.LENGTH_SHORT).show();
                     manga.setIsFav(false);
                     db.unfavoritedManga(manga.getName());
                 } else {
-                    fab.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_favorite_dark));
+                    fab.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_action_favorite));
                     Snackbar.make(getView(), "Manga favorited", Snackbar.LENGTH_SHORT).show();
                     db.insertManga(manga);
                     manga.setIsFav(true);

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -41,6 +42,8 @@ public class ChapterFragment extends Fragment {
     private Context context;
 
     private Manga manga;
+
+    private SwipeRefreshLayout refreshLayout;
 
     public ChapterFragment() {
         // Required empty public constructor
@@ -86,11 +89,23 @@ public class ChapterFragment extends Fragment {
         });
 
 
+
         manga = ((DetailActivity) getActivity()).getManga();
 
-        String url = ((DetailActivity) getActivity()).getManga().getUrl();
+        final String url = ((DetailActivity) getActivity()).getManga().getUrl();
 
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
+
+        refreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refresh_list);
+
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Toast.makeText(context, "Refreshing chapter list...",Toast.LENGTH_SHORT).show();
+                listView.setVisibility(ListView.GONE);
+                new GetMangaDetails().execute(url);
+            }
+        });
 
         if (savedInstanceState != null && savedInstanceState.containsKey("list")) {
             chapters = savedInstanceState.getParcelableArrayList("list");
@@ -101,9 +116,12 @@ public class ChapterFragment extends Fragment {
             listView.setVisibility(ListView.VISIBLE);
 
             listView.setTextFilterEnabled(true);
-        } else
+        } else {
+            progressBar.setVisibility(ProgressBar.VISIBLE);
+            listView.setVisibility(ListView.GONE);
             new GetMangaDetails().execute(url);
 
+        }
         return view;
     }
 
@@ -158,8 +176,7 @@ public class ChapterFragment extends Fragment {
 
     public class GetMangaDetails extends AsyncTask<String, Void, ArrayList<Chapter>> {
         public void onPreExecute() {
-            progressBar.setVisibility(ProgressBar.VISIBLE);
-            listView.setVisibility(ListView.GONE);
+
         }
 
         public ArrayList<Chapter> doInBackground(String... params) {
@@ -174,6 +191,8 @@ public class ChapterFragment extends Fragment {
         }
 
         public void onPostExecute(ArrayList<Chapter> arr) {
+            refreshLayout.setRefreshing(false);
+
             if (arr != null) {
 
                 chapters = arr;

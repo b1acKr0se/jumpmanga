@@ -1,5 +1,6 @@
 package io.wyrmise.jumpmanga;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -52,6 +53,8 @@ public class ReadActivity extends AppCompatActivity {
 
     private int chapter_position;
 
+    private int chapter_position_temp;
+
     private Manga manga;
 
     private String name;
@@ -65,6 +68,8 @@ public class ReadActivity extends AppCompatActivity {
     private AnimationHelper anim;
 
     private int calculatedPixel;
+
+    private ProgressDialog progressDialog;
 
     private void hideSystemUI() {
         View decorView = getWindow().getDecorView();
@@ -219,6 +224,11 @@ public class ReadActivity extends AppCompatActivity {
 
         calculatedPixel = convertToPx(20);
 
+        progressDialog = new ProgressDialog(ReadActivity.this);
+        progressDialog.setMessage("Changing chapter, please wait...");
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
+
         next = (ImageView) findViewById(R.id.next);
 
         next.setOnClickListener(new View.OnClickListener() {
@@ -264,16 +274,10 @@ public class ReadActivity extends AppCompatActivity {
 
     public void nextChapter() {
         if ((chapter_position - 1) != -1) {
+            chapter_position_temp = chapter_position;
             chapter_position--;
-            if (!chapters.get(chapter_position).isRead()) {
-                db.insertChapter(chapters.get(chapter_position), name);
-                if (ChapterFragment.getAdapter() != null)
-                    ChapterFragment.getAdapter().getItem(chapter_position).setIsRead(true);
-                else chapters.get(chapter_position).setIsRead(true);
-            }
-            db.insertRecentChapter(manga, chapters.get(chapter_position));
-            new RetrieveAllPages().execute(chapters.get(chapter_position).getUrl());
-            getSupportActionBar().setTitle(chapters.get(chapter_position).getName());
+            ChangeChapter task = new ChangeChapter(progressDialog);
+            task.execute(chapters.get(chapter_position).getUrl());
         } else {
             Toast.makeText(getApplicationContext(), "This is the last chapter", Toast.LENGTH_SHORT).show();
         }
@@ -281,19 +285,23 @@ public class ReadActivity extends AppCompatActivity {
 
     public void prevChapter() {
         if ((chapter_position + 1) != chapters.size()) {
+            chapter_position_temp = chapter_position;
             chapter_position++;
-            if (!chapters.get(chapter_position).isRead()) {
-                db.insertChapter(chapters.get(chapter_position), name);
-                if (ChapterFragment.getAdapter() != null)
-                    ChapterFragment.getAdapter().getItem(chapter_position).setIsRead(true);
-                else chapters.get(chapter_position).setIsRead(true);
-            }
-            db.insertRecentChapter(manga, chapters.get(chapter_position));
-            new RetrieveAllPages().execute(chapters.get(chapter_position).getUrl());
-            getSupportActionBar().setTitle(chapters.get(chapter_position).getName());
+            ChangeChapter task = new ChangeChapter(progressDialog);
+            task.execute(chapters.get(chapter_position).getUrl());
         } else {
             Toast.makeText(getApplicationContext(), "This is the first chapter", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void setRead(){
+        if (!chapters.get(chapter_position).isRead()) {
+            db.insertChapter(chapters.get(chapter_position), name);
+            if (ChapterFragment.getAdapter() != null)
+                ChapterFragment.getAdapter().getItem(chapter_position).setIsRead(true);
+            else chapters.get(chapter_position).setIsRead(true);
+        }
+        db.insertRecentChapter(manga, chapters.get(chapter_position));
     }
 
     public void updateProgress() {
@@ -338,7 +346,6 @@ public class ReadActivity extends AppCompatActivity {
         public void onPreExecute() {
             next.setVisibility(ImageView.INVISIBLE);
             previous.setVisibility(ImageView.INVISIBLE);
-            Toast.makeText(getApplicationContext(), "Loading new chapter, please wait", Toast.LENGTH_SHORT).show();
         }
 
         public ArrayList<Page> doInBackground(String... params) {
@@ -354,6 +361,8 @@ public class ReadActivity extends AppCompatActivity {
         }
 
         public void onPostExecute(ArrayList<Page> result) {
+            next.setVisibility(ImageView.VISIBLE);
+            previous.setVisibility(ImageView.VISIBLE);
             if (result != null) {
                 pages = result;
                 adapter = new FullScreenImageAdapter(ReadActivity.this, pages);
@@ -391,6 +400,106 @@ public class ReadActivity extends AppCompatActivity {
                 seekBar.setProgress(0);
                 seekBar.setMax(adapter.getCount() - 1);
 
+            } else {
+                Toast.makeText(getApplicationContext(),"Failed to retrieve this chapter, please check your network",Toast.LENGTH_SHORT).show();
+                finish();
+            }
+
+        }
+    }
+
+    public class ChangeChapter extends AsyncTask<String, Void, ArrayList<Page>> {
+
+        private ProgressDialog dialog;
+
+        public ChangeChapter(ProgressDialog p) {
+            dialog = p;
+        }
+
+        public void onPreExecute() {
+            next.setVisibility(ImageView.INVISIBLE);
+            previous.setVisibility(ImageView.INVISIBLE);
+            if (dialog != null)
+                dialog.show();
+        }
+
+        public ArrayList<Page> doInBackground(String... params) {
+            DownloadUtils download = new DownloadUtils(params[0]);
+            ArrayList<Page> arr;
+            try {
+                arr = download.GetPages();
+                return arr;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        public void onPostExecute(ArrayList<Page> result) {
+            if (dialog != null && dialog.isShowing())
+                dialog.dismiss();
+            if (result != null) {
+                pages = result;
+                adapter = new FullScreenImageAdapter(ReadActivity.this, pages);
+                viewPager.setAdapter(adapter);
+                viewPager.setOnSwipeOutListener(new CustomViewPager.OnSwipeOutListener() {
+
+                    boolean callHappened = false;
+
+                    @Override
+                    public void onSwipeOutAtStart() {
+                        if (!callHappened) {
+                            callHappened = true;
+                            prevChapter();
+                        }
+                    }
+
+                    @Override
+                    public void onSwipeOutAtEnd() {
+                        if (!callHappened) {
+                            callHappened = true;
+                            nextChapter();
+                        }
+                    }
+                });
+
+                viewPager.setCurrentItem(0);
+                viewPager.setOffscreenPageLimit(3);
+                viewPager.setPageMargin(calculatedPixel);
+                pageIndicator.setText("Page 1/" + adapter.getCount());
+                progressBar.setProgress(0);
+                increment = 0;
+                progressBar.setMax(adapter.getCount());
+                progressBar.setVisibility(View.VISIBLE);
+
+                seekBar.setProgress(0);
+                seekBar.setMax(adapter.getCount() - 1);
+
+                setRead();
+                getSupportActionBar().setTitle(chapters.get(chapter_position).getName());
+            } else {
+                Toast.makeText(getApplicationContext(), "Cannot retrieve new chapter, please check your network", Toast.LENGTH_SHORT).show();
+                chapter_position = chapter_position_temp;
+                viewPager.setOnSwipeOutListener(new CustomViewPager.OnSwipeOutListener() {
+
+                    boolean callHappened = false;
+
+                    @Override
+                    public void onSwipeOutAtStart() {
+                        if (!callHappened) {
+                            callHappened = true;
+                            prevChapter();
+                        }
+                    }
+
+                    @Override
+                    public void onSwipeOutAtEnd() {
+                        if (!callHappened) {
+                            callHappened = true;
+                            nextChapter();
+                        }
+                    }
+                });
             }
             next.setVisibility(ImageView.VISIBLE);
             previous.setVisibility(ImageView.VISIBLE);

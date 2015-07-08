@@ -29,7 +29,7 @@ import io.wyrmise.jumpmanga.model.Manga;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RecentFragment extends Fragment implements MangaAdapter.OnItemClickListener{
+public class RecentFragment extends Fragment implements MangaAdapter.OnItemClickListener {
 
     private DatabaseHelper db;
 
@@ -82,7 +82,7 @@ public class RecentFragment extends Fragment implements MangaAdapter.OnItemClick
     public void onResume() {
         super.onResume();
         mangas = db.getRecentChapters();
-        if (mangas != null && context!=null) {
+        if (mangas != null && context != null) {
             adapter = new RecentAdapter(context, mangas);
             adapter.setOnItemClickListener(RecentFragment.this);
             recyclerView.setVisibility(View.VISIBLE);
@@ -121,7 +121,8 @@ public class RecentFragment extends Fragment implements MangaAdapter.OnItemClick
 
         @Override
         public void onPostExecute(ArrayList<Chapter> arr) {
-            progressDialog.dismiss();
+            if (progressDialog != null && progressDialog.isShowing())
+                progressDialog.dismiss();
             if (arr != null) {
                 Intent intent = new Intent(context, ReadActivity.class);
                 intent.putExtra("manga", manga);
