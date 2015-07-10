@@ -161,6 +161,7 @@ public class MangaAdapter extends RecyclerView.Adapter implements View.OnClickLi
             image = (ImageView) itemView.findViewById(R.id.image);
             text = (TextView) itemView.findViewById(R.id.text);
             latest = (TextView) itemView.findViewById(R.id.latest);
+
         }
     }
 

@@ -25,7 +25,6 @@ public class MainActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
-    private View view_placeholder;
 
     private int savedMenuId = -1;
 
@@ -37,8 +36,6 @@ public class MainActivity extends AppCompatActivity {
 
         initToolbar();
         setupDrawerLayout();
-
-        view_placeholder = (View) findViewById(R.id.appbar_bottom);
 
         final ImageView avatar = (ImageView) findViewById(R.id.avatar);
 

@@ -71,6 +71,8 @@ public class ReadActivity extends AppCompatActivity {
 
     private ProgressDialog progressDialog;
 
+    private boolean isRefreshing = false;
+
     private void hideSystemUI() {
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(
@@ -190,10 +192,10 @@ public class ReadActivity extends AppCompatActivity {
         });
 
         viewPager.setOnSwipeOutListener(new CustomViewPager.OnSwipeOutListener() {
-            @Override
-            public void onSwipeOutAtStart() {
-                prevChapter();
-            }
+//            @Override
+//            public void onSwipeOutAtStart() {
+//                prevChapter();
+//            }
 
             @Override
             public void onSwipeOutAtEnd() {
@@ -294,7 +296,7 @@ public class ReadActivity extends AppCompatActivity {
         }
     }
 
-    public void setRead(){
+    public void setRead() {
         if (!chapters.get(chapter_position).isRead()) {
             db.insertChapter(chapters.get(chapter_position), name);
             if (ChapterFragment.getAdapter() != null)
@@ -340,6 +342,7 @@ public class ReadActivity extends AppCompatActivity {
 
     private void refresh() {
         ChangeChapter task = new ChangeChapter(progressDialog);
+        isRefreshing = true;
         task.execute(chapters.get(chapter_position).getUrl());
     }
 
@@ -372,13 +375,13 @@ public class ReadActivity extends AppCompatActivity {
                 viewPager.setOnSwipeOutListener(new CustomViewPager.OnSwipeOutListener() {
                     boolean callHappened = false;
 
-                    @Override
-                    public void onSwipeOutAtStart() {
-                        if (!callHappened) {
-                            callHappened = true;
-                            prevChapter();
-                        }
-                    }
+//                    @Override
+//                    public void onSwipeOutAtStart() {
+//                        if (!callHappened) {
+//                            callHappened = true;
+//                            prevChapter();
+//                        }
+//                    }
 
                     @Override
                     public void onSwipeOutAtEnd() {
@@ -402,7 +405,7 @@ public class ReadActivity extends AppCompatActivity {
                 seekBar.setMax(adapter.getCount() - 1);
 
             } else {
-                Toast.makeText(getApplicationContext(),"Failed to retrieve this chapter, please check your network",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Failed to retrieve this chapter, please check your network", Toast.LENGTH_SHORT).show();
                 finish();
             }
 
@@ -447,13 +450,13 @@ public class ReadActivity extends AppCompatActivity {
 
                     boolean callHappened = false;
 
-                    @Override
-                    public void onSwipeOutAtStart() {
-                        if (!callHappened) {
-                            callHappened = true;
-                            prevChapter();
-                        }
-                    }
+//                    @Override
+//                    public void onSwipeOutAtStart() {
+//                        if (!callHappened) {
+//                            callHappened = true;
+//                            prevChapter();
+//                        }
+//                    }
 
                     @Override
                     public void onSwipeOutAtEnd() {
@@ -476,22 +479,25 @@ public class ReadActivity extends AppCompatActivity {
                 seekBar.setProgress(0);
                 seekBar.setMax(adapter.getCount() - 1);
 
+                isRefreshing = false;
+
                 setRead();
                 getSupportActionBar().setTitle(chapters.get(chapter_position).getName());
             } else {
                 Toast.makeText(getApplicationContext(), "Cannot retrieve new chapter, please check your network", Toast.LENGTH_SHORT).show();
-                chapter_position = chapter_position_temp;
+                if (!isRefreshing)
+                    chapter_position = chapter_position_temp;
                 viewPager.setOnSwipeOutListener(new CustomViewPager.OnSwipeOutListener() {
 
                     boolean callHappened = false;
 
-                    @Override
-                    public void onSwipeOutAtStart() {
-                        if (!callHappened) {
-                            callHappened = true;
-                            prevChapter();
-                        }
-                    }
+//                    @Override
+//                    public void onSwipeOutAtStart() {
+//                        if (!callHappened) {
+//                            callHappened = true;
+//                            prevChapter();
+//                        }
+//                    }
 
                     @Override
                     public void onSwipeOutAtEnd() {

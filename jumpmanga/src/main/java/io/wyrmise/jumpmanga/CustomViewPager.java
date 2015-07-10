@@ -37,15 +37,16 @@ public class CustomViewPager extends ViewPager {
                 mStartDragX = x;
                 break;
             case MotionEvent.ACTION_MOVE:
-                if (mStartDragX < x && getCurrentItem() == 0) {
-                    View view = findViewWithTag(0);
-                    if (view != null) {
-                        TouchImageView img = (TouchImageView) view.findViewById(R.id.img);
-                        if (!img.isZoomed()) {
-                            mListener.onSwipeOutAtStart();
-                        }
-                    }
-                } else if (mStartDragX > x && getCurrentItem() == getAdapter().getCount() - 1) {
+//                if (mStartDragX < x && getCurrentItem() == 0) {
+//                    View view = findViewWithTag(0);
+//                    if (view != null) {
+//                        TouchImageView img = (TouchImageView) view.findViewById(R.id.img);
+//                        if (!img.isZoomed()) {
+//                            mListener.onSwipeOutAtStart();
+//                        }
+//                    }
+//                } else
+                if (mStartDragX > x && getCurrentItem() == getAdapter().getCount() - 1) {
                     View view = findViewWithTag(getAdapter().getCount() - 1);
                     if (view != null) {
                         TouchImageView img = (TouchImageView) view.findViewById(R.id.img);
@@ -60,7 +61,7 @@ public class CustomViewPager extends ViewPager {
     }
 
     public interface OnSwipeOutListener {
-        void onSwipeOutAtStart();
+//        void onSwipeOutAtStart();
 
         void onSwipeOutAtEnd();
     }
