@@ -1,6 +1,7 @@
 package io.wyrmise.jumpmanga;
 
 import android.content.res.Configuration;
+import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,10 +19,7 @@ public class DetailActivity extends AppCompatActivity {
     Toolbar toolbar;
     ViewPager pager;
     ViewPagerAdapter adapter;
-    SlidingTabLayout tabs;
-    CharSequence Titles[]={"Information","Chapters"};
-    int Numboftabs =2;
-
+    TabLayout tabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,21 +33,18 @@ public class DetailActivity extends AppCompatActivity {
 
         setTitle(getManga().getName());
 
-        adapter =  new ViewPagerAdapter(getSupportFragmentManager(),Titles,Numboftabs);
         pager = (ViewPager) findViewById(R.id.pager);
+
+        adapter =  new ViewPagerAdapter(getSupportFragmentManager(),DetailActivity.this);
+
         pager.setAdapter(adapter);
 
-        tabs = (SlidingTabLayout) findViewById(R.id.tabs);
-        tabs.setDistributeEvenly(true);
+        tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
 
-        tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
-            @Override
-            public int getIndicatorColor(int position) {
-                return getResources().getColor(R.color.tabsScrollColor);
-            }
-        });
+        tabLayout.setTabTextColors(getResources().getColor(R.color.green_dark),getResources().getColor(android.R.color.white));
 
-        tabs.setViewPager(pager);
+        tabLayout.setupWithViewPager(pager);
+
     }
 
     @Override

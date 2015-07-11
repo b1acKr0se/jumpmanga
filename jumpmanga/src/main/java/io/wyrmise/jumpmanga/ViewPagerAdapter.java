@@ -1,5 +1,6 @@
 package io.wyrmise.jumpmanga;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -9,24 +10,25 @@ import android.support.v4.app.FragmentStatePagerAdapter;
  * Created by Thanh on 6/30/2015.
  */
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {
-    CharSequence titles[];
-    int noOfTabs;
 
-    public ViewPagerAdapter(FragmentManager fm,CharSequence mTitles[], int mNumbOfTabsumb) {
+    final int PAGE_COUNT = 2;
+    private String titles[] = new String[]{"Information", "Chapter"};
+    private Context context;
+
+
+    public ViewPagerAdapter(FragmentManager fm, Context context) {
         super(fm);
-        titles = mTitles;
-        noOfTabs = mNumbOfTabsumb;
+        this.context = context;
     }
 
     @Override
     public Fragment getItem(int position) {
 
-        if(position == 0) // if the position is 0 we are returning the First tab
+        if (position == 0)
         {
             InfoFragment infoFragment = new InfoFragment();
             return infoFragment;
-        }
-        else             // As we are having 2 tabs if the position is now 0 it must be 1 so we are returning second tab
+        } else
         {
             ChapterFragment chapterFragment = new ChapterFragment();
             return chapterFragment;
@@ -41,9 +43,8 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return noOfTabs;
+        return PAGE_COUNT;
     }
-
 
 
 }
