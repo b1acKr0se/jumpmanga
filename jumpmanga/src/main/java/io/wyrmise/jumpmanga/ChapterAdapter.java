@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.wyrmise.jumpmanga.database.DatabaseHelper;
 import io.wyrmise.jumpmanga.model.Chapter;
 
 /**
@@ -23,6 +25,7 @@ import io.wyrmise.jumpmanga.model.Chapter;
 public class ChapterAdapter extends ArrayAdapter<Chapter> implements Filterable {
     private ArrayList<Chapter> chapters;
     private ArrayList<Chapter> temp;
+    private DatabaseHelper db;
     private Context context;
     Holder holder;
 
@@ -31,6 +34,7 @@ public class ChapterAdapter extends ArrayAdapter<Chapter> implements Filterable 
         chapters = list;
         context = c;
         temp = new ArrayList<>(chapters);
+        db = new DatabaseHelper(context);
     }
 
     @Override
@@ -45,7 +49,7 @@ public class ChapterAdapter extends ArrayAdapter<Chapter> implements Filterable 
 
 
     @Override
-    public View getView(int position, View convertView, ViewGroup container) {
+    public View getView(final int position, View convertView, ViewGroup container) {
         View convertView1 = convertView;
         LayoutInflater vi = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -56,18 +60,41 @@ public class ChapterAdapter extends ArrayAdapter<Chapter> implements Filterable 
                     false);
             holder.chapter_name = (TextView) convertView1.findViewById(R.id.name);
             holder.read_status = (ImageView) convertView1.findViewById(R.id.status_read);
+            holder.fav_status = (CheckBox) convertView1.findViewById(R.id.favorite_box);
+
             convertView1.setTag(holder);
+
         } else {
             holder = (Holder) convertView1.getTag();
         }
 
-        Chapter chapter = getItem(position);
+        final Chapter chapter = getItem(position);
 
         holder.chapter_name.setText(chapter.getName());
+
+        holder.fav_status.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CheckBox c = (CheckBox) view;
+                if(!c.isChecked()) {
+                    chapter.setIsFav(false);
+                    System.out.println("Chapter name unfav: " +chapter.getName());
+                    db.unfavChapter(chapter, chapter.getMangaName().replaceAll("'", "''"));
+                } else {
+                    chapter.setIsFav(true);
+                    System.out.println("Chapter name fav: " +chapter.getName());
+                    db.favChapter(chapter,chapter.getMangaName().replaceAll("'", "''"));
+                }
+            }
+        });
 
         if(chapter.isRead())
             holder.read_status.setVisibility(ImageView.VISIBLE);
         else holder.read_status.setVisibility(ImageView.INVISIBLE);
+
+        if(chapter.isFav())
+            holder.fav_status.setChecked(true);
+        else holder.fav_status.setChecked(false);
 
         return convertView1;
     }
@@ -111,6 +138,7 @@ public class ChapterAdapter extends ArrayAdapter<Chapter> implements Filterable 
     private class Holder {
         public TextView chapter_name;
         public ImageView read_status;
+        public CheckBox fav_status;
     }
 
 }

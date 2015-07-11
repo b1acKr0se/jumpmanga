@@ -2,7 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="50dp"
-    android:layout_margin="@dimen/spacing_medium">
+    android:layout_margin="@dimen/spacing_medium"
+
+    android:background="@android:color/white">
 
     <TextView
         android:id="@+id/name"
@@ -10,19 +12,31 @@
         android:layout_height="wrap_content"
         android:textColor="@android:color/black"
         android:layout_marginLeft="@dimen/spacing_medium"
-        android:layout_marginRight="65dp"
+        android:layout_marginRight="75dp"
         android:layout_centerVertical="true"
         android:fontFamily="sans-serif-light"
+        android:text="Chap 356"
         android:textSize="18sp"/>
+
+    <CheckBox
+        android:id="@+id/favorite_box"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="@dimen/spacing_xsmall"
+        android:focusable="false"
+        android:button="@null"
+        android:background="@drawable/star_check_box"/>
 
     <ImageView
         android:id="@+id/status_read"
-        android:layout_width="50dp"
-        android:layout_height="25dp"
-        android:layout_marginRight="@dimen/spacing_medium"
-        android:layout_alignParentRight="true"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/ic_read"
         android:layout_centerVertical="true"
-        android:src="@drawable/read"
-        android:visibility="invisible"/>
+        android:paddingTop="2dp"
+        android:layout_marginRight="@dimen/spacing_medium"
+        android:layout_toLeftOf="@id/favorite_box"/>
 
 </RelativeLayout>

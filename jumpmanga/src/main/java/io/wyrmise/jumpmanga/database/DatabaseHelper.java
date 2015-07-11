@@ -20,12 +20,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //Log tag
     private static final String LOG = "DatabaseHelper";
 
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     private static final String DATABASE_NAME = "JumpManga";
 
     private static final String TABLE_MANGA = "manga";
     private static final String TABLE_CHAPTER = "chapter";
     private static final String TABLE_RECENT = "recent";
+    private static final String TABLE_FAV_CHAPTER = "fav_chapter";
 
 
     private static final String KEY_NAME = "name";
@@ -55,6 +56,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_RECENT = "CREATE TABLE " + TABLE_RECENT + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
             KEY_RECENT_MANGA_IMAGE + " TEXT, " + KEY_MANGA_NAME + " TEXT, " + KEY_RECENT_MANGA_URL + " TEXT, " + KEY_RECENT_READ_CHAPTER + " TEXT, " + KEY_RECENT_CHAPTER_URL + " TEXT)";
 
+    private static final String CREATE_TABLE_FAV_CHAPTER = "CREATE TABLE " + TABLE_FAV_CHAPTER + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + KEY_NAME + " TEXT, " + KEY_MANGA_NAME + " TEXT)";
+
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -72,12 +76,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // on upgrade drop older tables
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_MANGA);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_CHAPTER);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_RECENT);
+//        db.execSQL("DROP TABLE IF EXISTS " + TABLE_MANGA);
+//        db.execSQL("DROP TABLE IF EXISTS " + TABLE_CHAPTER);
+//        db.execSQL("DROP TABLE IF EXISTS " + TABLE_RECENT);
 
-        // create new tables
-        onCreate(db);
+        if(oldVersion==2 && newVersion==3)
+            db.execSQL(CREATE_TABLE_FAV_CHAPTER);
+
     }
 
     public boolean insertManga(Manga manga) {
@@ -262,5 +267,64 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return null;
     }
+
+    public ArrayList<Chapter> getAllFavChapters(Manga manga) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT * FROM " + TABLE_FAV_CHAPTER + " WHERE " + KEY_MANGA_NAME + " = '" + manga.getName() + "'";
+
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor.getCount() > 0) {
+            ArrayList<Chapter> chapters = new ArrayList<>();
+            while (cursor.moveToNext()) {
+                String name = cursor.getString(cursor.getColumnIndex(KEY_NAME));
+                Chapter chapter = new Chapter(name);
+                chapters.add(chapter);
+            }
+            return chapters;
+        }
+        return null;
+    }
+
+    public boolean isChapterFav(Chapter chapter, String mangaName) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String selectQuery = "SELECT  * FROM " + TABLE_FAV_CHAPTER + " WHERE " + KEY_NAME + " = '" + chapter.getName()
+                + "' AND " + KEY_MANGA_NAME + " = '" + mangaName + "'";
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        if (cursor.getCount() <= 0) {
+            cursor.close();
+            return false;
+        }
+        cursor.close();
+        return true;
+    }
+
+    public boolean favChapter(Chapter chapter, String mangaName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(KEY_NAME, chapter.getName());
+        contentValues.put(KEY_MANGA_NAME, mangaName);
+        try {
+            db.insertOrThrow(TABLE_FAV_CHAPTER, null, contentValues);
+        } catch (SQLiteConstraintException e) {
+            return false;
+        }
+        System.out.println("successfully favorited chapter");
+        return true;
+    }
+
+    public boolean unfavChapter(Chapter chapter, String mangaName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int rowsAffected = db.delete(TABLE_FAV_CHAPTER, KEY_NAME + " = ?"
+                + " AND " +KEY_MANGA_NAME+ " = ?",
+                new String[]{chapter.getName(),mangaName});
+        if (rowsAffected > 0) {
+            System.out.println("successfully unfav chapter");
+            return true;
+        }
+        return false;
+    }
+
 
 }

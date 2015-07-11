@@ -191,8 +191,11 @@ public class ChapterFragment extends Fragment {
             ArrayList<Chapter> arr = download.GetChapters();
             if (arr != null)
                 for (Chapter c : arr) {
+                    c.setMangaName(manga.getName());
                     if (db.isChapterRead(c, manga.getName().replaceAll("'", "''")))
                         c.setIsRead(true);
+                    if(db.isChapterFav(c, manga.getName().replaceAll("'", "''")))
+                        c.setIsFav(true);
                 }
             return arr;
         }
