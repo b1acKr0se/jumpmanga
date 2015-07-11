@@ -8,7 +8,8 @@
 
     <include
         android:id="@+id/toolbar"
-        layout="@layout/toolbar" />
+        layout="@layout/toolbar"
+        />
 
     <android.support.design.widget.TabLayout
         android:id="@+id/sliding_tabs"
