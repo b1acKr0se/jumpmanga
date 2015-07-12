@@ -24,7 +24,7 @@
         android:layout_height="25dp"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_marginRight="@dimen/spacing_xsmall"
+        android:layout_marginRight="@dimen/spacing_medium"
         android:focusable="false"
         android:button="@null"
         android:background="@drawable/star_check_box"/>
@@ -36,7 +36,7 @@
         android:src="@drawable/ic_read"
         android:layout_centerVertical="true"
         android:paddingTop="2dp"
-        android:layout_marginRight="@dimen/spacing_medium"
+        android:layout_marginRight="5dp"
         android:layout_toLeftOf="@id/favorite_box"/>
 
 </RelativeLayout>

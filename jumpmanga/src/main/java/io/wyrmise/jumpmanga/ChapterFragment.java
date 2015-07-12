@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,8 +18,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -44,7 +47,17 @@ public class ChapterFragment extends Fragment {
 
     private Manga manga;
 
+    private String url;
+
     private SwipeRefreshLayout refreshLayout;
+
+    private boolean isChecked = false;
+
+    private ArrayList<Chapter> temp;
+
+    private SwitchCompat switchCompat;
+
+    private SearchView actionSearchView;
 
     public ChapterFragment() {
         // Required empty public constructor
@@ -90,10 +103,9 @@ public class ChapterFragment extends Fragment {
         });
 
 
-
         manga = ((DetailActivity) getActivity()).getManga();
 
-        final String url = ((DetailActivity) getActivity()).getManga().getUrl();
+        url = ((DetailActivity) getActivity()).getManga().getUrl();
 
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 
@@ -102,7 +114,7 @@ public class ChapterFragment extends Fragment {
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                Toast.makeText(context, "Refreshing chapter list...",Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Refreshing chapter list...", Toast.LENGTH_SHORT).show();
                 listView.setVisibility(ListView.GONE);
                 new GetMangaDetails().execute(url);
             }
@@ -118,9 +130,9 @@ public class ChapterFragment extends Fragment {
 //
 //            listView.setTextFilterEnabled(true);
 //        } else {
-            progressBar.setVisibility(ProgressBar.VISIBLE);
-            listView.setVisibility(ListView.GONE);
-            new GetMangaDetails().execute(url);
+        progressBar.setVisibility(ProgressBar.VISIBLE);
+        listView.setVisibility(ListView.GONE);
+        new GetMangaDetails().execute(url);
 
 //        }
         return view;
@@ -137,7 +149,9 @@ public class ChapterFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_detail, menu);
         MenuItem searchItem = menu.findItem(R.id.action_search);
-        SearchView actionSearchView = (SearchView) searchItem.getActionView();
+        actionSearchView = (SearchView) searchItem.getActionView();
+        actionSearchView.setVisibility(View.GONE);
+
         actionSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextChange(String newText) {
@@ -161,6 +175,39 @@ public class ChapterFragment extends Fragment {
                 return false;
             }
         });
+
+        RelativeLayout layout = (RelativeLayout) menu.findItem(R.id.action_switch).getActionView();
+
+        switchCompat = (SwitchCompat) layout.findViewById(R.id.favorite_switch);
+
+        switchCompat.setVisibility(View.GONE);
+
+        switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                isChecked = b;
+                if (isChecked && chapters != null) {
+                    ArrayList<Chapter> arr = new ArrayList<Chapter>();
+                    for (int i = chapters.size() - 1; i >= 0; i--) {
+                        if (chapters.get(i).isFav() == true)
+                            arr.add(chapters.get(i));
+                    }
+
+                    if (arr.size() > 0) {
+                        chapters = new ArrayList<Chapter>(arr);
+                        adapter = new ChapterAdapter(context, R.layout.chapter_list_item, chapters);
+                        listView.setAdapter(adapter);
+                    } else {
+                        Toast.makeText(context, "You have no favorite chapter for this manga", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    chapters = new ArrayList<Chapter>(temp);
+                    adapter = new ChapterAdapter(context, R.layout.chapter_list_item, chapters);
+                    listView.setAdapter(adapter);
+                }
+            }
+        });
+
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -170,6 +217,16 @@ public class ChapterFragment extends Fragment {
         if (adapter != null) {
             adapter.notifyDataSetChanged();
         }
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return super.onOptionsItemSelected(item);
     }
 
 
@@ -194,7 +251,7 @@ public class ChapterFragment extends Fragment {
                     c.setMangaName(manga.getName());
                     if (db.isChapterRead(c, manga.getName().replaceAll("'", "''")))
                         c.setIsRead(true);
-                    if(db.isChapterFav(c, manga.getName().replaceAll("'", "''")))
+                    if (db.isChapterFav(c, manga.getName().replaceAll("'", "''")))
                         c.setIsFav(true);
                 }
             return arr;
@@ -207,6 +264,8 @@ public class ChapterFragment extends Fragment {
 
                 chapters = arr;
 
+                temp = new ArrayList<>(chapters);
+
                 adapter = new ChapterAdapter(context, R.layout.chapter_list_item, chapters);
 
                 listView.setAdapter(adapter);
@@ -216,6 +275,10 @@ public class ChapterFragment extends Fragment {
                 listView.setVisibility(ListView.VISIBLE);
 
                 listView.setTextFilterEnabled(true);
+
+                switchCompat.setVisibility(View.VISIBLE);
+
+                actionSearchView.setVisibility(View.VISIBLE);
 
             } else {
                 progressBar.setVisibility(ProgressBar.GONE);

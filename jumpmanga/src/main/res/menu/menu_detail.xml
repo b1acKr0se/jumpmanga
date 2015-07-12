@@ -3,9 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="io.wyrmise.jumpmanga.DetailedActivity">
     <item
+        android:id="@+id/action_switch"
+        android:title=""
+        app:actionLayout="@layout/switch_layout"
+        android:actionViewClass="android.support.v7.widget.SwitchCompat"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/action_search"
         android:icon="@android:drawable/ic_menu_search"
-        app:showAsAction="always"
+        android:title="Search"
         app:actionViewClass="android.support.v7.widget.SearchView"
-        android:title="Search"/>
+        app:showAsAction="always" />
 </menu>
