@@ -2,7 +2,9 @@ package io.wyrmise.jumpmanga;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.res.Configuration;
+import android.content.Context;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,20 +15,40 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+
+import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
+import io.wyrmise.jumpmanga.model.Manga;
 import io.wyrmise.jumpmanga.picasso.CircleTransform;
 
 public class MainActivity extends AppCompatActivity {
 
     public static final String AVATAR_URL = "http://lorempixel.com/200/200/people/1/";
 
+    private ArrayList<Manga> mangas;
+
+    private ArrayList<Manga> temp;
+
     private Toolbar toolbar;
+
     private DrawerLayout drawerLayout;
 
     private int savedMenuId = -1;
+
+    private JumpDatabaseHelper db;
+
+    private  SearchAdapter adapter;
+
+    private CustomAutoCompleteTextView searchBox;
+
+    private ImageView toggle_search;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +58,41 @@ public class MainActivity extends AppCompatActivity {
 
         initToolbar();
         setupDrawerLayout();
+
+        db = new JumpDatabaseHelper(MainActivity.this);
+
+        searchBox = (CustomAutoCompleteTextView) findViewById(R.id.search_box);
+
+        toggle_search = (ImageView) findViewById(R.id.toggle_search);
+
+        toggle_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toggleSearch(false);
+            }
+        });
+
+        new getAllMangas().execute();
+
+        searchBox.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                searchBox.setText("");
+                int position = temp.indexOf(adapter.getItem(i));
+                Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+                intent.putExtra("manga", temp.get(position));
+                startActivity(intent);
+            }
+        });
+
+        searchBox.setOnClearListener(new CustomAutoCompleteTextView.OnClearListener() {
+
+            @Override
+            public void onClear() {
+                toggleSearch(true);
+            }
+        });
+
 
         final ImageView avatar = (ImageView) findViewById(R.id.avatar);
 
@@ -57,6 +114,28 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
+    protected void toggleSearch(boolean reset) {
+        if (reset) {
+            // hide search box and show search icon
+            searchBox.setText("");
+            searchBox.setVisibility(View.GONE);
+            toggle_search.setVisibility(View.VISIBLE);
+            // hide the keyboard
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(searchBox.getWindowToken(), 0);
+        } else {
+            // hide search icon and show search box
+            toggle_search.setVisibility(View.GONE);
+            searchBox.setVisibility(View.VISIBLE);
+            searchBox.requestFocus();
+            // show the keyboard
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(searchBox, InputMethodManager.SHOW_IMPLICIT);
+        }
+
+    }
+
 
     @Override
     public void onSaveInstanceState(Bundle bundle) {
@@ -186,4 +265,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    public class getAllMangas extends AsyncTask<Void, Void, ArrayList<Manga>> {
+
+        @Override
+        public void onPreExecute() {
+        }
+
+        @Override
+        public ArrayList<Manga> doInBackground(Void... params) {
+            return db.getAllMangas();
+        }
+
+        @Override
+        public void onPostExecute(ArrayList<Manga> result) {
+
+            if (result != null) {
+                mangas = result;
+                temp = new ArrayList<>(mangas);
+                adapter = new SearchAdapter(getApplicationContext(),R.layout.search_dropdown_item,mangas);
+                searchBox.setAdapter(adapter);
+                Toast.makeText(getApplicationContext(),"Finished reading db",Toast.LENGTH_SHORT).show();
+            } else {
+                searchBox.setVisibility(View.GONE);
+            }
+        }
+    }
 }

@@ -15,5 +15,7 @@
     <color name="grey">#BDBDBD</color>
     <color name="grey_translucent">#78BDBDBD</color>
 
+    <color name="almost_black">#4c4c4c</color>
+
 
 </resources>

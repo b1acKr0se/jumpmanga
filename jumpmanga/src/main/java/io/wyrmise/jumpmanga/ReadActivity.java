@@ -3,10 +3,10 @@ package io.wyrmise.jumpmanga;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,11 +16,9 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.util.ArrayList;
-
 import io.wyrmise.jumpmanga.animation.AnimationHelper;
-import io.wyrmise.jumpmanga.database.DatabaseHelper;
+import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
 import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
 import io.wyrmise.jumpmanga.model.Chapter;
 import io.wyrmise.jumpmanga.model.Manga;
@@ -29,7 +27,7 @@ import io.wyrmise.jumpmanga.widget.TouchImageView;
 
 public class ReadActivity extends AppCompatActivity {
 
-    private DatabaseHelper db;
+    private JumpDatabaseHelper db;
 
     private FullScreenImageAdapter adapter;
 
@@ -142,7 +140,7 @@ public class ReadActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_read);
 
-        db = new DatabaseHelper(ReadActivity.this);
+        db = new JumpDatabaseHelper(ReadActivity.this);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
 

@@ -21,5 +21,11 @@
         <item name="rippleColor">@android:color/white</item>
     </style>
 
+    <style name="DropDownListViewStyle">
+        <item name="android:background">@android:color/white</item>
+        <item name="android:selectableItemBackground">@drawable/selectable_item_background</item>
+        <item name="android:drawSelectorOnTop">true</item>
+    </style>
+
 
 </resources>

@@ -15,6 +15,10 @@ public class Manga implements Parcelable {
     private Chapter recent;
     private boolean isFav;
 
+    public Manga(){
+
+    }
+
     public Manga(String n, String i) {
         name = n;
         image = i;
@@ -96,12 +100,7 @@ public class Manga implements Parcelable {
 
     @Override
     public String toString() {
-        return "Manga{" +
-                "latest='" + latest + '\'' +
-                ", image='" + image + '\'' +
-                ", url='" + url + '\'' +
-                ", name='" + name + '\'' +
-                '}';
+        return name;
     }
 
     protected Manga(Parcel in) {

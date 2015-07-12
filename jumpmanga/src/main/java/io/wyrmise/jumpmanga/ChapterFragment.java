@@ -26,7 +26,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import io.wyrmise.jumpmanga.database.DatabaseHelper;
+import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
 import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
 import io.wyrmise.jumpmanga.model.Chapter;
 import io.wyrmise.jumpmanga.model.Manga;
@@ -37,7 +37,7 @@ import io.wyrmise.jumpmanga.model.Manga;
  */
 public class ChapterFragment extends Fragment {
 
-    private DatabaseHelper db;
+    private JumpDatabaseHelper db;
     private ListView listView;
     private ArrayList<Chapter> chapters;
     private ProgressBar progressBar;
@@ -76,7 +76,7 @@ public class ChapterFragment extends Fragment {
 
         context = getActivity().getApplicationContext();
 
-        db = new DatabaseHelper(context);
+        db = new JumpDatabaseHelper(context);
 
         setHasOptionsMenu(true);
 
@@ -150,7 +150,6 @@ public class ChapterFragment extends Fragment {
         inflater.inflate(R.menu.menu_detail, menu);
         MenuItem searchItem = menu.findItem(R.id.action_search);
         actionSearchView = (SearchView) searchItem.getActionView();
-        actionSearchView.setVisibility(View.GONE);
 
         actionSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -179,8 +178,6 @@ public class ChapterFragment extends Fragment {
         RelativeLayout layout = (RelativeLayout) menu.findItem(R.id.action_switch).getActionView();
 
         switchCompat = (SwitchCompat) layout.findViewById(R.id.favorite_switch);
-
-        switchCompat.setVisibility(View.GONE);
 
         switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -214,6 +211,8 @@ public class ChapterFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        if (switchCompat != null && switchCompat.getVisibility() == View.GONE)
+            switchCompat.setVisibility(View.VISIBLE);
         if (adapter != null) {
             adapter.notifyDataSetChanged();
         }
@@ -240,7 +239,8 @@ public class ChapterFragment extends Fragment {
 
     public class GetMangaDetails extends AsyncTask<String, Void, ArrayList<Chapter>> {
         public void onPreExecute() {
-
+            if (switchCompat != null)
+                switchCompat.setVisibility(View.GONE);
         }
 
         public ArrayList<Chapter> doInBackground(String... params) {
@@ -276,9 +276,8 @@ public class ChapterFragment extends Fragment {
 
                 listView.setTextFilterEnabled(true);
 
-                switchCompat.setVisibility(View.VISIBLE);
-
-                actionSearchView.setVisibility(View.VISIBLE);
+                if (switchCompat != null)
+                    switchCompat.setVisibility(View.VISIBLE);
 
             } else {
                 progressBar.setVisibility(ProgressBar.GONE);

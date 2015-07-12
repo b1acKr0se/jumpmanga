@@ -1,13 +1,12 @@
 package io.wyrmise.jumpmanga;
 
 
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,7 +18,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import io.wyrmise.jumpmanga.database.DatabaseHelper;
+import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
 import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
 import io.wyrmise.jumpmanga.model.Manga;
 
@@ -34,7 +33,7 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
     private static final int RETRIEVE_FAVORITE_MANGA = 2;
 
     private Context context;
-    private DatabaseHelper db;
+    private JumpDatabaseHelper db;
     private ProgressBar progressBar;
     private RecyclerView recyclerView;
     private ArrayList<Manga> mangas = new ArrayList<>();
@@ -61,7 +60,7 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
 
         context = getActivity().getApplicationContext();
 
-        db = new DatabaseHelper(context);
+        db = new JumpDatabaseHelper(context);
 
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 

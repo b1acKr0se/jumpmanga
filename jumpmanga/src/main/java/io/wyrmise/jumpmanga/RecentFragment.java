@@ -1,26 +1,23 @@
 package io.wyrmise.jumpmanga;
 
 
+import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import io.wyrmise.jumpmanga.database.DatabaseHelper;
+import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
 import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
 import io.wyrmise.jumpmanga.model.Chapter;
 import io.wyrmise.jumpmanga.model.Manga;
@@ -31,7 +28,7 @@ import io.wyrmise.jumpmanga.model.Manga;
  */
 public class RecentFragment extends Fragment implements MangaAdapter.OnItemClickListener {
 
-    private DatabaseHelper db;
+    private JumpDatabaseHelper db;
 
     private Context context;
 
@@ -58,7 +55,7 @@ public class RecentFragment extends Fragment implements MangaAdapter.OnItemClick
 
         context = getActivity().getApplicationContext();
 
-        db = new DatabaseHelper(context);
+        db = new JumpDatabaseHelper(context);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.list);
 

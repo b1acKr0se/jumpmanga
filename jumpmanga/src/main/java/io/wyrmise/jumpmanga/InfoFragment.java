@@ -21,7 +21,7 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 
 import io.wyrmise.jumpmanga.animation.AnimationHelper;
-import io.wyrmise.jumpmanga.database.DatabaseHelper;
+import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
 import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
 import io.wyrmise.jumpmanga.model.Manga;
 
@@ -31,7 +31,7 @@ import io.wyrmise.jumpmanga.model.Manga;
  */
 public class InfoFragment extends Fragment {
 
-    private DatabaseHelper db;
+    private JumpDatabaseHelper db;
     private Context context;
     private String[] str;
     private TextView detail, summary;
@@ -60,7 +60,7 @@ public class InfoFragment extends Fragment {
 
         context = getActivity().getApplicationContext();
 
-        db = new DatabaseHelper(context);
+        db = new JumpDatabaseHelper(context);
 
         setHasOptionsMenu(false);
 
@@ -83,11 +83,9 @@ public class InfoFragment extends Fragment {
 
         plotCardView = (CardView) view.findViewById(R.id.cardView2);
 
-
-
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
 
-        if (manga.isFav())
+        if (db.isMangaFavorited(manga.getName()))
             fab.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.ic_action_favorite));
 
         fab.setOnClickListener(new View.OnClickListener() {

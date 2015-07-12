@@ -1,5 +1,6 @@
 package io.wyrmise.jumpmanga.manga24hbaseapi;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -152,4 +153,28 @@ public class DownloadUtils {
         }
     }
 
+    public ArrayList<Manga> GetAllMangas(String url) {
+        ArrayList<Manga> mangas = new ArrayList<>();
+        try {
+            Document document = Jsoup.connect(url).get();
+            Element table = document.select("div.col-md-12.box").select("div").select("table.table").first();
+            Elements els = table.select("tr.panel-update-each-item.panel-even,tr.panel-update-each-item.panel-odd");
+            for (int i = 0; i < els.size(); i++) {
+                Elements e = els.get(i).select("td.panel-update-each-item-title ");
+                Manga manga = new Manga();
+                String name = e.select("a[href]").attr("title");
+                if(name.isEmpty())
+                    name = e.select("a.tooltip-content-title[href]").text();
+                System.out.println("Name : " +name);
+                String manga_url = e.select("a[href]").attr("abs:href");
+                System.out.println(manga_url);
+                String img = e.select("img").attr("data-original");
+                System.out.println(img);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

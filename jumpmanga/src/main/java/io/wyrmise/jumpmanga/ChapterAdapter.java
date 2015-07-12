@@ -1,8 +1,6 @@
 package io.wyrmise.jumpmanga;
 
 import android.content.Context;
-import android.provider.SyncStateContract;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,11 +10,8 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import java.util.ArrayList;
-import java.util.List;
-
-import io.wyrmise.jumpmanga.database.DatabaseHelper;
+import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
 import io.wyrmise.jumpmanga.model.Chapter;
 
 /**
@@ -25,7 +20,7 @@ import io.wyrmise.jumpmanga.model.Chapter;
 public class ChapterAdapter extends ArrayAdapter<Chapter> implements Filterable {
     private ArrayList<Chapter> chapters;
     private ArrayList<Chapter> temp;
-    private DatabaseHelper db;
+    private JumpDatabaseHelper db;
     private Context context;
     Holder holder;
 
@@ -34,7 +29,7 @@ public class ChapterAdapter extends ArrayAdapter<Chapter> implements Filterable 
         chapters = list;
         context = c;
         temp = new ArrayList<>(chapters);
-        db = new DatabaseHelper(context);
+        db = new JumpDatabaseHelper(context);
     }
 
     @Override
