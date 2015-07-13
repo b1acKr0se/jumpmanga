@@ -5,12 +5,14 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
@@ -70,6 +72,8 @@ public class ReadActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
 
     private boolean isRefreshing = false;
+
+    private ImageView button_favorite;
 
     private void hideSystemUI() {
         View decorView = getWindow().getDecorView();
@@ -304,6 +308,13 @@ public class ReadActivity extends AppCompatActivity {
         db.insertRecentChapter(manga, chapters.get(chapter_position));
     }
 
+    public void getFavoriteStatus() {
+        if(!chapters.get(chapter_position).isFav()) {
+            button_favorite.setImageDrawable(ContextCompat.getDrawable(ReadActivity.this,R.drawable.ic_star_unfav_filled));
+        } else
+            button_favorite.setImageDrawable(ContextCompat.getDrawable(ReadActivity.this,R.drawable.star_fav));
+    }
+
     public void updateProgress() {
         increment++;
         progressBar.setProgress(increment);
@@ -313,7 +324,30 @@ public class ReadActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.menu_read, menu);
+        button_favorite = (ImageView) menu.findItem(R.id.favorite).getActionView();
+        button_favorite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(db.isChapterFav(chapters.get(chapter_position),manga.getName())) {
+                    db.unfavChapter(chapters.get(chapter_position), manga.getName());
+                    if (ChapterFragment.getAdapter() != null)
+                        ChapterFragment.getAdapter().getItem(chapter_position).setIsFav(false);
+                    chapters.get(chapter_position).setIsFav(false);
+                    button_favorite.setImageDrawable(ContextCompat.getDrawable(ReadActivity.this,R.drawable.ic_star_unfav_filled));
+                    Toast.makeText(ReadActivity.this,"Successfully unfavorited this chapter",Toast.LENGTH_SHORT).show();
+                } else {
+                    db.favChapter(chapters.get(chapter_position),manga.getName());
+                    if (ChapterFragment.getAdapter() != null)
+                        ChapterFragment.getAdapter().getItem(chapter_position).setIsFav(true);
+                    chapters.get(chapter_position).setIsFav(true);
+                    button_favorite.setImageDrawable(ContextCompat.getDrawable(ReadActivity.this,R.drawable.star_fav));
+                    Toast.makeText(ReadActivity.this,"Successfully favorited this chapter",Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
         return true;
     }
 
@@ -402,6 +436,8 @@ public class ReadActivity extends AppCompatActivity {
                 seekBar.setProgress(0);
                 seekBar.setMax(adapter.getCount() - 1);
 
+                getFavoriteStatus();
+
             } else {
                 Toast.makeText(getApplicationContext(), "Failed to retrieve this chapter, please check your network", Toast.LENGTH_SHORT).show();
                 finish();
@@ -479,6 +515,7 @@ public class ReadActivity extends AppCompatActivity {
 
                 isRefreshing = false;
 
+                getFavoriteStatus();
                 setRead();
                 getSupportActionBar().setTitle(chapters.get(chapter_position).getName());
             } else {

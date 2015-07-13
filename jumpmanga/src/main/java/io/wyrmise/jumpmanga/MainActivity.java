@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
 
     private JumpDatabaseHelper db;
 
-    private  SearchAdapter adapter;
+    private SearchAdapter adapter;
 
     private CustomAutoCompleteTextView searchBox;
 
@@ -72,12 +72,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        new getAllMangas().execute();
 
         searchBox.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                searchBox.setText("");
+                toggleSearch(true);
                 int position = temp.indexOf(adapter.getItem(i));
                 Intent intent = new Intent(MainActivity.this, DetailActivity.class);
                 intent.putExtra("manga", temp.get(position));
@@ -98,15 +97,17 @@ public class MainActivity extends AppCompatActivity {
 
         Picasso.with(this).load(AVATAR_URL).transform(new CircleTransform()).into(avatar);
 
-        if(savedInstanceState==null)
+        if (savedInstanceState == null) {
             GetHotMangas();
-        else {
+            new getAllMangas().execute();
+        } else {
             getSupportActionBar().setTitle(savedInstanceState.getString("title"));
+            mangas = savedInstanceState.getParcelableArrayList("list");
             NavigationView view = (NavigationView) findViewById(R.id.navigation_view);
             Menu menu = view.getMenu();
-            for(int i = 0; i < menu.size(); i++) {
+            for (int i = 0; i < menu.size(); i++) {
                 MenuItem item = menu.getItem(i);
-                if(item.getItemId()==savedInstanceState.getInt("menu")) {
+                if (item.getItemId() == savedInstanceState.getInt("menu")) {
                     savedMenuId = savedInstanceState.getInt("menu");
                     item.setChecked(true);
                 }
@@ -139,10 +140,19 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onSaveInstanceState(Bundle bundle) {
-        bundle.putString("title",getSupportActionBar().getTitle().toString());
-        bundle.putInt("menu",savedMenuId);
-
+        bundle.putString("title", getSupportActionBar().getTitle().toString());
+        bundle.putInt("menu", savedMenuId);
+        bundle.putParcelableArrayList("list", mangas);
         super.onSaveInstanceState(bundle);
+    }
+
+    private void GetNewMangas() {
+        NewFragment fragment = new NewFragment();
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.content_frame, fragment, "NEW");
+        fragmentTransaction.commit();
+        getSupportActionBar().setTitle("New");
     }
 
 
@@ -192,8 +202,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed(){
-        if(drawerLayout.isDrawerOpen(GravityCompat.START))
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START))
             drawerLayout.closeDrawers();
         else super.onBackPressed();
     }
@@ -233,6 +243,9 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.drawer_recent:
                         GetRecentList();
+                        break;
+                    case R.id.drawer_new:
+                        GetNewMangas();
                         break;
                 }
                 menuItem.setChecked(true);
@@ -282,9 +295,9 @@ public class MainActivity extends AppCompatActivity {
             if (result != null) {
                 mangas = result;
                 temp = new ArrayList<>(mangas);
-                adapter = new SearchAdapter(getApplicationContext(),R.layout.search_dropdown_item,mangas);
+                adapter = new SearchAdapter(getApplicationContext(), R.layout.search_dropdown_item, mangas);
                 searchBox.setAdapter(adapter);
-                Toast.makeText(getApplicationContext(),"Finished reading db",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Finished reading db", Toast.LENGTH_SHORT).show();
             } else {
                 searchBox.setVisibility(View.GONE);
             }
