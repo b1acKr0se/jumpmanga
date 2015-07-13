@@ -21,10 +21,20 @@
         <item name="rippleColor">@android:color/white</item>
     </style>
 
-    <style name="DropDownListViewStyle">
-        <item name="android:background">@android:color/white</item>
-        <item name="android:selectableItemBackground">@drawable/selectable_item_background</item>
-        <item name="android:drawSelectorOnTop">true</item>
+    <style name="Base.Widget.AppCompat.AutoCompleteTextView" parent="android:Widget.AutoCompleteTextView">
+        <item name="android:dropDownSelector">@drawable/abc_list_selector_holo_dark</item>
+        <item name="android:popupBackground">@drawable/abc_popup_background_mtrl_mult</item>
+        <item name="android:textColor">?attr/editTextColor</item>
+    </style>
+
+    <style name="Base.Widget.AppCompat.Light.AutoCompleteTextView" parent="android:Widget.AutoCompleteTextView">
+        <item name="android:dropDownSelector">@drawable/abc_list_selector_holo_light</item>
+    </style>
+
+    <style name="Widget.MyApp.HeaderBar.Spinner" parent="Widget.AppCompat.Light.Spinner.DropDown.ActionBar">
+        <item name="android:background">?android:selectableItemBackground</item>
+        <item name="android:dropDownSelector">?android:selectableItemBackground</item>
+        <item name="android:divider">@null</item>
     </style>
 
 

@@ -310,9 +310,9 @@ public class ReadActivity extends AppCompatActivity {
 
     public void getFavoriteStatus() {
         if(!chapters.get(chapter_position).isFav()) {
-            button_favorite.setImageDrawable(ContextCompat.getDrawable(ReadActivity.this,R.drawable.ic_star_unfav_filled));
+            button_favorite.setImageDrawable(ContextCompat.getDrawable(ReadActivity.this,R.drawable.ic_action_star_unfav));
         } else
-            button_favorite.setImageDrawable(ContextCompat.getDrawable(ReadActivity.this,R.drawable.star_fav));
+            button_favorite.setImageDrawable(ContextCompat.getDrawable(ReadActivity.this,R.drawable.ic_action_star_fav));
     }
 
     public void updateProgress() {
@@ -335,14 +335,14 @@ public class ReadActivity extends AppCompatActivity {
                     if (ChapterFragment.getAdapter() != null)
                         ChapterFragment.getAdapter().getItem(chapter_position).setIsFav(false);
                     chapters.get(chapter_position).setIsFav(false);
-                    button_favorite.setImageDrawable(ContextCompat.getDrawable(ReadActivity.this,R.drawable.ic_star_unfav_filled));
+                    button_favorite.setImageDrawable(ContextCompat.getDrawable(ReadActivity.this,R.drawable.ic_action_star_unfav));
                     Toast.makeText(ReadActivity.this,"Successfully unfavorited this chapter",Toast.LENGTH_SHORT).show();
                 } else {
                     db.favChapter(chapters.get(chapter_position),manga.getName());
                     if (ChapterFragment.getAdapter() != null)
                         ChapterFragment.getAdapter().getItem(chapter_position).setIsFav(true);
                     chapters.get(chapter_position).setIsFav(true);
-                    button_favorite.setImageDrawable(ContextCompat.getDrawable(ReadActivity.this,R.drawable.star_fav));
+                    button_favorite.setImageDrawable(ContextCompat.getDrawable(ReadActivity.this,R.drawable.ic_action_star_fav));
                     Toast.makeText(ReadActivity.this,"Successfully favorited this chapter",Toast.LENGTH_SHORT).show();
                 }
 

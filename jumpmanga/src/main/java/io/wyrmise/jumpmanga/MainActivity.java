@@ -9,15 +9,19 @@ import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
@@ -25,10 +29,11 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
+import io.wyrmise.jumpmanga.model.Category;
 import io.wyrmise.jumpmanga.model.Manga;
 import io.wyrmise.jumpmanga.picasso.CircleTransform;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Spinner.OnItemSelectedListener {
 
     public static final String AVATAR_URL = "http://lorempixel.com/200/200/people/1/";
 
@@ -36,11 +41,15 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<Manga> temp;
 
+    private ArrayList<Category> categories;
+
     private Toolbar toolbar;
 
     private DrawerLayout drawerLayout;
 
     private int savedMenuId = -1;
+
+    private int category_position = -1;
 
     private JumpDatabaseHelper db;
 
@@ -50,16 +59,26 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageView toggle_search;
 
+    private Spinner spinner;
+
+    private SpinnerAdapter spinnerAdapter;
+
+    private View spinnerContainer;
+
+    private boolean isManuallySelected = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
         setContentView(R.layout.activity_main);
 
+        db = new JumpDatabaseHelper(MainActivity.this);
+
         initToolbar();
         setupDrawerLayout();
 
-        db = new JumpDatabaseHelper(MainActivity.this);
+        categories = db.getAllCategories();
 
         searchBox = (CustomAutoCompleteTextView) findViewById(R.id.search_box);
 
@@ -143,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
         bundle.putString("title", getSupportActionBar().getTitle().toString());
         bundle.putInt("menu", savedMenuId);
         bundle.putParcelableArrayList("list", mangas);
+        bundle.putInt("category", category_position);
         super.onSaveInstanceState(bundle);
     }
 
@@ -152,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.content_frame, fragment, "NEW");
         fragmentTransaction.commit();
+        removeSpinner();
         getSupportActionBar().setTitle("New");
     }
 
@@ -165,6 +186,7 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.content_frame, fragment, "HOT");
         fragmentTransaction.commit();
+        removeSpinner();
         getSupportActionBar().setTitle("Jump Manga");
     }
 
@@ -177,6 +199,7 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.content_frame, fragment, "FAVOURITE");
         fragmentTransaction.commit();
+        removeSpinner();
         getSupportActionBar().setTitle("Favourite");
     }
 
@@ -186,7 +209,23 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.content_frame, fragment, "RECENT");
         fragmentTransaction.commit();
+        removeSpinner();
         getSupportActionBar().setTitle("Recent");
+    }
+
+    private void GetCategories(Category c) {
+        if (spinnerContainer == null)
+            setUpSpinner();
+        CategoryFragment fragment = new CategoryFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("url", c.getUrl());
+        bundle.putInt("max_page", c.getPage());
+        bundle.putInt("position",categories.indexOf(c));
+        fragment.setArguments(bundle);
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.content_frame, fragment, "CATEGORY");
+        fragmentTransaction.commit();
     }
 
 //    @Override
@@ -222,7 +261,37 @@ public class MainActivity extends AppCompatActivity {
     private void initToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+    }
 
+    public void setUpSpinner() {
+        spinnerContainer = LayoutInflater.from(this).inflate(R.layout.spinner,
+                toolbar, false);
+
+        ActionBar.LayoutParams lp = new ActionBar.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        toolbar.addView(spinnerContainer, lp);
+
+        spinnerAdapter = new SpinnerAdapter(MainActivity.this);
+
+        if (categories != null) {
+            spinnerAdapter.addItems(categories);
+            spinner = (Spinner) spinnerContainer.findViewById(R.id.toolbar_spinner);
+            spinner.setOnItemSelectedListener(MainActivity.this);
+            spinner.setAdapter(spinnerAdapter);
+        }
+
+    }
+
+    public void setSpinnerPosition(int position) {
+        if(spinner!=null) {
+            isManuallySelected = false;
+            spinner.setSelection(position);
+        }
+    }
+
+    private void removeSpinner() {
+        if (spinnerContainer != null)
+            toolbar.removeView(spinnerContainer);
     }
 
     private void setupDrawerLayout() {
@@ -246,6 +315,9 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.drawer_new:
                         GetNewMangas();
+                        break;
+                    case R.id.drawer_category:
+                        GetCategories(categories.get(0));
                         break;
                 }
                 menuItem.setChecked(true);
@@ -275,6 +347,24 @@ public class MainActivity extends AppCompatActivity {
 
         //calling sync state is necessay or else your hamburger icon wont show up
         actionBarDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        if(isManuallySelected) {
+            Category c = (Category) spinnerAdapter.getItem(i);
+            GetCategories(c);
+        } else {
+            spinner.post(new Runnable() {
+                public void run() {
+                    isManuallySelected = true;
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
     }
 
 

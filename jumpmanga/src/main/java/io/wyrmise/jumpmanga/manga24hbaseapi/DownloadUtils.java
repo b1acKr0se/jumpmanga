@@ -48,8 +48,28 @@ public class DownloadUtils {
             Element content = elements.get(2);
             Elements mangaList = content.select("div.panel-featured-row.panel-featured-row-small");
 
-            for (Element e : mangaList.select("div.col-md-4.col-xs-12.col-sm-12").select("div.featured-item-small")
-                    ) {
+            for (Element e : mangaList.select("div.col-md-4.col-xs-12.col-sm-12").select("div.featured-item-small")) {
+                String img = e.select("a.featured-item-small-a").select("img").attr("data-original");
+                String name = e.select("h4").select("a[href]").text();
+                String url = e.select("h4").select("a[href]").attr("abs:href");
+                String latest = e.select("span.featured-item-new-chapt").select("a[href]").text();
+                Manga manga = new Manga(name,url,img,latest);
+                mangas.add(manga);
+            }
+            return mangas;
+        } catch (IOException e) {
+
+        }
+        return null;
+    }
+
+    public ArrayList<Manga> GetMangasFromCategory() {
+        ArrayList<Manga> mangas = new ArrayList<>();
+        try {
+            Document document = Jsoup.connect(url).get();
+            Elements elements = document.select("div.col-md-12.box").select("div");
+            Elements mangaList = elements.select("div.panel-featured-row.panel-featured-row-small");
+            for (Element e : mangaList.select("div.col-md-4.col-xs-12.col-sm-12").select("div.featured-item-small")) {
                 String img = e.select("a.featured-item-small-a").select("img").attr("data-original");
                 String name = e.select("h4").select("a[href]").text();
                 String url = e.select("h4").select("a[href]").attr("abs:href");

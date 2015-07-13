@@ -9,27 +9,32 @@
             android:id="@+id/drawer_home"
             android:checked="true"
             android:icon="@drawable/ic_action_home"
-            android:title="@string/home"/>
+            android:title="@string/home" />
 
         <item
             android:id="@+id/drawer_new"
             android:icon="@drawable/ic_action_new"
-            android:title="@string/new_"/>
+            android:title="@string/new_" />
+
+        <item
+            android:id="@+id/drawer_category"
+            android:icon="@drawable/ic_action_more"
+            android:title="@string/categories" />
 
         <item
             android:id="@+id/drawer_favourite"
             android:icon="@drawable/ic_action_favorite_black"
-            android:title="@string/favourite"/>
+            android:title="@string/favourite" />
 
         <item
             android:id="@+id/drawer_recent"
             android:icon="@drawable/ic_action_recent"
-            android:title="@string/recent"/>
+            android:title="@string/recent" />
 
     </group>
 
     <item
         android:id="@+id/drawer_settings"
         android:icon="@drawable/ic_action_settings"
-        android:title="@string/settings"/>
+        android:title="@string/settings" />
 </menu>

@@ -7,13 +7,15 @@ import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 import java.util.ArrayList;
+
+import io.wyrmise.jumpmanga.model.Category;
 import io.wyrmise.jumpmanga.model.Chapter;
 import io.wyrmise.jumpmanga.model.Manga;
 
 
 public class JumpDatabaseHelper extends SQLiteAssetHelper {
     private static final String DATABASE_NAME = "jump_database.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     public JumpDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -25,6 +27,7 @@ public class JumpDatabaseHelper extends SQLiteAssetHelper {
     private static final String TABLE_RECENT = "recent";
     private static final String TABLE_FAV_CHAPTER = "fav_chapter";
     private static final String TABLE_ALL_MANGA = "all_manga";
+    private static final String TABLE_CATEGORY = "category";
 
     //TABLE_MANGA COLUMNS
     private static final String TABLE_MANGA_ID = "_id";
@@ -56,6 +59,12 @@ public class JumpDatabaseHelper extends SQLiteAssetHelper {
     private static final String TABLE_ALL_MANGA_NAME = "name";
     private static final String TABLE_ALL_MANGA_URL = "url";
     private static final String TABLE_ALL_MANGA_IMAGE = "image";
+
+    //TABLE_CATEGORY COLUMNS
+    private static final String TABLE_CATEGORY_ID = "_id";
+    private static final String TABLE_CATEGORY_NAME = "name";
+    private static final String TABLE_CATEGORY_URL = "url";
+    private static final String TABLE_CATEGORY_PAGE = "page";
 
     public boolean insertManga(Manga manga) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -316,6 +325,28 @@ public class JumpDatabaseHelper extends SQLiteAssetHelper {
                 mangas.add(manga);
             }
             return mangas;
+        }
+        return null;
+    }
+
+    public ArrayList<Category> getAllCategories() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String selectQuery = "SELECT * FROM " + TABLE_CATEGORY;
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor.getCount() > 0) {
+            ArrayList<Category> categories = new ArrayList<>();
+            while (cursor.moveToNext()) {
+                String name = cursor.getString(cursor.getColumnIndex(TABLE_CATEGORY_NAME));
+                String url = cursor.getString(cursor.getColumnIndex(TABLE_CATEGORY_URL));
+                int page = cursor.getInt(cursor.getColumnIndex(TABLE_CATEGORY_PAGE));
+                Category c = new Category();
+                c.setName(name);
+                c.setUrl(url);
+                c.setPage(page);
+                categories.add(c);
+            }
+            return categories;
         }
         return null;
     }
