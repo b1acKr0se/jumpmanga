@@ -19,4 +19,7 @@
 
     <style name="Base.Widget.AppCompat.Light.AutoCompleteTextView" parent="android:Widget.Material.AutoCompleteTextView" />
 
+    <style name="Base.Widget.AppCompat.ListView.DropDown"
+        parent="android:Widget.Material.ListView.DropDown"/>
+
 </resources>

@@ -220,7 +220,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         Bundle bundle = new Bundle();
         bundle.putString("url", c.getUrl());
         bundle.putInt("max_page", c.getPage());
-        bundle.putInt("position",categories.indexOf(c));
+        bundle.putInt("position", categories.indexOf(c));
         fragment.setArguments(bundle);
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -283,15 +283,17 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
     }
 
     public void setSpinnerPosition(int position) {
-        if(spinner!=null) {
+        if (spinner != null) {
             isManuallySelected = false;
             spinner.setSelection(position);
         }
     }
 
     private void removeSpinner() {
-        if (spinnerContainer != null)
+        if(spinnerContainer!=null) {
             toolbar.removeView(spinnerContainer);
+            spinnerContainer = null;
+        }
     }
 
     private void setupDrawerLayout() {
@@ -351,15 +353,11 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-        if(isManuallySelected) {
+        if (isManuallySelected) {
             Category c = (Category) spinnerAdapter.getItem(i);
             GetCategories(c);
         } else {
-            spinner.post(new Runnable() {
-                public void run() {
-                    isManuallySelected = true;
-                }
-            });
+            isManuallySelected = true;
         }
     }
 

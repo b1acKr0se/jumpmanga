@@ -19,7 +19,7 @@
         <item
             android:id="@+id/drawer_category"
             android:icon="@drawable/ic_action_more"
-            android:title="@string/categories" />
+            android:title="@string/category" />
 
         <item
             android:id="@+id/drawer_favourite"

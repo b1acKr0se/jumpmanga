@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
 import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
 import io.wyrmise.jumpmanga.model.Manga;
+import io.wyrmise.jumpmanga.widget.SimpleDividerItemDecoration;
 
 
 /**
@@ -121,17 +122,17 @@ public class CategoryFragment extends Fragment implements CategoryAdapter.OnItem
 
         adapter = new CategoryAdapter(context, mangas, recyclerView);
         adapter.setOnItemClickListener(CategoryFragment.this);
-        if (max_page >= 2 && page <= max_page)
-            adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
-                @Override
-                public void onLoadMore() {
-                    {
-                        mangas.add(null);
-                        adapter.notifyItemInserted(mangas.size() - 1);
-                        new LoadMoreManga().execute(url + "" + page);
-                    }
+        adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
+            @Override
+            public void onLoadMore() {
+                if (max_page >= 2 && page <= max_page && !url.equals("")) {
+                    mangas.add(null);
+                    adapter.notifyItemInserted(mangas.size() - 1);
+                    new LoadMoreManga().execute(url + "" + page);
                 }
-            });
+            }
+        });
+        recyclerView.addItemDecoration(new SimpleDividerItemDecoration(context));
         recyclerView.setAdapter(adapter);
     }
 
@@ -168,16 +169,18 @@ public class CategoryFragment extends Fragment implements CategoryAdapter.OnItem
                 mangas = result;
                 adapter = new CategoryAdapter(context, mangas, recyclerView);
                 adapter.setOnItemClickListener(CategoryFragment.this);
-                if (max_page >= 2 && page <= max_page && !url.equals("")) {
-                    adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
-                        @Override
-                        public void onLoadMore() {
+
+                adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
+                    @Override
+                    public void onLoadMore() {
+                        if (max_page >= 2 && page <= max_page && !url.equals("")) {
                             mangas.add(null);
                             adapter.notifyItemInserted(mangas.size() - 1);
                             new LoadMoreManga().execute(url + "" + page);
                         }
-                    });
-                }
+                    }
+                });
+                recyclerView.addItemDecoration(new SimpleDividerItemDecoration(context));
                 recyclerView.setAdapter(adapter);
             } else {
                 recyclerView.setVisibility(RecyclerView.GONE);

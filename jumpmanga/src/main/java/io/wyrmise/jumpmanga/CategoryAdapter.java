@@ -75,7 +75,7 @@ public class CategoryAdapter extends RecyclerView.Adapter implements View.OnClic
 
         RecyclerView.ViewHolder vh;
         if (viewType == VIEW_ITEM) {
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recent_items, parent, false);
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.category_item, parent, false);
             v.setOnClickListener(this);
             vh = new MangaViewHolder(v);
         } else {

@@ -53,6 +53,8 @@ public class DownloadUtils {
                 String name = e.select("h4").select("a[href]").text();
                 String url = e.select("h4").select("a[href]").attr("abs:href");
                 String latest = e.select("span.featured-item-new-chapt").select("a[href]").text();
+                if(latest.equals(""))
+                    latest = "Unknown";
                 Manga manga = new Manga(name,url,img,latest);
                 mangas.add(manga);
             }
@@ -74,6 +76,8 @@ public class DownloadUtils {
                 String name = e.select("h4").select("a[href]").text();
                 String url = e.select("h4").select("a[href]").attr("abs:href");
                 String latest = e.select("span.featured-item-new-chapt").select("a[href]").text();
+                if(latest.equals(""))
+                    latest = "Unknown";
                 Manga manga = new Manga(name,url,img,latest);
                 mangas.add(manga);
             }
