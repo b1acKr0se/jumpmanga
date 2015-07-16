@@ -1,6 +1,7 @@
 package io.wyrmise.jumpmanga;
 
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -107,6 +108,12 @@ public class InfoFragment extends Fragment {
                     Snackbar.make(getView(), "Manga favorited", Snackbar.LENGTH_SHORT).show();
                     db.insertManga(manga);
                     manga.setIsFav(true);
+
+                    ArrayList<Manga> mangas = new ArrayList<Manga>();
+                    for(int i = 0; i<5;i++)
+                        mangas.add(manga);
+
+                    showNotification(mangas);
                 }
 
             }
@@ -126,6 +133,46 @@ public class InfoFragment extends Fragment {
         return view;
     }
 
+    private void showNotification(ArrayList<Manga> mangas) {
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
+        if(mangas.size()==1) {
+            mBuilder.setContentTitle(mangas.get(0).getName());
+            mBuilder.setContentText("New chapter: " +mangas.get(0).getLatest());
+        } else {
+            mBuilder.setContentTitle("New chapters");
+            mBuilder.setContentText("New chapters found for your favorite manga");
+        }
+
+        mBuilder.setSmallIcon(R.drawable.ic_notification);
+
+        mBuilder.setNumber(mangas.size());
+
+        mBuilder.setDefaults(Notification.DEFAULT_ALL);
+
+        mBuilder.setPriority(NotificationCompat.PRIORITY_MAX);
+
+        NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+
+        for(int i = 0 ; i < mangas.size(); i++) {
+            inboxStyle.addLine(mangas.get(i).toString());
+        }
+
+        mBuilder.setStyle(inboxStyle);
+
+        Intent notificationIntent = new Intent(context,MainActivity.class);
+        notificationIntent.putExtra("favorite", true);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,notificationIntent, 0);
+        mBuilder.setContentIntent(pendingIntent);
+        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        Notification note = mBuilder.build();
+        note.defaults |= Notification.DEFAULT_VIBRATE;
+        note.defaults |= Notification.DEFAULT_SOUND;
+        note.defaults |= Notification.DEFAULT_LIGHTS;
+
+        /* notificationID allows you to update the notification later on. */
+        mNotificationManager.notify(1, mBuilder.build());
+    }
 
 //    @Override
 //    public void onSaveInstanceState(Bundle bundle) {
@@ -140,6 +187,7 @@ public class InfoFragment extends Fragment {
         super.onConfigurationChanged(newConfig);
 
     }
+
 
     public class GetMangaDetails extends AsyncTask<String, Void, String[]> {
         public String[] doInBackground(String... params) {

@@ -102,7 +102,7 @@ public class FetchLatestService extends Service {
             mBuilder.setContentText("New chapters found for your favorite manga");
         }
 
-        mBuilder.setSmallIcon(R.drawable.splash_icon);
+        mBuilder.setSmallIcon(R.drawable.ic_notification);
 
         mBuilder.setNumber(mangas.size());
 
