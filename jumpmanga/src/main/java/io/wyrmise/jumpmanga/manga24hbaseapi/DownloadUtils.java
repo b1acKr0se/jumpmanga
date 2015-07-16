@@ -21,6 +21,10 @@ public class DownloadUtils {
     private String url;
     private Document document;
 
+    public DownloadUtils() {
+
+    }
+
     public DownloadUtils(String u) {
         url = u;
         try {
@@ -28,16 +32,6 @@ public class DownloadUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public int GetTotalNumberOfChapters() {
-
-        Element table = document.select("table.table.chapt-table").first();
-
-        Elements els = table.select("tr.item-odd,tr.item-even");
-
-
-        return els.size();
     }
 
     public ArrayList<Manga> GetMangas(int number_of_entries) {
@@ -175,6 +169,19 @@ public class DownloadUtils {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public String GetLatestChapter(Manga manga) {
+        String url = manga.getUrl();
+        try {
+            Document document = Jsoup.connect(url).get();
+            Element e = document.select("div.col-md-6.wrap-chapt-chosen-info").first();
+            String latest = e.select("a[href]").text();
+            return latest;
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
     public ArrayList<Manga> GetAllMangas(String url) {

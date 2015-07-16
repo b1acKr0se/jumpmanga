@@ -100,7 +100,7 @@ public class Manga implements Parcelable {
 
     @Override
     public String toString() {
-        return name;
+        return name + ": " +latest;
     }
 
     protected Manga(Parcel in) {

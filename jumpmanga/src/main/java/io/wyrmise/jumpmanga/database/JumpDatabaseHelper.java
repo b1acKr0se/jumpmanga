@@ -128,7 +128,7 @@ public class JumpDatabaseHelper extends SQLiteAssetHelper {
     public boolean isMangaFavorited(String mangaName) {
         SQLiteDatabase db = this.getReadableDatabase();
         String selectQuery = "SELECT  * FROM " + TABLE_MANGA + " WHERE "
-                + TABLE_MANGA_NAME + " = '" + mangaName + "'";
+                + TABLE_MANGA_NAME + " = '" + mangaName.replace("'","''") + "'";
 
         Cursor cursor = db.rawQuery(selectQuery, null);
 
@@ -162,10 +162,24 @@ public class JumpDatabaseHelper extends SQLiteAssetHelper {
         return null;
     }
 
+    public boolean updateLatestChapter(Manga manga) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put(TABLE_MANGA_LATEST, manga.getLatest());
+
+        int rowsAffected = db.update(TABLE_MANGA, contentValues, TABLE_MANGA_NAME + " = ?",
+                new String[]{manga.getName()});
+
+        if (rowsAffected > 0) return true;
+        return false;
+    }
+
+
     public boolean isChapterRead(Chapter chapter, String mangaName) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String selectQuery = "SELECT  * FROM " + TABLE_CHAPTER + " WHERE " + TABLE_CHAPTER_NAME + " = '" + chapter.getName()
-                + "' AND " + TABLE_CHAPTER_MANGA_NAME + " = '" + mangaName + "'";
+        String selectQuery = "SELECT  * FROM " + TABLE_CHAPTER + " WHERE " + TABLE_CHAPTER_NAME + " = '" + chapter.getName().replace("'","''")
+                + "' AND " + TABLE_CHAPTER_MANGA_NAME + " = '" + mangaName.replace("'","''") + "'";
         Cursor cursor = db.rawQuery(selectQuery, null);
         if (cursor.getCount() <= 0) {
             cursor.close();
@@ -269,8 +283,8 @@ public class JumpDatabaseHelper extends SQLiteAssetHelper {
 
     public boolean isChapterFav(Chapter chapter, String mangaName) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String selectQuery = "SELECT  * FROM " + TABLE_FAV_CHAPTER + " WHERE " + TABLE_FAV_CHAPTER_NAME + " = '" + chapter.getName()
-                + "' AND " + TABLE_FAV_CHAPTER_MANGA_NAME + " = '" + mangaName + "'";
+        String selectQuery = "SELECT  * FROM " + TABLE_FAV_CHAPTER + " WHERE " + TABLE_FAV_CHAPTER_NAME + " = '" + chapter.getName().replace("'","''")
+                + "' AND " + TABLE_FAV_CHAPTER_MANGA_NAME + " = '" + mangaName.replace("'","''") + "'";
         Cursor cursor = db.rawQuery(selectQuery, null);
         if (cursor.getCount() <= 0) {
             cursor.close();

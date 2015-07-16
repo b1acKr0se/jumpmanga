@@ -100,21 +100,12 @@ public class MangaAdapter extends RecyclerView.Adapter implements View.OnClickLi
             });
             ((MangaViewHolder) holder).image.setImageBitmap(null);
 
-            if(!item.getImage().equals("")) {
+            if (!item.getImage().equals("")) {
                 Picasso.with(((MangaViewHolder) holder).image.getContext()).load(item.getImage()).placeholder(R.drawable.placeholder).error(R.drawable.error)
-                        .into(((MangaViewHolder) holder).image, new Callback() {
-                            @Override
-                            public void onSuccess() {
-
-                            }
-
-                            @Override
-                            public void onError() {
-
-                            }
-                        });
+                        .into(((MangaViewHolder) holder).image);
             } else {
-                ((MangaViewHolder) holder).image.setImageDrawable(context.getResources().getDrawable(R.drawable.error));
+                Picasso.with(((MangaViewHolder) holder).image.getContext()).load(R.drawable.error)
+                        .into(((MangaViewHolder) holder).image);
             }
 
             holder.itemView.setTag(item);
@@ -131,7 +122,6 @@ public class MangaAdapter extends RecyclerView.Adapter implements View.OnClickLi
     public void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener) {
         this.onLoadMoreListener = onLoadMoreListener;
     }
-
 
 
     @Override

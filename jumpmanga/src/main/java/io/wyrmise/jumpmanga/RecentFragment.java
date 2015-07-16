@@ -1,6 +1,7 @@
 package io.wyrmise.jumpmanga;
 
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -54,6 +55,7 @@ public class RecentFragment extends Fragment implements MangaAdapter.OnItemClick
         View view = inflater.inflate(R.layout.fragment_recent, container, false);
 
         context = getActivity().getApplicationContext();
+        Activity activity = getActivity();
 
         db = new JumpDatabaseHelper(context);
 
@@ -61,7 +63,7 @@ public class RecentFragment extends Fragment implements MangaAdapter.OnItemClick
 
         empty = (TextView) view.findViewById(R.id.empty);
 
-        progressDialog = new ProgressDialog(getActivity());
+        progressDialog = new ProgressDialog(activity);
         progressDialog.setMessage("Picking up where you left off...");
         progressDialog.setIndeterminate(true);
         progressDialog.setCancelable(true);

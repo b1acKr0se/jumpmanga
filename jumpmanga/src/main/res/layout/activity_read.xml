@@ -40,11 +40,11 @@
                 android:paddingBottom="15dp">
                 <ImageView
                     android:id="@+id/previous"
-                    android:layout_width="40dp"
+                    android:layout_width="45dp"
                     android:layout_height="45dp"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
-                    android:src="@drawable/ic_action_previous"/>
+                    android:background="@drawable/previous_selector"/>
                 <TextView
                     android:id="@+id/indicator"
                     android:layout_width="wrap_content"
@@ -55,11 +55,11 @@
                     android:layout_centerInParent="true"/>
                 <ImageView
                     android:id="@+id/next"
-                    android:layout_width="40dp"
+                    android:layout_width="45dp"
                     android:layout_height="45dp"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
-                    android:src="@drawable/ic_action_next"/>
+                    android:background="@drawable/next_selector"/>
 
             </RelativeLayout>
 

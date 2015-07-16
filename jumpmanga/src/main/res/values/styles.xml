@@ -9,9 +9,10 @@
         <item name="colorPrimary">@color/green</item>
         <item name="colorPrimaryDark">@color/green_dark</item>
         <item name="colorControlHighlight">@color/grey_translucent</item>
-        <item name="colorAccent">@color/yellow</item>
+        <item name="colorAccent">@color/grey</item>
         <item name="selectableItemBackground">@drawable/selectable_item_background</item>
         <item name="android:dropDownListViewStyle">@style/DropDownListViewStyle</item>
+        <item name="colorControlActivated">@color/yellow</item>
     </style>
 
     <style name="FabStyle">

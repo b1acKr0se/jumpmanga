@@ -16,12 +16,16 @@
 
 package io.wyrmise.jumpmanga;
 
+import android.app.AlarmManager;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -48,6 +52,7 @@ import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
 import io.wyrmise.jumpmanga.model.Category;
 import io.wyrmise.jumpmanga.model.Manga;
 import io.wyrmise.jumpmanga.picasso.CircleTransform;
+import io.wyrmise.jumpmanga.service.FetchLatestService;
 
 public class MainActivity extends AppCompatActivity implements Spinner.OnItemSelectedListener {
 
@@ -83,6 +88,9 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
 
     private boolean isManuallySelected = true;
 
+    private SharedPreferences prefs;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,6 +103,8 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         setupDrawerLayout();
 
         categories = db.getAllCategories();
+
+        prefs = getSharedPreferences("Alarm", MODE_PRIVATE);
 
         searchBox = (CustomAutoCompleteTextView) findViewById(R.id.search_box);
 
@@ -132,12 +142,30 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
 
         Picasso.with(this).load(AVATAR_URL).transform(new CircleTransform()).into(avatar);
 
-        if (savedInstanceState == null) {
+        boolean isOpenFromNotification = getIntent().getBooleanExtra("favorite", false);
+
+        if (savedInstanceState == null && !isOpenFromNotification) {
             GetHotMangas();
             new getAllMangas().execute();
-        } else {
+
+        } else if (isOpenFromNotification) {
+            GetFavoriteMangas();
+            new getAllMangas().execute();
+            NavigationView view = (NavigationView) findViewById(R.id.navigation_view);
+            Menu menu = view.getMenu();
+            for (int i = 0; i < menu.size(); i++) {
+                MenuItem item = menu.getItem(i);
+                if (item.getItemId() == R.id.drawer_favourite) {
+                    savedMenuId = item.getItemId();
+                    item.setChecked(true);
+                }
+            }
+        } else if (savedInstanceState!=null) {
             getSupportActionBar().setTitle(savedInstanceState.getString("title"));
             mangas = savedInstanceState.getParcelableArrayList("list");
+            temp = new ArrayList<>(mangas);
+            adapter = new SearchAdapter(getApplicationContext(), R.layout.search_dropdown_item, mangas);
+            searchBox.setAdapter(adapter);
             NavigationView view = (NavigationView) findViewById(R.id.navigation_view);
             Menu menu = view.getMenu();
             for (int i = 0; i < menu.size(); i++) {
@@ -149,6 +177,44 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
             }
         }
 
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        boolean isOpenFromNotification = intent.getBooleanExtra("favorite", false);
+        if (isOpenFromNotification) {
+            GetFavoriteMangas();
+            new getAllMangas().execute();
+            NavigationView view = (NavigationView) findViewById(R.id.navigation_view);
+            Menu menu = view.getMenu();
+            for (int i = 0; i < menu.size(); i++) {
+                MenuItem item = menu.getItem(i);
+                if (item.getItemId() == R.id.drawer_favourite) {
+                    savedMenuId = item.getItemId();
+                    item.setChecked(true);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(!prefs.getBoolean("Alarm", false)) {
+            Intent i = new Intent(this, FetchLatestService.class);
+            PendingIntent pi = PendingIntent.getService(this, 0, i, 0);
+            AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+            am.cancel(pi);
+            am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                    SystemClock.elapsedRealtime() + AlarmManager.INTERVAL_DAY,
+                    AlarmManager.INTERVAL_DAY, pi);
+            System.out.println("Service started");
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("Alarm", true);
+            editor.commit();
+        }
     }
 
     protected void toggleSearch(boolean reset) {
@@ -306,7 +372,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
     }
 
     private void removeSpinner() {
-        if(spinnerContainer!=null) {
+        if (spinnerContainer != null) {
             toolbar.removeView(spinnerContainer);
             spinnerContainer = null;
         }
@@ -401,7 +467,6 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
                 temp = new ArrayList<>(mangas);
                 adapter = new SearchAdapter(getApplicationContext(), R.layout.search_dropdown_item, mangas);
                 searchBox.setAdapter(adapter);
-                Toast.makeText(getApplicationContext(), "Finished reading db", Toast.LENGTH_SHORT).show();
             } else {
                 searchBox.setVisibility(View.GONE);
             }

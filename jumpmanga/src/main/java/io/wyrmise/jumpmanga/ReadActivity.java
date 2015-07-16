@@ -425,7 +425,7 @@ public class ReadActivity extends AppCompatActivity {
                 });
 
                 viewPager.setCurrentItem(0);
-                viewPager.setOffscreenPageLimit(3);
+                viewPager.setOffscreenPageLimit(5);
                 viewPager.setPageMargin(calculatedPixel);
                 pageIndicator.setText("Page 1/" + adapter.getCount());
                 progressBar.setProgress(0);
@@ -502,7 +502,7 @@ public class ReadActivity extends AppCompatActivity {
                 });
 
                 viewPager.setCurrentItem(0);
-                viewPager.setOffscreenPageLimit(3);
+                viewPager.setOffscreenPageLimit(5);
                 viewPager.setPageMargin(calculatedPixel);
                 pageIndicator.setText("Page 1/" + adapter.getCount());
                 progressBar.setProgress(0);

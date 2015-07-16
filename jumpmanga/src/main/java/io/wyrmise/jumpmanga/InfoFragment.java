@@ -1,7 +1,10 @@
 package io.wyrmise.jumpmanga;
 
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,6 +13,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +23,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
 
 import io.wyrmise.jumpmanga.animation.AnimationHelper;
 import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
@@ -72,7 +78,7 @@ public class InfoFragment extends Fragment {
         if (!image.equals("") && image != null) {
             Picasso.with(context).load(image).into(img);
         } else {
-            img.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.error));
+            img.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.error));
         }
 
         detail = (TextView) view.findViewById(R.id.detail);
@@ -86,13 +92,13 @@ public class InfoFragment extends Fragment {
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
 
         if (db.isMangaFavorited(manga.getName()))
-            fab.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.ic_action_favorite));
+            fab.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_action_favorite));
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (manga.isFav()) {
-                    fab.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.ic_action_unfavorite));
+                    fab.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_action_unfavorite));
                     Snackbar.make(getView(), "Manga unfavorited", Snackbar.LENGTH_SHORT).show();
                     manga.setIsFav(false);
                     db.unfavoritedManga(manga.getName());
@@ -114,11 +120,12 @@ public class InfoFragment extends Fragment {
 //            plotCardView.setVisibility(CardView.VISIBLE);
 //            fab.setVisibility(FloatingActionButton.VISIBLE);
 //        } else
-            new GetMangaDetails().execute(url);
+        new GetMangaDetails().execute(url);
 
 
         return view;
     }
+
 
 //    @Override
 //    public void onSaveInstanceState(Bundle bundle) {
@@ -134,12 +141,15 @@ public class InfoFragment extends Fragment {
 
     }
 
-
     public class GetMangaDetails extends AsyncTask<String, Void, String[]> {
         public String[] doInBackground(String... params) {
             str = new String[2];
             DownloadUtils download = new DownloadUtils(params[0]);
             String detail = download.GetMangaDetail();
+            manga.setLatest(download.GetLatestChapter(manga));
+            if (db.isMangaFavorited(manga.getName())) {
+                db.updateLatestChapter(manga);
+            }
             String plot = download.GetMangaSummary();
             if (detail != null && plot != null) {
                 str[0] = detail;
