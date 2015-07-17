@@ -120,8 +120,12 @@ public class RecentFragment extends Fragment implements MangaAdapter.OnItemClick
 
         @Override
         public void onPostExecute(ArrayList<Chapter> arr) {
-            if (progressDialog != null && progressDialog.isShowing())
-                progressDialog.dismiss();
+            try {
+                if (progressDialog != null && progressDialog.isShowing())
+                    progressDialog.dismiss();
+            } catch (Exception e) {
+
+            }
             if (arr != null) {
                 Intent intent = new Intent(context, ReadActivity.class);
                 intent.putExtra("manga", manga);

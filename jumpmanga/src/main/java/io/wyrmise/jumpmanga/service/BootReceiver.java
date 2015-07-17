@@ -18,8 +18,8 @@ public class BootReceiver extends BroadcastReceiver {
             AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             am.cancel(pi); // cancel any existing alarms
             am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                    SystemClock.elapsedRealtime() + AlarmManager.INTERVAL_DAY,
-                    AlarmManager.INTERVAL_DAY, pi);
+                    SystemClock.elapsedRealtime() + 60 * 60 * 1000,
+                    60 * 60 * 1000, pi);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean("Alarm", true);
             editor.commit();

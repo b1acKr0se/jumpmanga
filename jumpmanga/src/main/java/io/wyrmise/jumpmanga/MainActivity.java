@@ -160,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
                     item.setChecked(true);
                 }
             }
-        } else if (savedInstanceState!=null) {
+        } else if (savedInstanceState != null) {
             getSupportActionBar().setTitle(savedInstanceState.getString("title"));
             mangas = savedInstanceState.getParcelableArrayList("list");
             temp = new ArrayList<>(mangas);
@@ -202,15 +202,15 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
     @Override
     public void onResume() {
         super.onResume();
-        if(!prefs.getBoolean("Alarm", false)) {
+        if (!prefs.getBoolean("Alarm", false)) {
             Intent i = new Intent(this, FetchLatestService.class);
             PendingIntent pi = PendingIntent.getService(this, 0, i, 0);
             AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
             am.cancel(pi);
             am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                    SystemClock.elapsedRealtime() + AlarmManager.INTERVAL_DAY,
-                    AlarmManager.INTERVAL_DAY, pi);
-            System.out.println("Service started");
+                    SystemClock.elapsedRealtime() + 60 * 60 * 1000,
+                    60 * 60 * 1000, pi);
+
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean("Alarm", true);
             editor.commit();

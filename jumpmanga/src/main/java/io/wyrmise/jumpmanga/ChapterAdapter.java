@@ -14,9 +14,6 @@ import java.util.ArrayList;
 import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
 import io.wyrmise.jumpmanga.model.Chapter;
 
-/**
- * Created by Thanh on 6/30/2015.
- */
 public class ChapterAdapter extends ArrayAdapter<Chapter> implements Filterable {
     private ArrayList<Chapter> chapters;
     private ArrayList<Chapter> temp;

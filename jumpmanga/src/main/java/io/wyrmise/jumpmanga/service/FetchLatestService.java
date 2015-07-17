@@ -13,7 +13,11 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.NotificationCompat;
 import android.widget.Toast;
 
+import java.io.OutputStreamWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 import io.wyrmise.jumpmanga.MainActivity;
 import io.wyrmise.jumpmanga.R;
@@ -25,7 +29,7 @@ public class FetchLatestService extends Service {
 
     private PowerManager.WakeLock wakeLock;
     private JumpDatabaseHelper db;
-    private int numberOfNotifications = 0;
+    private int index = 1;
 
     @Nullable
     @Override
@@ -38,12 +42,14 @@ public class FetchLatestService extends Service {
         wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Wakelock service");
         wakeLock.acquire();
 
-        Toast.makeText(this,"Service started",Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Service started", Toast.LENGTH_SHORT).show();
 
         try {
             db = new JumpDatabaseHelper(this);
+
             ArrayList<Manga> mangas = db.getAllFavoritedMangas();
-            new FetchLatestTask().execute(mangas);
+            if (mangas != null)
+                new FetchLatestTask().execute(mangas);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -57,10 +63,10 @@ public class FetchLatestService extends Service {
     }
 
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         super.onDestroy();
         wakeLock.release();
-        Toast.makeText(this, "Service stopped",Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Service stopped", Toast.LENGTH_SHORT).show();
     }
 
     private class FetchLatestTask extends AsyncTask<ArrayList<Manga>, Void, ArrayList<Manga>> {
@@ -70,10 +76,10 @@ public class FetchLatestService extends Service {
             ArrayList<Manga> list = mangas[0];
             ArrayList<Manga> tempNotificationArr = new ArrayList<>();
             DownloadUtils downloadUtils = new DownloadUtils();
-            for(int i = 0; i < list.size(); i++) {
+            for (int i = 0; i < list.size(); i++) {
                 Manga manga = list.get(i);
                 String latest = downloadUtils.GetLatestChapter(manga);
-                if (!latest.equals(manga.getLatest())) {
+                if (!latest.equals(manga.getLatest()) && !latest.equals("")) {
                     manga.setLatest(latest);
                     if (db.isMangaFavorited(manga.getName())) {
                         db.updateLatestChapter(manga);
@@ -86,7 +92,8 @@ public class FetchLatestService extends Service {
 
         @Override
         public void onPostExecute(ArrayList<Manga> result) {
-            if(result.size()>0) {
+            writeLog();
+            if (result.size() > 0) {
                 showNotification(result);
             }
         }
@@ -94,33 +101,31 @@ public class FetchLatestService extends Service {
 
     private void showNotification(ArrayList<Manga> mangas) {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
-        if(mangas.size()==1) {
+        if (mangas.size() == 1) {
             mBuilder.setContentTitle(mangas.get(0).getName());
-            mBuilder.setContentText("New chapter: " +mangas.get(0).getLatest());
+            mBuilder.setContentText("New chapter: " + mangas.get(0).getLatest());
         } else {
             mBuilder.setContentTitle("New chapters");
             mBuilder.setContentText("New chapters found for your favorite manga");
         }
 
-        mBuilder.setSmallIcon(R.drawable.ic_notification);
+        mBuilder.setSmallIcon(R.drawable.ic_stat_notification);
 
         mBuilder.setNumber(mangas.size());
 
         mBuilder.setDefaults(Notification.DEFAULT_ALL);
 
-        mBuilder.setPriority(NotificationCompat.PRIORITY_MAX);
-
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
 
-        for(int i = 0 ; i < mangas.size(); i++) {
+        for (int i = 0; i < mangas.size(); i++) {
             inboxStyle.addLine(mangas.get(i).toString());
         }
 
         mBuilder.setStyle(inboxStyle);
 
-        Intent notificationIntent = new Intent(this,MainActivity.class);
+        Intent notificationIntent = new Intent(this, MainActivity.class);
         notificationIntent.putExtra("favorite", true);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,notificationIntent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
         mBuilder.setContentIntent(pendingIntent);
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -132,5 +137,26 @@ public class FetchLatestService extends Service {
         /* notificationID allows you to update the notification later on. */
         mNotificationManager.notify(1, mBuilder.build());
 
+    }
+
+    private void writeLog() {
+        try {
+            OutputStreamWriter out = new OutputStreamWriter(openFileOutput("jump_service_log.txt", MODE_APPEND));
+
+
+            SimpleDateFormat format = new SimpleDateFormat(
+                    "dd-M-yyyy hh:mm:ss", Locale.US);
+            Date date = new Date();
+            String dateFormat = "Service #" + index + ": at " +format.format(date);
+
+            index++;
+
+            out.write(dateFormat);
+            out.write('\n');
+
+            out.close();
+
+        } catch (java.io.IOException e) {
+        }
     }
 }

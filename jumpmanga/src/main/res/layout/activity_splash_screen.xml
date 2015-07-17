@@ -7,8 +7,10 @@
     tools:context="io.wyrmise.jumpmanga.SplashScreenActivity">
 
     <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@drawable/splash_icon" />
+        android:layout_width="170dp"
+        android:layout_height="170dp"
+        android:src="@drawable/splash_icon_"
+        android:scaleType="fitCenter"
+        android:layout_gravity="center"/>
 
 </FrameLayout>

@@ -143,13 +143,11 @@ public class InfoFragment extends Fragment {
             mBuilder.setContentText("New chapters found for your favorite manga");
         }
 
-        mBuilder.setSmallIcon(R.drawable.ic_notification);
+        mBuilder.setSmallIcon(R.drawable.ic_stat_notification);
 
         mBuilder.setNumber(mangas.size());
 
         mBuilder.setDefaults(Notification.DEFAULT_ALL);
-
-        mBuilder.setPriority(NotificationCompat.PRIORITY_MAX);
 
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
 
