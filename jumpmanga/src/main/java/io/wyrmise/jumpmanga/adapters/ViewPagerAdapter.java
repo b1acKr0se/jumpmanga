@@ -1,10 +1,12 @@
-package io.wyrmise.jumpmanga;
+package io.wyrmise.jumpmanga.adapters;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+
+import io.wyrmise.jumpmanga.fragments.ChapterFragment;
+import io.wyrmise.jumpmanga.fragments.InfoFragment;
 
 /**
  * Created by Thanh on 6/30/2015.

@@ -1,4 +1,4 @@
-package io.wyrmise.jumpmanga;
+package io.wyrmise.jumpmanga.fragments;
 
 
 import android.app.Notification;
@@ -27,6 +27,9 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import io.wyrmise.jumpmanga.R;
+import io.wyrmise.jumpmanga.activities.DetailActivity;
+import io.wyrmise.jumpmanga.activities.MainActivity;
 import io.wyrmise.jumpmanga.animation.AnimationHelper;
 import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
 import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
@@ -192,7 +195,7 @@ public class InfoFragment extends Fragment {
             str = new String[2];
             DownloadUtils download = new DownloadUtils(params[0]);
             String detail = download.GetMangaDetail();
-            manga.setLatest(download.GetLatestChapter(manga));
+            manga.setLatest(download.GetLatestChapter(manga).getName());
             if (db.isMangaFavorited(manga.getName())) {
                 db.updateLatestChapter(manga);
             }

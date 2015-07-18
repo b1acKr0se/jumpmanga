@@ -1,4 +1,4 @@
-package io.wyrmise.jumpmanga;
+package io.wyrmise.jumpmanga.adapters;
 
 import android.app.Activity;
 import android.content.Context;
@@ -14,6 +14,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import io.wyrmise.jumpmanga.R;
+import io.wyrmise.jumpmanga.activities.ReadActivity;
 import io.wyrmise.jumpmanga.model.Page;
 import io.wyrmise.jumpmanga.widget.TouchImageView;
 

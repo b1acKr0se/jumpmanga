@@ -1,12 +1,8 @@
-package io.wyrmise.jumpmanga;
-
-/**
- * Created by Thanh on 6/29/2015.
- */
+package io.wyrmise.jumpmanga.adapters;
 
 import android.content.Context;
 import android.os.Handler;
-import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,13 +16,18 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import io.wyrmise.jumpmanga.listener.OnLoadMoreListener;
+import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.model.Manga;
 
-public class MangaAdapter extends RecyclerView.Adapter implements View.OnClickListener {
+/**
+ * Created by Thanh on 7/13/2015.
+ */
+public class CategoryAdapter extends RecyclerView.Adapter implements View.OnClickListener {
     private final int VIEW_ITEM = 1;
     private final int VIEW_PROG = 0;
-
     private int visibleThreshold = 5;
+
     private int lastVisibleItem, totalItemCount;
     private boolean loading;
     private OnLoadMoreListener onLoadMoreListener;
@@ -36,18 +37,18 @@ public class MangaAdapter extends RecyclerView.Adapter implements View.OnClickLi
 
     private Context context;
 
-    public MangaAdapter(Context c, List<Manga> items, RecyclerView recyclerView) {
+    public CategoryAdapter(Context c, List<Manga> items, RecyclerView recyclerView) {
         context = c;
         this.items = items;
-        if (recyclerView.getLayoutManager() instanceof GridLayoutManager) {
-            final GridLayoutManager gridLayoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
+        if (recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
+            final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
 
             recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                     super.onScrolled(recyclerView, dx, dy);
-                    totalItemCount = gridLayoutManager.getItemCount();
-                    lastVisibleItem = gridLayoutManager.findLastVisibleItemPosition();
+                    totalItemCount = linearLayoutManager.getItemCount();
+                    lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
                     if (!loading && totalItemCount < (lastVisibleItem + visibleThreshold)) {
                         //reach the end
                         if (onLoadMoreListener != null) {
@@ -69,12 +70,13 @@ public class MangaAdapter extends RecyclerView.Adapter implements View.OnClickLi
         this.onItemClickListener = onItemClickListener;
     }
 
+
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         RecyclerView.ViewHolder vh;
         if (viewType == VIEW_ITEM) {
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.manga_recycler_items, parent, false);
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.category_items, parent, false);
             v.setOnClickListener(this);
             vh = new MangaViewHolder(v);
         } else {
@@ -90,22 +92,23 @@ public class MangaAdapter extends RecyclerView.Adapter implements View.OnClickLi
             Manga item = items.get(position);
             ((MangaViewHolder) holder).text.setText(item.getName());
             ((MangaViewHolder) holder).latest.setText(item.getLatest());
-            ((MangaViewHolder) holder).text.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (((MangaViewHolder) holder).latest.getVisibility() == TextView.GONE)
-                        ((MangaViewHolder) holder).latest.setVisibility(TextView.VISIBLE);
-                    else ((MangaViewHolder) holder).latest.setVisibility(TextView.GONE);
-                }
-            });
             ((MangaViewHolder) holder).image.setImageBitmap(null);
 
             if (!item.getImage().equals("")) {
                 Picasso.with(((MangaViewHolder) holder).image.getContext()).load(item.getImage()).placeholder(R.drawable.placeholder).error(R.drawable.error)
-                        .into(((MangaViewHolder) holder).image);
+                        .into(((MangaViewHolder) holder).image, new Callback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onError() {
+
+                            }
+                        });
             } else {
-                Picasso.with(((MangaViewHolder) holder).image.getContext()).load(R.drawable.error)
-                        .into(((MangaViewHolder) holder).image);
+                ((MangaViewHolder) holder).image.setImageDrawable(context.getResources().getDrawable(R.drawable.error));
             }
 
             holder.itemView.setTag(item);
@@ -114,6 +117,7 @@ public class MangaAdapter extends RecyclerView.Adapter implements View.OnClickLi
         }
 
     }
+
 
     public void setLoaded() {
         loading = false;
@@ -148,9 +152,9 @@ public class MangaAdapter extends RecyclerView.Adapter implements View.OnClickLi
 
         public MangaViewHolder(View itemView) {
             super(itemView);
-            image = (ImageView) itemView.findViewById(R.id.image);
-            text = (TextView) itemView.findViewById(R.id.text);
-            latest = (TextView) itemView.findViewById(R.id.latest);
+            image = (ImageView) itemView.findViewById(R.id.manga_thumbnail);
+            text = (TextView) itemView.findViewById(R.id.manga_name);
+            latest = (TextView) itemView.findViewById(R.id.chapter_name);
 
         }
     }

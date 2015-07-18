@@ -5,7 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
+
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
+
 import java.util.ArrayList;
 
 import io.wyrmise.jumpmanga.model.Category;
@@ -28,6 +30,7 @@ public class JumpDatabaseHelper extends SQLiteAssetHelper {
     private static final String TABLE_FAV_CHAPTER = "fav_chapter";
     private static final String TABLE_ALL_MANGA = "all_manga";
     private static final String TABLE_CATEGORY = "category";
+    private static final String TABLE_SUBSCRIPTION = "subscription";
 
     //TABLE_MANGA COLUMNS
     private static final String TABLE_MANGA_ID = "_id";
@@ -65,6 +68,15 @@ public class JumpDatabaseHelper extends SQLiteAssetHelper {
     private static final String TABLE_CATEGORY_NAME = "name";
     private static final String TABLE_CATEGORY_URL = "url";
     private static final String TABLE_CATEGORY_PAGE = "page";
+
+    //TABLE_SUBSCRIPTION COLUMNS
+    private static final String TABLE_SUBSCRIPTION_ID = "_id";
+    private static final String TABLE_SUBSCRIPTION_MANGA_NAME = "manga_name";
+    private static final String TABLE_SUBSCRIPTION_MANGA_IMAGE = "manga_image";
+    private static final String TABLE_SUBSCRIPTION_MANGA_URL = "manga_url";
+    private static final String TABLE_SUBSCRIPTION_CHAPTER_NAME = "chapter_name";
+    private static final String TABLE_SUBSCRIPTION_CHAPTER_URL = "chapter_url";
+
 
     public boolean insertManga(Manga manga) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -128,7 +140,7 @@ public class JumpDatabaseHelper extends SQLiteAssetHelper {
     public boolean isMangaFavorited(String mangaName) {
         SQLiteDatabase db = this.getReadableDatabase();
         String selectQuery = "SELECT  * FROM " + TABLE_MANGA + " WHERE "
-                + TABLE_MANGA_NAME + " = '" + mangaName.replace("'","''") + "'";
+                + TABLE_MANGA_NAME + " = '" + mangaName.replace("'", "''") + "'";
 
         Cursor cursor = db.rawQuery(selectQuery, null);
 
@@ -175,11 +187,10 @@ public class JumpDatabaseHelper extends SQLiteAssetHelper {
         return false;
     }
 
-
     public boolean isChapterRead(Chapter chapter, String mangaName) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String selectQuery = "SELECT  * FROM " + TABLE_CHAPTER + " WHERE " + TABLE_CHAPTER_NAME + " = '" + chapter.getName().replace("'","''")
-                + "' AND " + TABLE_CHAPTER_MANGA_NAME + " = '" + mangaName.replace("'","''") + "'";
+        String selectQuery = "SELECT  * FROM " + TABLE_CHAPTER + " WHERE " + TABLE_CHAPTER_NAME + " = '" + chapter.getName().replace("'", "''")
+                + "' AND " + TABLE_CHAPTER_MANGA_NAME + " = '" + mangaName.replace("'", "''") + "'";
         Cursor cursor = db.rawQuery(selectQuery, null);
         if (cursor.getCount() <= 0) {
             cursor.close();
@@ -283,8 +294,8 @@ public class JumpDatabaseHelper extends SQLiteAssetHelper {
 
     public boolean isChapterFav(Chapter chapter, String mangaName) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String selectQuery = "SELECT  * FROM " + TABLE_FAV_CHAPTER + " WHERE " + TABLE_FAV_CHAPTER_NAME + " = '" + chapter.getName().replace("'","''")
-                + "' AND " + TABLE_FAV_CHAPTER_MANGA_NAME + " = '" + mangaName.replace("'","''") + "'";
+        String selectQuery = "SELECT  * FROM " + TABLE_FAV_CHAPTER + " WHERE " + TABLE_FAV_CHAPTER_NAME + " = '" + chapter.getName().replace("'", "''")
+                + "' AND " + TABLE_FAV_CHAPTER_MANGA_NAME + " = '" + mangaName.replace("'", "''") + "'";
         Cursor cursor = db.rawQuery(selectQuery, null);
         if (cursor.getCount() <= 0) {
             cursor.close();
@@ -365,4 +376,51 @@ public class JumpDatabaseHelper extends SQLiteAssetHelper {
         return null;
     }
 
+    public ArrayList<Manga> getAllSubscription() {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT * FROM " + TABLE_SUBSCRIPTION + " ORDER BY " + TABLE_SUBSCRIPTION_ID;
+
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor.getCount() > 0) {
+            ArrayList<Manga> mangas = new ArrayList<>();
+            while (cursor.moveToNext()) {
+                String manga_name = cursor.getString(cursor.getColumnIndex(TABLE_SUBSCRIPTION_MANGA_NAME));
+                String manga_image = cursor.getString(cursor.getColumnIndex(TABLE_SUBSCRIPTION_MANGA_IMAGE));
+                String manga_url = cursor.getString(cursor.getColumnIndex(TABLE_SUBSCRIPTION_MANGA_URL));
+                String chapter_name = cursor.getString(cursor.getColumnIndex(TABLE_SUBSCRIPTION_CHAPTER_NAME));
+                String chapter_url = cursor.getString(cursor.getColumnIndex(TABLE_SUBSCRIPTION_CHAPTER_URL));
+                Chapter c = new Chapter(chapter_name, chapter_url);
+                Manga m = new Manga(manga_name, manga_image, c);
+                m.setUrl(manga_url);
+                mangas.add(m);
+            }
+            return mangas;
+        }
+        return null;
+    }
+
+    public boolean insertSubscription(Manga manga, Chapter chapter) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TABLE_SUBSCRIPTION_MANGA_NAME, manga.getName());
+        contentValues.put(TABLE_SUBSCRIPTION_MANGA_IMAGE, manga.getImage());
+        contentValues.put(TABLE_SUBSCRIPTION_MANGA_URL, manga.getUrl());
+        contentValues.put(TABLE_SUBSCRIPTION_CHAPTER_NAME, chapter.getName());
+        contentValues.put(TABLE_SUBSCRIPTION_MANGA_IMAGE, manga.getUrl());
+        try {
+            db.insertOrThrow(TABLE_SUBSCRIPTION, null, contentValues);
+        } catch (SQLiteConstraintException e) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean deleteFromSubscription(String mangaName, String chapterName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int rowsAffected = db.delete(TABLE_SUBSCRIPTION, TABLE_SUBSCRIPTION_MANGA_NAME + " = ?"
+                + " AND " + TABLE_SUBSCRIPTION_CHAPTER_NAME + " = ?", new String[]{mangaName, chapterName});
+        return rowsAffected > 0;
+    }
 }

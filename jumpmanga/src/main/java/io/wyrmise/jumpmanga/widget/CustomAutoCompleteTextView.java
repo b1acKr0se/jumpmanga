@@ -1,4 +1,4 @@
-package io.wyrmise.jumpmanga;
+package io.wyrmise.jumpmanga.widget;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -7,6 +7,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
+
+import io.wyrmise.jumpmanga.R;
 
 public class CustomAutoCompleteTextView extends AutoCompleteTextView {
 
@@ -58,7 +60,7 @@ public class CustomAutoCompleteTextView extends AutoCompleteTextView {
 
     void init() {
 
-        imgClearButton = ContextCompat.getDrawable(c,R.drawable.ic_action_clear);
+        imgClearButton = ContextCompat.getDrawable(c, R.drawable.ic_action_clear);
 
         // Set the bounds of the button
         this.setCompoundDrawablesWithIntrinsicBounds(null, null,

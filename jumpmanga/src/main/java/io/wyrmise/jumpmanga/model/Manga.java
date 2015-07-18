@@ -12,7 +12,7 @@ public class Manga implements Parcelable {
     private String description;
     private String image;
     private String latest;
-    private Chapter recent;
+    private Chapter chapter;
     private boolean isFav;
 
     public Manga(){
@@ -28,7 +28,7 @@ public class Manga implements Parcelable {
     public Manga(String n, String i, Chapter c) {
         name = n;
         image = i;
-        recent = c;
+        chapter = c;
         isFav = false;
     }
 
@@ -90,12 +90,12 @@ public class Manga implements Parcelable {
         this.description = description;
     }
 
-    public Chapter getRecent() {
-        return recent;
+    public Chapter getChapter() {
+        return chapter;
     }
 
-    public void setRecent(Chapter recent) {
-        this.recent = recent;
+    public void setChapter(Chapter chapter) {
+        this.chapter = chapter;
     }
 
     @Override

@@ -1,4 +1,4 @@
-package io.wyrmise.jumpmanga;
+package io.wyrmise.jumpmanga.activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -12,13 +12,17 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.util.ArrayList;
+
+import io.wyrmise.jumpmanga.fragments.ChapterFragment;
+import io.wyrmise.jumpmanga.widget.CustomViewPager;
+import io.wyrmise.jumpmanga.R;
+import io.wyrmise.jumpmanga.adapters.FullScreenImageAdapter;
 import io.wyrmise.jumpmanga.animation.AnimationHelper;
 import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
 import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;

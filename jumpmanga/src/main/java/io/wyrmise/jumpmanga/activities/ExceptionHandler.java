@@ -1,4 +1,4 @@
-package io.wyrmise.jumpmanga;
+package io.wyrmise.jumpmanga.activities;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -6,6 +6,8 @@ import android.os.Build;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+
+import io.wyrmise.jumpmanga.activities.ExceptionActivity;
 
 /**
  * Created by Thanh on 7/4/2015.

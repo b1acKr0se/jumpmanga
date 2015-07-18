@@ -27,6 +27,11 @@
             android:title="@string/favourite" />
 
         <item
+            android:id="@+id/drawer_feeds"
+            android:icon="@drawable/ic_action_feed"
+            android:title="@string/feeds"/>
+
+        <item
             android:id="@+id/drawer_recent"
             android:icon="@drawable/ic_action_recent"
             android:title="@string/recent" />

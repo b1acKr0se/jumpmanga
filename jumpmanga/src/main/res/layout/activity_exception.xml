@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="io.wyrmise.jumpmanga.ExceptionActivity">
+    tools:context="io.wyrmise.jumpmanga.activities.ExceptionActivity">
 
     <include
         android:id="@+id/toolbar" layout="@layout/toolbar" />

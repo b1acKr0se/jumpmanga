@@ -171,17 +171,19 @@ public class DownloadUtils {
         }
     }
 
-    public String GetLatestChapter(Manga manga) {
+    public Chapter GetLatestChapter(Manga manga) {
         String url = manga.getUrl();
         try {
             Document document = Jsoup.connect(url).get();
             Element e = document.select("div.col-md-6.wrap-chapt-chosen-info").first();
             String latest = e.select("a[href]").text();
-            return latest;
+            String latest_url = e.select("a[href]").attr("abs:href");
+            Chapter chapter = new Chapter(latest,latest_url);
+            return chapter;
         }catch (IOException e) {
             e.printStackTrace();
         }
-        return "";
+        return null;
     }
 
     public ArrayList<Manga> GetAllMangas(String url) {

@@ -1,4 +1,4 @@
-package io.wyrmise.jumpmanga;
+package io.wyrmise.jumpmanga.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;

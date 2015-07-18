@@ -1,4 +1,4 @@
-package io.wyrmise.jumpmanga;
+package io.wyrmise.jumpmanga.activities;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -15,6 +15,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.io.FileOutputStream;
+
+import io.wyrmise.jumpmanga.R;
 
 public class ExceptionActivity extends AppCompatActivity {
 

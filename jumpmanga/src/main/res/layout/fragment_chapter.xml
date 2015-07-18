@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="@dimen/spacing_medium"
-    tools:context="io.wyrmise.jumpmanga.ChapterFragment">
+    tools:context="io.wyrmise.jumpmanga.fragments.ChapterFragment">
 
     <ProgressBar
         android:id="@+id/progressBar"

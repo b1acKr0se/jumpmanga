@@ -1,4 +1,4 @@
-package io.wyrmise.jumpmanga;
+package io.wyrmise.jumpmanga.fragments;
 
 
 import android.app.Activity;
@@ -18,6 +18,10 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import io.wyrmise.jumpmanga.R;
+import io.wyrmise.jumpmanga.activities.ReadActivity;
+import io.wyrmise.jumpmanga.adapters.MangaAdapter;
+import io.wyrmise.jumpmanga.adapters.RecentAdapter;
 import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
 import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
 import io.wyrmise.jumpmanga.model.Chapter;
@@ -129,11 +133,11 @@ public class RecentFragment extends Fragment implements MangaAdapter.OnItemClick
             if (arr != null) {
                 Intent intent = new Intent(context, ReadActivity.class);
                 intent.putExtra("manga", manga);
-                intent.putExtra("name", manga.getRecent().getName());
-                intent.putExtra("url", manga.getRecent().getUrl());
+                intent.putExtra("name", manga.getChapter().getName());
+                intent.putExtra("url", manga.getChapter().getUrl());
                 int position = -1;
                 for (Chapter c : arr) {
-                    if (c.getName().equals(manga.getRecent().getName()))
+                    if (c.getName().equals(manga.getChapter().getName()))
                         position = arr.indexOf(c);
                 }
                 intent.putExtra("position", position);

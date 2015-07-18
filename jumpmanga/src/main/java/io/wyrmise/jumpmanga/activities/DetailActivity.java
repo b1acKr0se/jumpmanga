@@ -1,4 +1,4 @@
-package io.wyrmise.jumpmanga;
+package io.wyrmise.jumpmanga.activities;
 
 import android.content.res.Configuration;
 import android.support.design.widget.TabLayout;
@@ -8,11 +8,10 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
-import android.widget.TextView;
 
+import io.wyrmise.jumpmanga.R;
+import io.wyrmise.jumpmanga.adapters.ViewPagerAdapter;
 import io.wyrmise.jumpmanga.model.Manga;
-import io.wyrmise.jumpmanga.widget.SlidingTabLayout;
 
 public class DetailActivity extends AppCompatActivity {
 

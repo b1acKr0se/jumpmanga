@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="io.wyrmise.jumpmanga.DetailActivity">
+    tools:context="io.wyrmise.jumpmanga.activities.DetailActivity">
 
     <include
         android:id="@+id/toolbar"

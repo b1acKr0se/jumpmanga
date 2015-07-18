@@ -32,6 +32,8 @@
 
     <string name="personal">Personal</string>
 
+    <string name="feeds">My feeds</string>
+
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 

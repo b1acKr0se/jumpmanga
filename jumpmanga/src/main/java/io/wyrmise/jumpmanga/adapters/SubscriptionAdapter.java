@@ -1,4 +1,4 @@
-package io.wyrmise.jumpmanga;
+package io.wyrmise.jumpmanga.adapters;
 
 import android.content.Context;
 import android.os.Handler;
@@ -6,7 +6,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,17 +13,18 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.model.Manga;
 
 /**
- * Created by Thanh on 7/5/2015.
+ * Created by Thanh on 7/18/2015.
  */
-public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder> implements View.OnClickListener {
+public class SubscriptionAdapter extends RecyclerView.Adapter<SubscriptionAdapter.ViewHolder> implements View.OnClickListener {
     private ArrayList<Manga> recent_list;
     private MangaAdapter.OnItemClickListener onItemClickListener;
     private Context context;
 
-    public RecentAdapter(Context c, ArrayList<Manga> list) {
+    public SubscriptionAdapter(Context c, ArrayList<Manga> list) {
         context = c;
         recent_list = list;
     }
@@ -44,7 +44,7 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder
     public void onBindViewHolder(ViewHolder holder, int position) {
         Manga manga = recent_list.get(position);
         holder.manga_name.setText(manga.getName());
-        holder.chapter_name.setText(manga.getRecent().getName());
+        holder.chapter_name.setText(manga.getChapter().getName());
         if (!manga.getImage().equals("")) {
             Picasso.with(context).load(manga.getImage()).error(R.drawable.error).into(holder.image);
         }
@@ -81,6 +81,3 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder
         }
     }
 }
-
-
-

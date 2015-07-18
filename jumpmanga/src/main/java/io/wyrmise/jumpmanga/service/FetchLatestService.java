@@ -19,10 +19,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-import io.wyrmise.jumpmanga.MainActivity;
+import io.wyrmise.jumpmanga.activities.MainActivity;
 import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
 import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
+import io.wyrmise.jumpmanga.model.Chapter;
 import io.wyrmise.jumpmanga.model.Manga;
 
 public class FetchLatestService extends Service {
@@ -78,9 +79,10 @@ public class FetchLatestService extends Service {
             DownloadUtils downloadUtils = new DownloadUtils();
             for (int i = 0; i < list.size(); i++) {
                 Manga manga = list.get(i);
-                String latest = downloadUtils.GetLatestChapter(manga);
-                if (!latest.equals(manga.getLatest()) && !latest.equals("")) {
-                    manga.setLatest(latest);
+                Chapter latest = downloadUtils.GetLatestChapter(manga);
+                if (!latest.getName().equals(manga.getLatest()) && !latest.getName().equals("")) {
+                    manga.setLatest(latest.getName());
+                    manga.setChapter(latest);
                     if (db.isMangaFavorited(manga.getName())) {
                         db.updateLatestChapter(manga);
                         tempNotificationArr.add(manga);
@@ -94,6 +96,9 @@ public class FetchLatestService extends Service {
         public void onPostExecute(ArrayList<Manga> result) {
             writeLog();
             if (result.size() > 0) {
+                for(int i = 0; i < result.size(); i++) {
+                    db.insertSubscription(result.get(i),result.get(i).getChapter());
+                }
                 showNotification(result);
             }
         }

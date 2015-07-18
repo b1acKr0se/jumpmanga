@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.wyrmise.jumpmanga;
+package io.wyrmise.jumpmanga.activities;
 
 import android.app.AlarmManager;
 import android.app.FragmentManager;
@@ -42,12 +42,20 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import io.wyrmise.jumpmanga.fragments.CategoryFragment;
+import io.wyrmise.jumpmanga.widget.CustomAutoCompleteTextView;
+import io.wyrmise.jumpmanga.fragments.MainFragment;
+import io.wyrmise.jumpmanga.fragments.NewFragment;
+import io.wyrmise.jumpmanga.R;
+import io.wyrmise.jumpmanga.fragments.RecentFragment;
+import io.wyrmise.jumpmanga.fragments.SubscriptionFragment;
+import io.wyrmise.jumpmanga.adapters.SearchAdapter;
+import io.wyrmise.jumpmanga.adapters.SpinnerAdapter;
 import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
 import io.wyrmise.jumpmanga.model.Category;
 import io.wyrmise.jumpmanga.model.Manga;
@@ -149,13 +157,13 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
             new getAllMangas().execute();
 
         } else if (isOpenFromNotification) {
-            GetFavoriteMangas();
+            GetSubscription();
             new getAllMangas().execute();
             NavigationView view = (NavigationView) findViewById(R.id.navigation_view);
             Menu menu = view.getMenu();
             for (int i = 0; i < menu.size(); i++) {
                 MenuItem item = menu.getItem(i);
-                if (item.getItemId() == R.id.drawer_favourite) {
+                if (item.getItemId() == R.id.drawer_feeds) {
                     savedMenuId = item.getItemId();
                     item.setChecked(true);
                 }
@@ -185,13 +193,13 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         setIntent(intent);
         boolean isOpenFromNotification = intent.getBooleanExtra("favorite", false);
         if (isOpenFromNotification) {
-            GetFavoriteMangas();
+            GetSubscription();
             new getAllMangas().execute();
             NavigationView view = (NavigationView) findViewById(R.id.navigation_view);
             Menu menu = view.getMenu();
             for (int i = 0; i < menu.size(); i++) {
                 MenuItem item = menu.getItem(i);
-                if (item.getItemId() == R.id.drawer_favourite) {
+                if (item.getItemId() == R.id.drawer_feeds) {
                     savedMenuId = item.getItemId();
                     item.setChecked(true);
                 }
@@ -208,8 +216,8 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
             AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
             am.cancel(pi);
             am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                    SystemClock.elapsedRealtime() + 60 * 60 * 1000,
-                    60 * 60 * 1000, pi);
+                    SystemClock.elapsedRealtime() + 480 * 60 * 1000,
+                    480 * 60 * 1000, pi);
 
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean("Alarm", true);
@@ -310,6 +318,16 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         fragmentTransaction.commit();
     }
 
+    private void GetSubscription() {
+        SubscriptionFragment fragment = new SubscriptionFragment();
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.content_frame, fragment, "FEEDS");
+        fragmentTransaction.commit();
+        removeSpinner();
+        getSupportActionBar().setTitle("My feeds");
+    }
+
 //    @Override
 //    public void onConfigurationChanged(Configuration newConfig) {
 //        super.onConfigurationChanged(newConfig);
@@ -402,6 +420,9 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
                         break;
                     case R.id.drawer_category:
                         GetCategories(categories.get(0));
+                        break;
+                    case R.id.drawer_feeds:
+                        GetSubscription();
                         break;
                 }
                 menuItem.setChecked(true);
