@@ -18,13 +18,14 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import io.wyrmise.jumpmanga.listener.OnLoadMoreListener;
+import io.wyrmise.jumpmanga.utils.OnLoadMoreListener;
 import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.activities.DetailActivity;
 import io.wyrmise.jumpmanga.adapters.MangaAdapter;
 import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
 import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
 import io.wyrmise.jumpmanga.model.Manga;
+import io.wyrmise.jumpmanga.utils.OrientationLocker;
 
 
 /**
@@ -129,6 +130,7 @@ public class NewFragment extends Fragment implements MangaAdapter.OnItemClickLis
     }
 
     public class LoadMoreManga extends AsyncTask<String, Void, ArrayList<Manga>> {
+
         @Override
         public ArrayList<Manga> doInBackground(String... params) {
             DownloadUtils download = new DownloadUtils(params[0]);
@@ -206,6 +208,7 @@ public class NewFragment extends Fragment implements MangaAdapter.OnItemClickLis
                 empty.setVisibility(TextView.VISIBLE);
                 Toast.makeText(context, "There's something wrong with your network, please check", Toast.LENGTH_LONG).show();
             }
+
         }
     }
 

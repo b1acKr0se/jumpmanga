@@ -9,33 +9,54 @@
         android:id="@+id/name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/black"
-        android:layout_marginLeft="@dimen/spacing_medium"
-        android:layout_marginRight="75dp"
         android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/spacing_medium"
+        android:layout_marginRight="90dp"
         android:fontFamily="sans-serif-light"
         android:text="Chap 356"
-        android:textSize="18sp"/>
+        android:textColor="@android:color/black"
+        android:textSize="18sp" />
+
+
+    <ImageView
+        android:id="@+id/download"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="@dimen/spacing_medium"
+        android:paddingTop="2dp"
+        android:src="@drawable/download_arrow" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_toLeftOf="@id/download"
+        android:background="@color/grey_translucent" />
 
     <CheckBox
         android:id="@+id/favorite_box"
         android:layout_width="25dp"
         android:layout_height="25dp"
-        android:layout_alignParentRight="true"
+        android:layout_toLeftOf="@id/divider"
         android:layout_centerVertical="true"
-        android:layout_marginRight="@dimen/spacing_medium"
-        android:focusable="false"
+        android:layout_marginRight="5dp"
+        android:background="@drawable/star_check_box"
         android:button="@null"
-        android:background="@drawable/star_check_box"/>
+        android:focusable="false" />
 
     <ImageView
         android:id="@+id/status_read"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:src="@drawable/ic_read"
         android:layout_centerVertical="true"
-        android:paddingTop="2dp"
         android:layout_marginRight="5dp"
-        android:layout_toLeftOf="@id/favorite_box"/>
+        android:layout_toLeftOf="@id/favorite_box"
+        android:paddingTop="2dp"
+        android:src="@drawable/ic_read" />
 
 </RelativeLayout>

@@ -26,6 +26,7 @@ import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
 import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
 import io.wyrmise.jumpmanga.model.Chapter;
 import io.wyrmise.jumpmanga.model.Manga;
+import io.wyrmise.jumpmanga.utils.OrientationLocker;
 import io.wyrmise.jumpmanga.widget.SimpleDividerItemDecoration;
 
 
@@ -123,6 +124,7 @@ public class SubscriptionFragment extends Fragment implements MangaAdapter.OnIte
 
         @Override
         public void onPreExecute() {
+            OrientationLocker.lock(getActivity());
             progressDialog.show();
         }
 
@@ -160,6 +162,8 @@ public class SubscriptionFragment extends Fragment implements MangaAdapter.OnIte
             } else {
                 Toast.makeText(context, "There's an error with your network, please check", Toast.LENGTH_SHORT).show();
             }
+
+            OrientationLocker.unlock(getActivity());
         }
     }
 

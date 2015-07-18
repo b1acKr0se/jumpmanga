@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import io.wyrmise.jumpmanga.R;
@@ -21,23 +22,19 @@ import io.wyrmise.jumpmanga.activities.ReadActivity;
 import io.wyrmise.jumpmanga.model.Page;
 import io.wyrmise.jumpmanga.widget.TouchImageView;
 
-/**
- * Created by Thanh on 7/1/2015.
- */
-public class FullScreenImageAdapter extends PagerAdapter {
+public class DownloadedImageAdapter extends PagerAdapter {
     private Activity activity;
-    private ArrayList<Page> pages;
+    private ArrayList<String> imagePaths = new ArrayList<String>();
     private LayoutInflater layoutInflater;
 
-    public FullScreenImageAdapter(Activity a, ArrayList<Page> p) {
+    public DownloadedImageAdapter(Activity a, ArrayList<String> path) {
         activity = a;
-        pages = p;
+        imagePaths = path;
     }
-
 
     @Override
     public int getCount() {
-        return pages.size();
+        return imagePaths.size();
     }
 
     @Override
@@ -63,19 +60,8 @@ public class FullScreenImageAdapter extends PagerAdapter {
             }
         });
 
-        Picasso.with(activity.getApplicationContext()).load(pages.get(position).getUrl()).placeholder(R.drawable.page_placeholder)
-                .error(R.drawable.page_error).into(imageView, new Callback() {
-
-            @Override
-            public void onSuccess() {
-                ((ReadActivity) activity).updateProgress();
-            }
-
-            @Override
-            public void onError() {
-
-            }
-        });
+        Picasso.with(activity.getApplicationContext()).load(new File(imagePaths.get(position))).placeholder(R.drawable.page_placeholder)
+                .error(R.drawable.page_error).into(imageView);
 
         imageView.resetZoom();
 

@@ -17,7 +17,7 @@ import io.wyrmise.jumpmanga.model.Manga;
 
 public class JumpDatabaseHelper extends SQLiteAssetHelper {
     private static final String DATABASE_NAME = "jump_database.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     public JumpDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

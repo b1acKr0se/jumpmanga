@@ -17,9 +17,13 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import java.util.ArrayList;
 
+import io.wyrmise.jumpmanga.adapters.DownloadedImageAdapter;
 import io.wyrmise.jumpmanga.fragments.ChapterFragment;
+import io.wyrmise.jumpmanga.utils.FileDownloader;
+import io.wyrmise.jumpmanga.utils.FileUtils;
 import io.wyrmise.jumpmanga.widget.CustomViewPager;
 import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.adapters.FullScreenImageAdapter;
@@ -277,15 +281,61 @@ public class ReadActivity extends AppCompatActivity {
 
         mHideHandler.postDelayed(hideControllerThread, 3000);
 
-        new RetrieveAllPages().execute(url);
+        getAppropriateChapter(url);
+
     }
+
+    public void getAppropriateChapter(String url) {
+        FileUtils fileUtils = new FileUtils();
+        if (fileUtils.isChapterDownloaded(manga.getName(), chapters.get(chapter_position).getName())) {
+            ArrayList<String> filePath = fileUtils.getFilePaths();
+            if (filePath != null && filePath.size() > 0) {
+                progressBar.setVisibility(View.INVISIBLE);
+                DownloadedImageAdapter adapter = new DownloadedImageAdapter(ReadActivity.this, filePath);
+                viewPager.setAdapter(adapter);
+                viewPager.setCurrentItem(0);
+                viewPager.setPageMargin(calculatedPixel);
+                pageIndicator.setText("Page 1/" + adapter.getCount());
+                seekBar.setProgress(0);
+                seekBar.setMax(adapter.getCount() - 1);
+            } else
+                new RetrieveAllPages().execute(url);
+        } else
+            new RetrieveAllPages().execute(url);
+    }
+
+    public void changeDownloadedChapter() {
+        FileUtils fileUtils = new FileUtils();
+        if (fileUtils.isChapterDownloaded(manga.getName(), chapters.get(chapter_position).getName())) {
+            ArrayList<String> filePath = fileUtils.getFilePaths();
+            if (filePath != null && filePath.size() > 0) {
+                progressBar.setVisibility(View.INVISIBLE);
+                DownloadedImageAdapter adapter = new DownloadedImageAdapter(ReadActivity.this, filePath);
+                viewPager.setAdapter(adapter);
+                viewPager.setCurrentItem(0);
+                viewPager.setPageMargin(calculatedPixel);
+                pageIndicator.setText("Page 1/" + adapter.getCount());
+                seekBar.setProgress(0);
+                seekBar.setMax(adapter.getCount() - 1);
+                getFavoriteStatus();
+                setRead();
+                getSupportActionBar().setTitle(chapters.get(chapter_position).getName());
+            } else {
+                ChangeChapter task = new ChangeChapter(progressDialog);
+                task.execute(chapters.get(chapter_position).getUrl());
+            }
+        } else {
+            ChangeChapter task = new ChangeChapter(progressDialog);
+            task.execute(chapters.get(chapter_position).getUrl());
+        }
+    }
+
 
     public void nextChapter() {
         if ((chapter_position - 1) != -1) {
             chapter_position_temp = chapter_position;
             chapter_position--;
-            ChangeChapter task = new ChangeChapter(progressDialog);
-            task.execute(chapters.get(chapter_position).getUrl());
+            changeDownloadedChapter();
         } else {
             Toast.makeText(getApplicationContext(), "This is the last chapter", Toast.LENGTH_SHORT).show();
         }
@@ -295,8 +345,7 @@ public class ReadActivity extends AppCompatActivity {
         if ((chapter_position + 1) != chapters.size()) {
             chapter_position_temp = chapter_position;
             chapter_position++;
-            ChangeChapter task = new ChangeChapter(progressDialog);
-            task.execute(chapters.get(chapter_position).getUrl());
+            changeDownloadedChapter();
         } else {
             Toast.makeText(getApplicationContext(), "This is the first chapter", Toast.LENGTH_SHORT).show();
         }
@@ -313,10 +362,10 @@ public class ReadActivity extends AppCompatActivity {
     }
 
     public void getFavoriteStatus() {
-        if(!chapters.get(chapter_position).isFav()) {
-            button_favorite.setImageDrawable(ContextCompat.getDrawable(ReadActivity.this,R.drawable.ic_action_star_unfav));
+        if (!chapters.get(chapter_position).isFav()) {
+            button_favorite.setImageDrawable(ContextCompat.getDrawable(ReadActivity.this, R.drawable.ic_action_star_unfav));
         } else
-            button_favorite.setImageDrawable(ContextCompat.getDrawable(ReadActivity.this,R.drawable.ic_action_star_fav));
+            button_favorite.setImageDrawable(ContextCompat.getDrawable(ReadActivity.this, R.drawable.ic_action_star_fav));
     }
 
     public void updateProgress() {
@@ -334,20 +383,20 @@ public class ReadActivity extends AppCompatActivity {
         button_favorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(db.isChapterFav(chapters.get(chapter_position),manga.getName())) {
+                if (db.isChapterFav(chapters.get(chapter_position), manga.getName())) {
                     db.unfavChapter(chapters.get(chapter_position), manga.getName());
                     if (ChapterFragment.getAdapter() != null)
                         ChapterFragment.getAdapter().getItem(chapter_position).setIsFav(false);
                     chapters.get(chapter_position).setIsFav(false);
-                    button_favorite.setImageDrawable(ContextCompat.getDrawable(ReadActivity.this,R.drawable.ic_action_star_unfav));
-                    Toast.makeText(ReadActivity.this,"Successfully unfavorited this chapter",Toast.LENGTH_SHORT).show();
+                    button_favorite.setImageDrawable(ContextCompat.getDrawable(ReadActivity.this, R.drawable.ic_action_star_unfav));
+                    Toast.makeText(ReadActivity.this, "Successfully unfavorited this chapter", Toast.LENGTH_SHORT).show();
                 } else {
-                    db.favChapter(chapters.get(chapter_position),manga.getName());
+                    db.favChapter(chapters.get(chapter_position), manga.getName());
                     if (ChapterFragment.getAdapter() != null)
                         ChapterFragment.getAdapter().getItem(chapter_position).setIsFav(true);
                     chapters.get(chapter_position).setIsFav(true);
-                    button_favorite.setImageDrawable(ContextCompat.getDrawable(ReadActivity.this,R.drawable.ic_action_star_fav));
-                    Toast.makeText(ReadActivity.this,"Successfully favorited this chapter",Toast.LENGTH_SHORT).show();
+                    button_favorite.setImageDrawable(ContextCompat.getDrawable(ReadActivity.this, R.drawable.ic_action_star_fav));
+                    Toast.makeText(ReadActivity.this, "Successfully favorited this chapter", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -551,6 +600,7 @@ public class ReadActivity extends AppCompatActivity {
             previous.setVisibility(ImageView.VISIBLE);
         }
     }
+
 
     public int convertToPx(int dp) {
         // Get the screen's density scale

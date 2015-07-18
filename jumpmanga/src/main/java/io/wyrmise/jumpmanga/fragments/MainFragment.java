@@ -1,15 +1,22 @@
 package io.wyrmise.jumpmanga.fragments;
 
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.Point;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -18,7 +25,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import io.wyrmise.jumpmanga.listener.OnLoadMoreListener;
+import io.wyrmise.jumpmanga.utils.OnLoadMoreListener;
 import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.activities.DetailActivity;
 import io.wyrmise.jumpmanga.adapters.MangaAdapter;
@@ -154,6 +161,7 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
     }
 
     public class LoadMoreManga extends AsyncTask<String, Void, ArrayList<Manga>> {
+
         @Override
         public ArrayList<Manga> doInBackground(String... params) {
             DownloadUtils download = new DownloadUtils(params[0]);
@@ -205,7 +213,6 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
         @Override
         public void onPostExecute(ArrayList<Manga> result) {
             progressBar.setVisibility(ProgressBar.GONE);
-
             if (result != null) {
                 recyclerView.setVisibility(RecyclerView.VISIBLE);
                 mangas = result;
@@ -270,5 +277,7 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
             }
         }
     }
+
+
 
 }

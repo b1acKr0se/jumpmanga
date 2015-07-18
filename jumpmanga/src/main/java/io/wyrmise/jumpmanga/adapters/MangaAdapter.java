@@ -19,7 +19,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-import io.wyrmise.jumpmanga.listener.OnLoadMoreListener;
+import io.wyrmise.jumpmanga.utils.OnLoadMoreListener;
 import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.model.Manga;
 

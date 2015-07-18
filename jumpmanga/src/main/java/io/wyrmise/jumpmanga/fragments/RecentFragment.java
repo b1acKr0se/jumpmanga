@@ -26,6 +26,7 @@ import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
 import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
 import io.wyrmise.jumpmanga.model.Chapter;
 import io.wyrmise.jumpmanga.model.Manga;
+import io.wyrmise.jumpmanga.utils.OrientationLocker;
 
 
 /**
@@ -146,6 +147,7 @@ public class RecentFragment extends Fragment implements MangaAdapter.OnItemClick
             } else {
                 Toast.makeText(context, "There's an error with your network, please check", Toast.LENGTH_SHORT).show();
             }
+
         }
     }
 

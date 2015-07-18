@@ -39,7 +39,7 @@ import io.wyrmise.jumpmanga.model.Manga;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ChapterFragment extends Fragment {
+public class ChapterFragment extends Fragment{
 
     private JumpDatabaseHelper db;
     private ListView listView;
@@ -233,6 +233,7 @@ public class ChapterFragment extends Fragment {
     }
 
 
+
 //    @Override
 //    public void onSaveInstanceState(Bundle bundle) {
 //        if (chapters != null)
@@ -271,6 +272,7 @@ public class ChapterFragment extends Fragment {
                 temp = new ArrayList<>(chapters);
 
                 adapter = new ChapterAdapter(context, R.layout.chapter_list_item, chapters);
+
 
                 listView.setAdapter(adapter);
 

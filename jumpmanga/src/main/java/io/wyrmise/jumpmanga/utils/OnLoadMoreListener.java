@@ -1,4 +1,4 @@
-package io.wyrmise.jumpmanga.listener;
+package io.wyrmise.jumpmanga.utils;
 
 /**
  * Created by Thanh on 7/3/2015.
