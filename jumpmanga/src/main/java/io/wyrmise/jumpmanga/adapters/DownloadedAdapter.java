@@ -14,46 +14,42 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 import io.wyrmise.jumpmanga.R;
+import io.wyrmise.jumpmanga.model.Chapter;
 import io.wyrmise.jumpmanga.model.Manga;
 
-/**
- * Created by Thanh on 7/18/2015.
- */
-public class SubscriptionAdapter extends RecyclerView.Adapter<SubscriptionAdapter.ViewHolder> implements View.OnClickListener {
-    private ArrayList<Manga> recent_list;
-    private MangaAdapter.OnItemClickListener onItemClickListener;
-    private Context context;
+public class DownloadedAdapter extends RecyclerView.Adapter<DownloadedAdapter.ViewHolder> implements View.OnClickListener {
 
-    public SubscriptionAdapter(Context c, ArrayList<Manga> list) {
+    private ArrayList<Chapter> chapters;
+    private Context context;
+    private OnItemClickListener onItemClickListener;
+
+    public DownloadedAdapter(Context c, ArrayList<Chapter> list) {
         context = c;
-        recent_list = list;
+        chapters = list;
     }
 
-    public void setOnItemClickListener(MangaAdapter.OnItemClickListener onItemClickListener) {
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.subscription_items, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.downloaded_items, parent, false);
         v.setOnClickListener(this);
         return new ViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Manga manga = recent_list.get(position);
-        holder.manga_name.setText(manga.getName());
-        holder.chapter_name.setText(manga.getChapter().getName());
-        if (!manga.getImage().equals("")) {
-            Picasso.with(context).load(manga.getImage()).error(R.drawable.error).into(holder.image);
-        }
-        holder.itemView.setTag(manga);
+        Chapter chapter = chapters.get(position);
+        holder.manga_name.setText(chapter.getMangaName());
+        holder.chapter_name.setText(chapter.getName());
+        holder.itemView.setTag(chapter);
     }
 
     @Override
     public int getItemCount() {
-        return recent_list.size();
+        return chapters.size();
     }
 
     @Override
@@ -63,21 +59,27 @@ public class SubscriptionAdapter extends RecyclerView.Adapter<SubscriptionAdapte
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    onItemClickListener.onItemClick(v, (Manga) v.getTag());
+                    onItemClickListener.onItemClick(v, (Chapter) v.getTag());
                 }
             }, 200);
         }
     }
 
     protected class ViewHolder extends RecyclerView.ViewHolder {
-        public ImageView image;
         public TextView manga_name, chapter_name;
 
         public ViewHolder(View v) {
             super(v);
-            image = (ImageView) v.findViewById(R.id.manga_thumbnail);
             manga_name = (TextView) v.findViewById(R.id.manga_name);
             chapter_name = (TextView) v.findViewById(R.id.chapter_name);
         }
     }
+
+
+    public interface OnItemClickListener {
+
+        void onItemClick(View view, Chapter chapter);
+
+    }
+
 }

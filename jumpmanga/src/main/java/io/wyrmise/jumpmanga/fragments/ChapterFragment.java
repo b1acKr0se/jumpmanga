@@ -78,7 +78,7 @@ public class ChapterFragment extends Fragment{
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_chapter, container, false);
 
-        context = getActivity().getApplicationContext();
+        context = getActivity();
 
         db = new JumpDatabaseHelper(context);
 

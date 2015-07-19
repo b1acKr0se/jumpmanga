@@ -19,6 +19,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import io.wyrmise.jumpmanga.R;
+import io.wyrmise.jumpmanga.activities.DetailActivity;
 import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
 import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
 import io.wyrmise.jumpmanga.model.Chapter;
@@ -194,7 +195,7 @@ public class ChapterAdapter extends ArrayAdapter<Chapter> implements Filterable 
         }
     }
 
-    class DownloadAsync extends AsyncTask<ArrayList<Page>, Integer, Integer> {
+    class DownloadAsync extends AsyncTask<ArrayList<Page>, Integer, Boolean> {
         private String mangaName;
         private String chapterName;
         private int id = NotificationUtils.getID();
@@ -218,17 +219,26 @@ public class ChapterAdapter extends ArrayAdapter<Chapter> implements Filterable 
 
         }
 
-        public Integer doInBackground(ArrayList<Page>... page) {
+        public Boolean doInBackground(ArrayList<Page>... page) {
 
             ArrayList<Page> pages = page[0];
 
-            FileDownloader downloader = new FileDownloader(mangaName, chapterName);
+            try {
+                FileDownloader downloader = new FileDownloader(mangaName, chapterName);
 
-            for (int i = 0; i < pages.size(); i ++) {
-                downloader.download(pages.get(i).getUrl());
-                publishProgress((int)((i*100)/pages.size()));
+                if(context instanceof DetailActivity) {
+                    downloader.downloadPoster(((DetailActivity)context).getManga().getImage());
+                    System.out.println("Get Manga");
+                }
+
+                for (int i = 0; i < pages.size(); i++) {
+                    downloader.download(pages.get(i).getUrl());
+                    publishProgress((int) ((i * 100) / pages.size()));
+                }
+            }catch (Exception e) {
+                return false;
             }
-            return null;
+            return true;
         }
 
         @Override
@@ -239,13 +249,20 @@ public class ChapterAdapter extends ArrayAdapter<Chapter> implements Filterable 
             super.onProgressUpdate(values);
         }
 
-
         @Override
-        public void onPostExecute(Integer result) {
-            mBuilder.setContentText("Download completed: " +chapterName);
-            mBuilder.setProgress(0, 0, false);
-            mBuilder.setSmallIcon(android.R.drawable.stat_sys_download_done);
-            mNotifyManager.notify(id, mBuilder.build());
+        public void onPostExecute(Boolean result) {
+            if(result) {
+                mBuilder.setContentText("Download completed: " + chapterName);
+                mBuilder.setProgress(0, 0, false);
+                mBuilder.setSmallIcon(android.R.drawable.stat_sys_download_done);
+                mNotifyManager.notify(id, mBuilder.build());
+            } else {
+                System.out.println(fileUtils.deleteChapter(mangaName, chapterName));
+                mBuilder.setContentText("Download failed: " + chapterName);
+                mBuilder.setProgress(0, 0, false);
+                mBuilder.setSmallIcon(android.R.drawable.stat_sys_download_done);
+                mNotifyManager.notify(id, mBuilder.build());
+            }
             notifyDataSetChanged();
         }
     }

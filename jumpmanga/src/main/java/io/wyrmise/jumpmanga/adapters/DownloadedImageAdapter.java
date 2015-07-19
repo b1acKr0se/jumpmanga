@@ -18,6 +18,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import io.wyrmise.jumpmanga.R;
+import io.wyrmise.jumpmanga.activities.DownloadedReadActivity;
 import io.wyrmise.jumpmanga.activities.ReadActivity;
 import io.wyrmise.jumpmanga.model.Page;
 import io.wyrmise.jumpmanga.widget.TouchImageView;
@@ -26,10 +27,12 @@ public class DownloadedImageAdapter extends PagerAdapter {
     private Activity activity;
     private ArrayList<String> imagePaths = new ArrayList<String>();
     private LayoutInflater layoutInflater;
+    private boolean fromDownloaded;
 
-    public DownloadedImageAdapter(Activity a, ArrayList<String> path) {
+    public DownloadedImageAdapter(Activity a, ArrayList<String> path, boolean fromDownloaded) {
         activity = a;
         imagePaths = path;
+        this.fromDownloaded = fromDownloaded;
     }
 
     @Override
@@ -53,12 +56,20 @@ public class DownloadedImageAdapter extends PagerAdapter {
 
         imageView.resetZoom();
 
+        if(!fromDownloaded)
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ((ReadActivity) activity).onClick(view);
             }
         });
+        else
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ((DownloadedReadActivity) activity).onClick(view);
+                }
+            });
 
         Picasso.with(activity.getApplicationContext()).load(new File(imagePaths.get(position))).placeholder(R.drawable.page_placeholder)
                 .error(R.drawable.page_error).into(imageView);

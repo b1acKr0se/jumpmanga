@@ -48,6 +48,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 import io.wyrmise.jumpmanga.fragments.CategoryFragment;
+import io.wyrmise.jumpmanga.fragments.DownloadedFragment;
 import io.wyrmise.jumpmanga.widget.CustomAutoCompleteTextView;
 import io.wyrmise.jumpmanga.fragments.MainFragment;
 import io.wyrmise.jumpmanga.fragments.NewFragment;
@@ -256,6 +257,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         super.onSaveInstanceState(bundle);
     }
 
+
     private void GetNewMangas() {
         NewFragment fragment = new NewFragment();
         FragmentManager fragmentManager = getFragmentManager();
@@ -326,6 +328,16 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         fragmentTransaction.commit();
         removeSpinner();
         getSupportActionBar().setTitle("My feeds");
+    }
+
+    private void GetDownloaded() {
+        DownloadedFragment fragment = new DownloadedFragment();
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.content_frame, fragment, "DOWNLOADED");
+        fragmentTransaction.commit();
+        removeSpinner();
+        getSupportActionBar().setTitle("Downloaded");
     }
 
 //    @Override
@@ -423,6 +435,9 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
                         break;
                     case R.id.drawer_feeds:
                         GetSubscription();
+                        break;
+                    case R.id.drawer_downloaded:
+                        GetDownloaded();
                         break;
                 }
                 menuItem.setChecked(true);

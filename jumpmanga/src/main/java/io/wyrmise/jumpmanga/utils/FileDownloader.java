@@ -17,20 +17,45 @@ public class FileDownloader {
     public FileDownloader(String m, String c) {
         mangaName = m;
         chapterName = c;
-        if(canWriteOnExternalStorage()) isSdCardAvailable=true;
+        if (canWriteOnExternalStorage()) isSdCardAvailable = true;
     }
 
-    public void download(String fileUrl) {
+    public void download(String fileUrl) throws IOException {
+        if (isSdCardAvailable) {
+            File sdcard = Environment.getExternalStorageDirectory();
+            File directory = new File(sdcard.getAbsolutePath() + "/.Jump Manga/" + mangaName + "/" + chapterName);
+            directory.mkdirs();
+            String fileName = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
+            URL url = new URL(fileUrl);
+            InputStream input = url.openStream();
+            try {
+                OutputStream output = new FileOutputStream(new File(directory, fileName));
+                try {
+                    byte[] buffer = new byte[1024];
+                    int bytesRead = 0;
+                    while ((bytesRead = input.read(buffer, 0, buffer.length)) >= 0) {
+                        output.write(buffer, 0, bytesRead);
+                    }
+                } finally {
+                    output.close();
+                }
+            } finally {
+                input.close();
+            }
+        }
+    }
+
+    public void downloadPoster(String fileUrl) {
         try {
-            if(isSdCardAvailable) {
+            if (isSdCardAvailable) {
                 File sdcard = Environment.getExternalStorageDirectory();
-                File directory = new File(sdcard.getAbsolutePath() + "/Jump Manga/"+mangaName+"/"+chapterName);
+                File directory = new File(sdcard.getAbsolutePath() + "/.Jump Manga/" + mangaName + "/");
                 directory.mkdirs();
-                String fileName = fileUrl.substring(fileUrl.lastIndexOf("/")+1);
+                String fileName = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
                 URL url = new URL(fileUrl);
                 InputStream input = url.openStream();
                 try {
-                    OutputStream output = new FileOutputStream (new File(directory,fileName));
+                    OutputStream output = new FileOutputStream(new File(directory, fileName));
                     try {
                         byte[] buffer = new byte[1024];
                         int bytesRead = 0;
@@ -47,8 +72,8 @@ public class FileDownloader {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
+
 
     public static boolean canWriteOnExternalStorage() {
         // get the state of your external storage

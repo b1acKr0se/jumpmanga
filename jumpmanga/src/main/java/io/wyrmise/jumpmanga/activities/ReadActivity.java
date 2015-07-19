@@ -291,7 +291,7 @@ public class ReadActivity extends AppCompatActivity {
             ArrayList<String> filePath = fileUtils.getFilePaths();
             if (filePath != null && filePath.size() > 0) {
                 progressBar.setVisibility(View.INVISIBLE);
-                DownloadedImageAdapter adapter = new DownloadedImageAdapter(ReadActivity.this, filePath);
+                DownloadedImageAdapter adapter = new DownloadedImageAdapter(ReadActivity.this, filePath,false);
                 viewPager.setAdapter(adapter);
                 viewPager.setCurrentItem(0);
                 viewPager.setPageMargin(calculatedPixel);
@@ -310,7 +310,7 @@ public class ReadActivity extends AppCompatActivity {
             ArrayList<String> filePath = fileUtils.getFilePaths();
             if (filePath != null && filePath.size() > 0) {
                 progressBar.setVisibility(View.INVISIBLE);
-                DownloadedImageAdapter adapter = new DownloadedImageAdapter(ReadActivity.this, filePath);
+                DownloadedImageAdapter adapter = new DownloadedImageAdapter(ReadActivity.this, filePath,false);
                 viewPager.setAdapter(adapter);
                 viewPager.setCurrentItem(0);
                 viewPager.setPageMargin(calculatedPixel);

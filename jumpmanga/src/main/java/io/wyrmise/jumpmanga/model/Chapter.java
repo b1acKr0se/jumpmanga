@@ -3,6 +3,8 @@ package io.wyrmise.jumpmanga.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
+
 public class Chapter implements Parcelable {
 
     private String mangaName;
@@ -10,6 +12,7 @@ public class Chapter implements Parcelable {
     private String url;
     private boolean isRead;
     private boolean isFav;
+    private ArrayList<String> path;
 
     public Chapter() {
 
@@ -26,6 +29,14 @@ public class Chapter implements Parcelable {
         url = u;
         isRead = false;
         isFav = false;
+    }
+
+    public void setPath(ArrayList<String> p)  {
+        path = p;
+    }
+
+    public ArrayList<String> getPath() {
+        return path;
     }
 
     public String getName() {

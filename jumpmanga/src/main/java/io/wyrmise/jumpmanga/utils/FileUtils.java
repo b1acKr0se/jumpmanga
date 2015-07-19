@@ -16,7 +16,7 @@ public class FileUtils {
 
     public boolean isChapterDownloaded(String m, String c) {
         File sdcard = Environment.getExternalStorageDirectory();
-        File directory = new File(sdcard.getAbsolutePath() + "/Jump Manga/"+m+"/"+c);
+        File directory = new File(sdcard.getAbsolutePath() + "/.Jump Manga/"+m+"/"+c);
         if(directory.exists() && directory.isDirectory() && directory.listFiles().length>0) {
             mangaName = m;
             chapterName = c;
@@ -29,7 +29,7 @@ public class FileUtils {
         ArrayList<String> filePaths = new ArrayList<String>();
 
         File sdcard = Environment.getExternalStorageDirectory();
-        File directory = new File(sdcard.getAbsolutePath() + "/Jump Manga/"+mangaName+"/"+chapterName);
+        File directory = new File(sdcard.getAbsolutePath() + "/.Jump Manga/"+mangaName+"/"+chapterName);
 
         // check for directory
         if (directory.isDirectory()) {
@@ -53,4 +53,18 @@ public class FileUtils {
         return filePaths;
     }
 
+    public boolean deleteChapter(String mangaName, String chapterName) {
+        File sdcard = Environment.getExternalStorageDirectory();
+        File directory = new File(sdcard.getAbsolutePath() + "/.Jump Manga/"+mangaName+"/"+chapterName);
+        if(directory.exists() && directory.isDirectory()) {
+            File[] files = directory.listFiles();
+            if (files == null) {
+                return true;
+            }
+            for(int i=0; i<files.length; i++) {
+                files[i].delete();
+            }
+        }
+        return directory.delete();
+    }
 }

@@ -31,4 +31,5 @@ dependencies {
     compile 'com.android.support:support-v4:22.2.0'
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'com.readystatesoftware.sqliteasset:sqliteassethelper:+'
+    compile 'com.bignerdranch.android:expandablerecyclerview:1.0.3'
 }
