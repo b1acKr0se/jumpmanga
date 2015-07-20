@@ -12,8 +12,10 @@
         <item name="colorAccent">@color/grey</item>
         <item name="selectableItemBackground">@drawable/selectable_item_background</item>
         <item name="android:dropDownListViewStyle">@style/DropDownListViewStyle</item>
+        <item name="windowActionModeOverlay">true</item>
         <item name="colorControlActivated">@color/yellow</item>
     </style>
+
 
     <style name="FabStyle">
         <item name="android:layout_width">wrap_content</item>

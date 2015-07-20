@@ -38,7 +38,7 @@
 
         <item
             android:id="@+id/drawer_downloaded"
-            android:icon="@drawable/download_arrow"
+            android:icon="@drawable/ic_action_downloaded"
             android:title="@string/downloaded"/>
 
     </group>

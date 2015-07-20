@@ -9,32 +9,50 @@
     android:clickable="true"
     android:focusable="true"
     android:foreground="?android:attr/selectableItemBackground"
-    card_view:cardElevation="1dp"
     card_view:cardCornerRadius="0dp"
+    card_view:cardElevation="1dp"
     card_view:cardUseCompatPadding="true">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/spacing_medium">
+        android:layout_height="80dp">
 
         <ImageView
             android:id="@+id/mangaThumbnail"
             android:layout_width="40dp"
             android:layout_height="60dp"
             android:layout_centerVertical="true"
+            android:layout_margin="@dimen/spacing_medium"
             android:scaleType="centerCrop"
-            android:src="@drawable/default_avatar"/>
+            android:src="@drawable/default_avatar" />
 
         <TextView
             android:id="@+id/mangaName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/spacing_medium"
-            android:text="Crime Title"
             android:layout_centerVertical="true"
+            android:layout_marginRight="50dp"
             android:layout_toRightOf="@id/mangaThumbnail"
+            android:paddingLeft="@dimen/spacing_medium"
+            android:text="Crime Title"
             android:textSize="17sp" />
+
+        <com.andexert.library.RippleView
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true">
+
+            <ImageView
+                android:id="@+id/delete"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:background="@color/red"
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_action_delete" />
+        </com.andexert.library.RippleView>
 
     </RelativeLayout>
 </android.support.v7.widget.CardView>

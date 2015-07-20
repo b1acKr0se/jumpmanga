@@ -59,6 +59,11 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
 
 
 

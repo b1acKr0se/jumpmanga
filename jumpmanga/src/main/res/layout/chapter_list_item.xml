@@ -17,30 +17,32 @@
         android:textColor="@android:color/black"
         android:textSize="18sp" />
 
+    <View
+        android:id="@+id/drag_handle"
+        android:layout_width="36dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:background="#20000000"/>
+
 
     <ImageView
         android:id="@+id/download"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="36dp"
+        android:layout_height="match_parent"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_marginRight="@dimen/spacing_medium"
         android:paddingTop="2dp"
-        android:src="@drawable/download_arrow" />
-
-    <View
-        android:id="@+id/divider"
-        android:layout_width="1dp"
-        android:layout_height="match_parent"
-        android:layout_marginRight="8dp"
-        android:layout_toLeftOf="@id/download"
-        android:background="@color/grey_translucent" />
+        android:paddingRight="6dp"
+        android:paddingLeft="6dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_action_download_btn"/>
 
     <CheckBox
         android:id="@+id/favorite_box"
         android:layout_width="25dp"
         android:layout_height="25dp"
-        android:layout_toLeftOf="@id/divider"
+        android:layout_toLeftOf="@id/download"
         android:layout_centerVertical="true"
         android:layout_marginRight="5dp"
         android:background="@drawable/star_check_box"

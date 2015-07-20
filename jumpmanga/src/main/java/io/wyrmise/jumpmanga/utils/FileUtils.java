@@ -67,4 +67,11 @@ public class FileUtils {
         }
         return directory.delete();
     }
+
+    public boolean delete(File path) {
+        if(path.isDirectory() && path.exists())
+            for (File f: path.listFiles())
+                delete(f);
+        return path.delete();
+    }
 }

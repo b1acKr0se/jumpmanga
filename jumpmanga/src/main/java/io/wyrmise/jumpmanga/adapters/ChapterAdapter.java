@@ -3,6 +3,7 @@ package io.wyrmise.jumpmanga.adapters;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v4.app.NotificationCompat;
 import android.view.LayoutInflater;
@@ -24,6 +25,7 @@ import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
 import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
 import io.wyrmise.jumpmanga.model.Chapter;
 import io.wyrmise.jumpmanga.model.Page;
+import io.wyrmise.jumpmanga.service.DownloaderService;
 import io.wyrmise.jumpmanga.utils.FileDownloader;
 import io.wyrmise.jumpmanga.utils.FileUtils;
 import io.wyrmise.jumpmanga.utils.NotificationUtils;
@@ -114,8 +116,17 @@ public class ChapterAdapter extends ArrayAdapter<Chapter> implements Filterable 
             holder.download_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    RetrieveAllPages task = new RetrieveAllPages(chapter.getMangaName(), chapter.getName());
-                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, chapter.getUrl());
+                    holder.download_btn.setVisibility(View.INVISIBLE);
+                    notifyDataSetChanged();
+                    if(context instanceof DetailActivity) {
+                        String image = ((DetailActivity)context).getManga().getImage();
+                        Intent intent = new Intent(context, DownloaderService.class);
+                        intent.putExtra("image",image);
+                        intent.putExtra("mangaName", chapter.getMangaName());
+                        intent.putExtra("chapterName", chapter.getName());
+                        intent.putExtra("chapterUrl", chapter.getUrl());
+                        context.startService(intent);
+                    }
                 }
             });
         }

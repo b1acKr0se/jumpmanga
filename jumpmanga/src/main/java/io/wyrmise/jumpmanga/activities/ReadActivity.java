@@ -362,10 +362,12 @@ public class ReadActivity extends AppCompatActivity {
     }
 
     public void getFavoriteStatus() {
-        if (!chapters.get(chapter_position).isFav()) {
-            button_favorite.setImageDrawable(ContextCompat.getDrawable(ReadActivity.this, R.drawable.ic_action_star_unfav));
-        } else
-            button_favorite.setImageDrawable(ContextCompat.getDrawable(ReadActivity.this, R.drawable.ic_action_star_fav));
+        if(button_favorite!=null) {
+            if (!chapters.get(chapter_position).isFav()) {
+                button_favorite.setImageDrawable(ContextCompat.getDrawable(ReadActivity.this, R.drawable.ic_action_star_unfav));
+            } else
+                button_favorite.setImageDrawable(ContextCompat.getDrawable(ReadActivity.this, R.drawable.ic_action_star_fav));
+        }
     }
 
     public void updateProgress() {
@@ -379,28 +381,34 @@ public class ReadActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.menu_read, menu);
-        button_favorite = (ImageView) menu.findItem(R.id.favorite).getActionView();
-        button_favorite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (db.isChapterFav(chapters.get(chapter_position), manga.getName())) {
-                    db.unfavChapter(chapters.get(chapter_position), manga.getName());
-                    if (ChapterFragment.getAdapter() != null)
-                        ChapterFragment.getAdapter().getItem(chapter_position).setIsFav(false);
-                    chapters.get(chapter_position).setIsFav(false);
-                    button_favorite.setImageDrawable(ContextCompat.getDrawable(ReadActivity.this, R.drawable.ic_action_star_unfav));
-                    Toast.makeText(ReadActivity.this, "Successfully unfavorited this chapter", Toast.LENGTH_SHORT).show();
-                } else {
-                    db.favChapter(chapters.get(chapter_position), manga.getName());
-                    if (ChapterFragment.getAdapter() != null)
-                        ChapterFragment.getAdapter().getItem(chapter_position).setIsFav(true);
-                    chapters.get(chapter_position).setIsFav(true);
-                    button_favorite.setImageDrawable(ContextCompat.getDrawable(ReadActivity.this, R.drawable.ic_action_star_fav));
-                    Toast.makeText(ReadActivity.this, "Successfully favorited this chapter", Toast.LENGTH_SHORT).show();
-                }
+        MenuItem item = menu.findItem(R.id.favorite);
 
-            }
-        });
+        View view = item.getActionView();
+
+        if(view instanceof ImageView) {
+            button_favorite = (ImageView) view;
+            button_favorite.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (db.isChapterFav(chapters.get(chapter_position), manga.getName())) {
+                        db.unfavChapter(chapters.get(chapter_position), manga.getName());
+                        if (ChapterFragment.getAdapter() != null)
+                            ChapterFragment.getAdapter().getItem(chapter_position).setIsFav(false);
+                        chapters.get(chapter_position).setIsFav(false);
+                        button_favorite.setImageDrawable(ContextCompat.getDrawable(ReadActivity.this, R.drawable.ic_action_star_unfav));
+                        Toast.makeText(ReadActivity.this, "Successfully unfavorited this chapter", Toast.LENGTH_SHORT).show();
+                    } else {
+                        db.favChapter(chapters.get(chapter_position), manga.getName());
+                        if (ChapterFragment.getAdapter() != null)
+                            ChapterFragment.getAdapter().getItem(chapter_position).setIsFav(true);
+                        chapters.get(chapter_position).setIsFav(true);
+                        button_favorite.setImageDrawable(ContextCompat.getDrawable(ReadActivity.this, R.drawable.ic_action_star_fav));
+                        Toast.makeText(ReadActivity.this, "Successfully favorited this chapter", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+            });
+        }
         return true;
     }
 

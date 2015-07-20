@@ -330,7 +330,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         getSupportActionBar().setTitle("My feeds");
     }
 
-    private void GetDownloaded() {
+    public void GetDownloaded() {
         DownloadedFragment fragment = new DownloadedFragment();
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

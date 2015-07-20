@@ -2,31 +2,39 @@ package io.wyrmise.jumpmanga.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bignerdranch.expandablerecyclerview.Adapter.ExpandableRecyclerAdapter;
 import com.bignerdranch.expandablerecyclerview.Model.ParentObject;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.List;
 
 import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.activities.DownloadedReadActivity;
+import io.wyrmise.jumpmanga.activities.MainActivity;
 import io.wyrmise.jumpmanga.model.Chapter;
 import io.wyrmise.jumpmanga.model.Wrapper;
+import io.wyrmise.jumpmanga.utils.FileUtils;
 
 public class ExpandableDownloadedAdapter
         extends ExpandableRecyclerAdapter<ExpandableDownloadedAdapter.ParentViewHolder, ExpandableDownloadedAdapter.ChildViewHolder> {
 
     private LayoutInflater mInflater;
+    private FileUtils fileUtils;
 
     public ExpandableDownloadedAdapter(Context context, List<ParentObject> itemList) {
         super(context, itemList);
         mInflater = LayoutInflater.from(context);
+        fileUtils = new FileUtils();
     }
 
     @Override
@@ -42,10 +50,23 @@ public class ExpandableDownloadedAdapter
     }
 
     @Override
-    public void onBindParentViewHolder(ParentViewHolder viewHolder, int i, Object o) {
-        Wrapper wrapper = (Wrapper) o;
+    public void onBindParentViewHolder(ParentViewHolder viewHolder, final int i, Object o) {
+        final Wrapper wrapper = (Wrapper) o;
         viewHolder.mangaName.setText(wrapper.getName());
         Picasso.with(mContext).load(wrapper.getImagePath()).error(R.drawable.error).into(viewHolder.mangaThumbnail);
+        viewHolder.deleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                File sdcard = Environment.getExternalStorageDirectory();
+                File directory = new File(sdcard.getAbsolutePath() + "/.Jump Manga/"+wrapper.getName());
+                fileUtils.delete(directory);
+                if(mContext instanceof MainActivity) {
+                    Toast.makeText(mContext, "Deleted", Toast.LENGTH_SHORT).show();
+                    ((MainActivity)mContext).GetDownloaded();
+                }
+
+            }
+        });
     }
 
     @Override
@@ -63,15 +84,30 @@ public class ExpandableDownloadedAdapter
         viewHolder.chapterName.setText(chapter.getName());
     }
 
+    private class deleteFileTask extends AsyncTask<Wrapper,Void, Boolean> {
+        public Boolean doInBackground(Wrapper... wrappers) {
+            Wrapper wrapper = wrappers[0];
+            return null;
+        }
+
+        public void onPostExecute(Boolean result){
+            if(result) {
+
+            }
+        }
+    }
+
 
     public class ParentViewHolder extends com.bignerdranch.expandablerecyclerview.ViewHolder.ParentViewHolder {
         public TextView mangaName;
         public ImageView mangaThumbnail;
+        public ImageView deleteBtn;
 
         public ParentViewHolder(View view) {
             super(view);
             mangaName = (TextView) view.findViewById(R.id.mangaName);
             mangaThumbnail = (ImageView) view.findViewById(R.id.mangaThumbnail);
+            deleteBtn = (ImageView) view.findViewById(R.id.delete);
         }
     }
 
