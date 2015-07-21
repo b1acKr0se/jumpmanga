@@ -86,7 +86,7 @@ public class DownloadedFragment extends Fragment {
                     File[] chapterNames = mangaNames[i].listFiles();
                     Wrapper w = new Wrapper();
                     w.setName(mangaNames[i].getName());
-                    ArrayList<Object> chapters = new ArrayList<>();
+                    ArrayList<Chapter> chapters = new ArrayList<>();
                     for (File f : chapterNames) {
                         if(f.isDirectory()) {
                             Chapter c = new Chapter();
@@ -102,7 +102,10 @@ public class DownloadedFragment extends Fragment {
                             System.out.println(f.getName());
                         }
                     }
-                    w.setChildObjectList(chapters);
+                    Collections.sort(chapters);
+                    ArrayList<Object> list = new ArrayList<>();
+                    for(Chapter c: chapters) list.add(c);
+                    w.setChildObjectList(list);
                     parentObjects.add(w);
                 }
             }
@@ -127,6 +130,8 @@ public class DownloadedFragment extends Fragment {
 
         return view;
     }
+
+
 
     @Override
     public void onSaveInstanceState(Bundle outState) {

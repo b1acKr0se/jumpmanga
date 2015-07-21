@@ -53,6 +53,17 @@ public class FileUtils {
         return filePaths;
     }
 
+    public boolean hasPoster(String mangaName){
+        File sdcard = Environment.getExternalStorageDirectory();
+        File directory = new File(sdcard.getAbsolutePath() + "/.Jump Manga/" + mangaName + "/");
+        if(directory.exists() && directory.isDirectory()) {
+            for (File f : directory.listFiles()) {
+                if (f.isFile()) return true;
+            }
+        }
+        return false;
+    }
+
     public boolean deleteChapter(String mangaName, String chapterName) {
         File sdcard = Environment.getExternalStorageDirectory();
         File directory = new File(sdcard.getAbsolutePath() + "/.Jump Manga/"+mangaName+"/"+chapterName);
