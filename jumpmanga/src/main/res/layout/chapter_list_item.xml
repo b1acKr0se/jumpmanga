@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="50dp"
     android:layout_margin="@dimen/spacing_medium"
-    android:background="@android:color/white">
+    android:background="@drawable/custom_background_indicator">
 
     <TextView
         android:id="@+id/name"
@@ -17,33 +17,12 @@
         android:textColor="@android:color/black"
         android:textSize="18sp" />
 
-    <View
-        android:id="@+id/drag_handle"
-        android:layout_width="36dp"
-        android:layout_height="match_parent"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:background="#20000000"/>
-
-
-    <ImageView
-        android:id="@+id/download"
-        android:layout_width="36dp"
-        android:layout_height="match_parent"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:paddingTop="2dp"
-        android:paddingRight="6dp"
-        android:paddingLeft="6dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/ic_action_download_btn"/>
-
     <CheckBox
         android:id="@+id/favorite_box"
         android:layout_width="25dp"
         android:layout_height="25dp"
-        android:layout_toLeftOf="@id/download"
         android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
         android:layout_marginRight="5dp"
         android:background="@drawable/star_check_box"
         android:button="@null"
@@ -55,8 +34,18 @@
         android:layout_height="20dp"
         android:layout_centerVertical="true"
         android:layout_marginRight="5dp"
+        android:layout_marginLeft="4dp"
         android:layout_toLeftOf="@id/favorite_box"
         android:paddingTop="2dp"
-        android:src="@drawable/ic_read" />
+        android:src="@drawable/ic_read"/>
+
+    <ImageView
+        android:id="@+id/download"
+        android:layout_width="27dp"
+        android:layout_height="27dp"
+        android:layout_toLeftOf="@id/status_read"
+        android:layout_centerVertical="true"
+        android:paddingTop="2dp"
+        android:src="@drawable/downloaded_indicator"/>
 
 </RelativeLayout>

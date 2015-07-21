@@ -11,12 +11,15 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
+import android.util.SparseBooleanArray;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.CompoundButton;
 import android.widget.ListView;
@@ -34,6 +37,7 @@ import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
 import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
 import io.wyrmise.jumpmanga.model.Chapter;
 import io.wyrmise.jumpmanga.model.Manga;
+import io.wyrmise.jumpmanga.service.DownloaderService;
 
 
 /**
@@ -108,8 +112,6 @@ public class ChapterFragment extends Fragment{
 
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 
-
-
         manga = ((DetailActivity) getActivity()).getManga();
 
         url = ((DetailActivity) getActivity()).getManga().getUrl();
@@ -151,6 +153,58 @@ public class ChapterFragment extends Fragment{
 
     }
 
+    private void setChoiceModeListener() {
+        listView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+            @Override
+            public void onItemCheckedStateChanged(ActionMode actionMode, int i, long l, boolean b) {
+                final int checkedCount = listView.getCheckedItemCount();
+                actionMode.setTitle(checkedCount + " chapter(s) selected");
+                adapter.toggleSelection(i);
+            }
+
+            @Override
+            public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+                actionMode.getMenuInflater().inflate(R.menu.menu_cab_download,menu);
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+                switch(menuItem.getItemId()) {
+                    case R.id.cab_download:
+                            SparseBooleanArray selected = adapter.getSelectedItems();
+                            ArrayList<Chapter> chapters = new ArrayList<Chapter>();
+                            for (int i = 0; i < selected.size(); i++) {
+                                if (selected.valueAt(i)) {
+                                    Chapter c = adapter.getItem(selected.keyAt(i));
+                                    chapters.add(c);
+                                }
+                            }
+                            if (chapters.size() > 0) {
+                                String image = ((DetailActivity) context).getManga().getImage();
+                                Intent intent = new Intent(context, DownloaderService.class);
+                                intent.putExtra("image", image);
+                                intent.putParcelableArrayListExtra("list", chapters);
+                                context.startService(intent);
+                            }
+                        actionMode.finish();
+                        return true;
+                }
+                return false;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode actionMode) {
+                adapter.removeSelection();
+            }
+        });
+    }
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -161,14 +215,12 @@ public class ChapterFragment extends Fragment{
         actionSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextChange(String newText) {
-                Log.d("OnQuerySubmit", "onQueryTextChange");
                 ChapterFragment.getAdapter().getFilter().filter(newText);
                 return true;
             }
 
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Log.d("OnQuerySubmit", "onQueryTextSubmit");
                 //ListViewFragment.adapter.getFilter().filter(query);
                 return true;
             }
@@ -276,8 +328,9 @@ public class ChapterFragment extends Fragment{
 
                 adapter = new ChapterAdapter(context, R.layout.chapter_list_item, chapters);
 
-
                 listView.setAdapter(adapter);
+
+                setChoiceModeListener();
 
                 progressBar.setVisibility(ProgressBar.GONE);
 

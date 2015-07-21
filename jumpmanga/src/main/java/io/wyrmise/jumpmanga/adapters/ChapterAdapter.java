@@ -76,7 +76,7 @@ public class ChapterAdapter extends ArrayAdapter<Chapter> implements Filterable 
             holder.chapter_name = (TextView) convertView1.findViewById(R.id.name);
             holder.read_status = (ImageView) convertView1.findViewById(R.id.status_read);
             holder.fav_status = (CheckBox) convertView1.findViewById(R.id.favorite_box);
-            holder.download_btn = (ImageView) convertView1.findViewById(R.id.download);
+            holder.download_status = (ImageView) convertView1.findViewById(R.id.download);
 
             convertView1.setTag(holder);
 
@@ -111,25 +111,9 @@ public class ChapterAdapter extends ArrayAdapter<Chapter> implements Filterable 
         else holder.fav_status.setChecked(false);
 
         if (fileUtils.isChapterDownloaded(chapter.getMangaName(), chapter.getName()))
-            holder.download_btn.setVisibility(View.INVISIBLE);
-        else {
-            holder.download_btn.setVisibility(View.VISIBLE);
-            holder.download_btn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(context instanceof DetailActivity) {
-                        String image = ((DetailActivity)context).getManga().getImage();
-                        Intent intent = new Intent(context, DownloaderService.class);
-                        intent.putExtra("image",image);
-                        intent.putExtra("mangaName", chapter.getMangaName());
-                        intent.putExtra("chapterName", chapter.getName());
-                        intent.putExtra("chapterUrl", chapter.getUrl());
-                        context.startService(intent);
-                    }
-                    holder.download_btn.setOnClickListener(null);
-                }
-            });
-        }
+            holder.download_status.setVisibility(View.VISIBLE);
+        else
+            holder.download_status.setVisibility(View.GONE);
 
         return convertView1;
     }
@@ -200,7 +184,7 @@ public class ChapterAdapter extends ArrayAdapter<Chapter> implements Filterable 
         public TextView chapter_name;
         public ImageView read_status;
         public CheckBox fav_status;
-        public ImageView download_btn;
+        public ImageView download_status;
     }
 
 

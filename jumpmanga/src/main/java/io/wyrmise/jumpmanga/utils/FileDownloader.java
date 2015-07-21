@@ -45,6 +45,30 @@ public class FileDownloader {
         }
     }
 
+    public void downloadAndRename(String fileUrl, String fileName) throws IOException {
+        if (isSdCardAvailable) {
+            File sdcard = Environment.getExternalStorageDirectory();
+            File directory = new File(sdcard.getAbsolutePath() + "/.Jump Manga/" + mangaName + "/" + chapterName);
+            directory.mkdirs();
+            URL url = new URL(fileUrl);
+            InputStream input = url.openStream();
+            try {
+                OutputStream output = new FileOutputStream(new File(directory, fileName));
+                try {
+                    byte[] buffer = new byte[1024];
+                    int bytesRead = 0;
+                    while ((bytesRead = input.read(buffer, 0, buffer.length)) >= 0) {
+                        output.write(buffer, 0, bytesRead);
+                    }
+                } finally {
+                    output.close();
+                }
+            } finally {
+                input.close();
+            }
+        }
+    }
+
     public void downloadPoster(String fileUrl) {
         try {
             if (isSdCardAvailable) {
