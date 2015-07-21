@@ -6,7 +6,6 @@
         android:id="@+id/favorite"
         android:icon="@drawable/star_unfav"
         android:title="Favorite"
-        app:actionViewClass="android.widget.ImageView"
         app:showAsAction="always" />
     <item
         android:id="@+id/action_refresh"

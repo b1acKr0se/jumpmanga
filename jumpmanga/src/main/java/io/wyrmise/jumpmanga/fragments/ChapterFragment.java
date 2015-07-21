@@ -106,6 +106,9 @@ public class ChapterFragment extends Fragment{
             }
         });
 
+        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+
+
 
         manga = ((DetailActivity) getActivity()).getManga();
 

@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.activities.DownloadedReadActivity;
 import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
+import io.wyrmise.jumpmanga.model.Chapter;
 import io.wyrmise.jumpmanga.model.Page;
 import io.wyrmise.jumpmanga.utils.FileDownloader;
 import io.wyrmise.jumpmanga.utils.FileUtils;
@@ -27,12 +28,10 @@ import io.wyrmise.jumpmanga.utils.NotificationUtils;
  */
 public class DownloaderService extends Service {
 
+    private static ArrayList<Chapter> list;
     private FileUtils fileUtils;
-
     private String image;
-
     private int numberOfService = 0;
-
     NotificationManager notificationManager;
     NotificationCompat.Builder builder;
 
@@ -71,6 +70,15 @@ public class DownloaderService extends Service {
 
 
     }
+
+//    private static synchronized void getChapterToDownload(){
+//        while(numberOfDownload<3 && list.size()>0) {
+//            Chapter c = list.get(0);
+//            new DownloadService().execute();
+//            numberOfDownload++;
+//            list.remove(0);
+//        }
+//    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {

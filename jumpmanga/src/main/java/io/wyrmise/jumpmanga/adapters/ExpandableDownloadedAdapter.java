@@ -84,18 +84,6 @@ public class ExpandableDownloadedAdapter
         viewHolder.chapterName.setText(chapter.getName());
     }
 
-    private class deleteFileTask extends AsyncTask<Wrapper,Void, Boolean> {
-        public Boolean doInBackground(Wrapper... wrappers) {
-            Wrapper wrapper = wrappers[0];
-            return null;
-        }
-
-        public void onPostExecute(Boolean result){
-            if(result) {
-
-            }
-        }
-    }
 
 
     public class ParentViewHolder extends com.bignerdranch.expandablerecyclerview.ViewHolder.ParentViewHolder {

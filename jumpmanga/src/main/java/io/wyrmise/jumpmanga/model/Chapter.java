@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 import java.util.ArrayList;
 
-public class Chapter implements Parcelable {
+public class Chapter implements Parcelable, Comparable<Chapter> {
 
     private String mangaName;
     private String name;
@@ -30,6 +30,7 @@ public class Chapter implements Parcelable {
         isRead = false;
         isFav = false;
     }
+
 
     public void setPath(ArrayList<String> p)  {
         path = p;
@@ -114,4 +115,9 @@ public class Chapter implements Parcelable {
             return new Chapter[size];
         }
     };
+
+    @Override
+    public int compareTo(Chapter c) {
+        return -(name.compareTo(c.getName()));
+    }
 }
