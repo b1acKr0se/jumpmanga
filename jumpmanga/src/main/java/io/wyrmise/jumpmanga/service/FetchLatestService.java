@@ -74,28 +74,33 @@ public class FetchLatestService extends Service {
 
         @Override
         protected ArrayList<Manga> doInBackground(ArrayList<Manga>... mangas) {
-            ArrayList<Manga> list = mangas[0];
-            ArrayList<Manga> tempNotificationArr = new ArrayList<>();
-            DownloadUtils downloadUtils = new DownloadUtils();
-            for (int i = 0; i < list.size(); i++) {
-                Manga manga = list.get(i);
-                Chapter latest = downloadUtils.GetLatestChapter(manga);
-                if (!latest.getName().equals(manga.getLatest()) && !latest.getName().equals("")) {
-                    manga.setLatest(latest.getName());
-                    manga.setChapter(latest);
-                    if (db.isMangaFavorited(manga.getName())) {
-                        db.updateLatestChapter(manga);
-                        tempNotificationArr.add(manga);
+            try {
+                ArrayList<Manga> list = mangas[0];
+                ArrayList<Manga> tempNotificationArr = new ArrayList<>();
+                DownloadUtils downloadUtils = new DownloadUtils();
+                for (int i = 0; i < list.size(); i++) {
+                    Manga manga = list.get(i);
+                    Chapter latest = downloadUtils.GetLatestChapter(manga);
+                    if (latest != null && !latest.getName().equals(manga.getLatest()) && !latest.getName().equals("")) {
+                        manga.setLatest(latest.getName());
+                        manga.setChapter(latest);
+                        if (db.isMangaFavorited(manga.getName())) {
+                            db.updateLatestChapter(manga);
+                            tempNotificationArr.add(manga);
+                        }
                     }
                 }
+                return tempNotificationArr;
+            }catch (Exception e) {
+                e.printStackTrace();
+                return null;
             }
-            return tempNotificationArr;
         }
 
         @Override
         public void onPostExecute(ArrayList<Manga> result) {
             writeLog();
-            if (result.size() > 0) {
+            if (result!=null && result.size() > 0) {
                 for(int i = 0; i < result.size(); i++) {
                     db.insertSubscription(result.get(i),result.get(i).getChapter());
                 }
