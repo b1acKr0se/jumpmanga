@@ -15,6 +15,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jpardogo.android.googleprogressbar.library.GoogleProgressBar;
+
 import java.util.ArrayList;
 
 import io.wyrmise.jumpmanga.utils.OnLoadMoreListener;
@@ -45,7 +47,7 @@ public class CategoryFragment extends Fragment implements CategoryAdapter.OnItem
 
     private CategoryAdapter adapter;
 
-    private ProgressBar progressBar;
+    private GoogleProgressBar progressBar;
 
     private TextView empty;
 
@@ -72,7 +74,7 @@ public class CategoryFragment extends Fragment implements CategoryAdapter.OnItem
 
         db = new JumpDatabaseHelper(context);
 
-        progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
+        progressBar = (GoogleProgressBar) view.findViewById(R.id.progressBar);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.list);
 

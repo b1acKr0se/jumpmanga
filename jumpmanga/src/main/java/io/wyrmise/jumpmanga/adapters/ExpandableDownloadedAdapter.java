@@ -50,7 +50,7 @@ public class ExpandableDownloadedAdapter
     }
 
     @Override
-    public void onBindParentViewHolder(ParentViewHolder viewHolder, final int i, Object o) {
+    public void onBindParentViewHolder(ParentViewHolder viewHolder, final int i, final Object o) {
         final Wrapper wrapper = (Wrapper) o;
         viewHolder.mangaName.setText(wrapper.getName());
         Picasso.with(mContext).load(wrapper.getImagePath()).error(R.drawable.error).into(viewHolder.mangaThumbnail);
@@ -60,10 +60,11 @@ public class ExpandableDownloadedAdapter
                 File sdcard = Environment.getExternalStorageDirectory();
                 File directory = new File(sdcard.getAbsolutePath() + "/.Jump Manga/"+wrapper.getName());
                 fileUtils.delete(directory);
-                if(mContext instanceof MainActivity) {
-                    Toast.makeText(mContext, "Deleted", Toast.LENGTH_SHORT).show();
-                    ((MainActivity)mContext).GetDownloaded();
-                }
+                notifyItemRangeRemoved(i, wrapper.getChildObjectList().size()+1);
+//                if(mContext instanceof MainActivity) {
+//                    Toast.makeText(mContext, "Deleted", Toast.LENGTH_SHORT).show();
+//                    ((MainActivity)mContext).GetDownloaded();
+//                }
 
             }
         });

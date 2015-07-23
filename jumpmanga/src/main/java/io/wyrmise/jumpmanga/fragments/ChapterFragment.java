@@ -25,10 +25,15 @@ import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import net.frakbot.jumpingbeans.JumpingBeans;
 
 import java.util.ArrayList;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.activities.DetailActivity;
 import io.wyrmise.jumpmanga.activities.ReadActivity;
@@ -43,12 +48,12 @@ import io.wyrmise.jumpmanga.service.DownloaderService;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ChapterFragment extends Fragment{
+public class ChapterFragment extends Fragment {
 
     private JumpDatabaseHelper db;
     private ListView listView;
     private ArrayList<Chapter> chapters;
-    private ProgressBar progressBar;
+
     private static ChapterAdapter adapter;
 
     private Context context;
@@ -67,6 +72,11 @@ public class ChapterFragment extends Fragment{
 
     private SearchView actionSearchView;
 
+    @Bind(R.id.loadingText)
+    TextView loadingText;
+
+    private JumpingBeans jumpingBeans;
+
     public ChapterFragment() {
         // Required empty public constructor
     }
@@ -81,6 +91,8 @@ public class ChapterFragment extends Fragment{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_chapter, container, false);
+
+        ButterKnife.bind(this, view);
 
         context = getActivity();
 
@@ -116,8 +128,6 @@ public class ChapterFragment extends Fragment{
 
         url = ((DetailActivity) getActivity()).getManga().getUrl();
 
-        progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
-
         refreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refresh_list);
 
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -139,7 +149,7 @@ public class ChapterFragment extends Fragment{
 //
 //            listView.setTextFilterEnabled(true);
 //        } else {
-        progressBar.setVisibility(ProgressBar.VISIBLE);
+        jumpingBeans = JumpingBeans.with(loadingText).appendJumpingDots().build();
         listView.setVisibility(ListView.GONE);
         new GetMangaDetails().execute(url);
 
@@ -164,7 +174,7 @@ public class ChapterFragment extends Fragment{
 
             @Override
             public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
-                actionMode.getMenuInflater().inflate(R.menu.menu_cab_download,menu);
+                actionMode.getMenuInflater().inflate(R.menu.menu_cab_download, menu);
                 return true;
             }
 
@@ -175,23 +185,23 @@ public class ChapterFragment extends Fragment{
 
             @Override
             public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
-                switch(menuItem.getItemId()) {
+                switch (menuItem.getItemId()) {
                     case R.id.cab_download:
-                            SparseBooleanArray selected = adapter.getSelectedItems();
-                            ArrayList<Chapter> chapters = new ArrayList<Chapter>();
-                            for (int i = 0; i < selected.size(); i++) {
-                                if (selected.valueAt(i)) {
-                                    Chapter c = adapter.getItem(selected.keyAt(i));
-                                    chapters.add(c);
-                                }
+                        SparseBooleanArray selected = adapter.getSelectedItems();
+                        ArrayList<Chapter> chapters = new ArrayList<Chapter>();
+                        for (int i = 0; i < selected.size(); i++) {
+                            if (selected.valueAt(i)) {
+                                Chapter c = adapter.getItem(selected.keyAt(i));
+                                chapters.add(c);
                             }
-                            if (chapters.size() > 0) {
-                                String image = ((DetailActivity) context).getManga().getImage();
-                                Intent intent = new Intent(context, DownloaderService.class);
-                                intent.putExtra("image", image);
-                                intent.putParcelableArrayListExtra("list", chapters);
-                                context.startService(intent);
-                            }
+                        }
+                        if (chapters.size() > 0) {
+                            String image = ((DetailActivity) context).getManga().getImage();
+                            Intent intent = new Intent(context, DownloaderService.class);
+                            intent.putExtra("image", image);
+                            intent.putParcelableArrayListExtra("list", chapters);
+                            context.startService(intent);
+                        }
                         actionMode.finish();
                         return true;
                 }
@@ -288,7 +298,6 @@ public class ChapterFragment extends Fragment{
     }
 
 
-
 //    @Override
 //    public void onSaveInstanceState(Bundle bundle) {
 //        if (chapters != null)
@@ -320,6 +329,11 @@ public class ChapterFragment extends Fragment{
         public void onPostExecute(ArrayList<Chapter> arr) {
             refreshLayout.setRefreshing(false);
 
+            jumpingBeans.stopJumping();
+
+            loadingText.setVisibility(View.GONE);
+
+
             if (arr != null) {
 
                 chapters = arr;
@@ -332,7 +346,6 @@ public class ChapterFragment extends Fragment{
 
                 setChoiceModeListener();
 
-                progressBar.setVisibility(ProgressBar.GONE);
 
                 listView.setVisibility(ListView.VISIBLE);
 
@@ -342,7 +355,6 @@ public class ChapterFragment extends Fragment{
                     switchCompat.setVisibility(View.VISIBLE);
 
             } else {
-                progressBar.setVisibility(ProgressBar.GONE);
                 Toast.makeText(context, "Cannot retrieve the chapters, please check your network", Toast.LENGTH_LONG).show();
             }
         }

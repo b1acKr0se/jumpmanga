@@ -80,6 +80,7 @@ public class MangaAdapter extends RecyclerView.Adapter implements View.OnClickLi
             vh = new MangaViewHolder(v);
         } else {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.progress_view, parent, false);
+
             vh = new ProgressViewHolder(v);
         }
         return vh;

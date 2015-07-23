@@ -23,6 +23,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jpardogo.android.googleprogressbar.library.GoogleProgressBar;
+
 import java.util.ArrayList;
 
 import io.wyrmise.jumpmanga.utils.OnLoadMoreListener;
@@ -45,7 +47,7 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
 
     private Context context;
     private JumpDatabaseHelper db;
-    private ProgressBar progressBar;
+    private GoogleProgressBar progressBar;
     private RecyclerView recyclerView;
     private ArrayList<Manga> mangas = new ArrayList<>();
     private ArrayList<Manga> moreManga;
@@ -79,7 +81,7 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
 
         db = new JumpDatabaseHelper(context);
 
-        progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
+        progressBar = (GoogleProgressBar) view.findViewById(R.id.progressBar);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler);
 

@@ -25,8 +25,12 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import net.frakbot.jumpingbeans.JumpingBeans;
+
 import java.util.ArrayList;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.activities.DetailActivity;
 import io.wyrmise.jumpmanga.activities.MainActivity;
@@ -49,6 +53,8 @@ public class InfoFragment extends Fragment {
     private FloatingActionButton fab;
     private AnimationHelper anim;
     private Manga manga;
+    @Bind(R.id.loadingText) TextView loadingText;
+
 
     public InfoFragment() {
         // Required empty public constructor
@@ -58,6 +64,7 @@ public class InfoFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
 
         final String image = ((DetailActivity) getActivity()).getManga().getImage();
 
@@ -69,6 +76,8 @@ public class InfoFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_info, container, false);
 
         context = getActivity().getApplicationContext();
+
+        ButterKnife.bind(this, view);
 
         db = new JumpDatabaseHelper(context);
 
@@ -191,6 +200,16 @@ public class InfoFragment extends Fragment {
 
 
     public class GetMangaDetails extends AsyncTask<String, Void, String[]> {
+
+        JumpingBeans jumpingBeans;
+
+        @Override
+        public void onPreExecute() {
+            loadingText.setVisibility(View.VISIBLE);
+            jumpingBeans = JumpingBeans.with(loadingText).appendJumpingDots().build();
+        }
+
+        @Override
         public String[] doInBackground(String... params) {
             str = new String[2];
             DownloadUtils download = new DownloadUtils(params[0]);
@@ -208,7 +227,10 @@ public class InfoFragment extends Fragment {
             return null;
         }
 
+        @Override
         public void onPostExecute(String[] str) {
+            jumpingBeans.stopJumping();
+            loadingText.setVisibility(View.GONE);
             if (str != null) {
                 detail.setText(str[0]);
                 summary.setText(str[1]);

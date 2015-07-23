@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
 
     private CustomAutoCompleteTextView searchBox;
 
-    private ImageView toggle_search;
+    private MenuItem toggle_btn;
 
     private Spinner spinner;
 
@@ -117,14 +117,6 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
 
         searchBox = (CustomAutoCompleteTextView) findViewById(R.id.search_box);
 
-        toggle_search = (ImageView) findViewById(R.id.toggle_search);
-
-        toggle_search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggleSearch(false);
-            }
-        });
 
 
         searchBox.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -231,13 +223,13 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
             // hide search box and show search icon
             searchBox.setText("");
             searchBox.setVisibility(View.GONE);
-            toggle_search.setVisibility(View.VISIBLE);
+            toggle_btn.setVisible(true);
             // hide the keyboard
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(searchBox.getWindowToken(), 0);
         } else {
             // hide search icon and show search box
-            toggle_search.setVisibility(View.GONE);
+            toggle_btn.setVisible(false);
             searchBox.setVisibility(View.VISIBLE);
             searchBox.requestFocus();
             // show the keyboard
@@ -349,6 +341,9 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        toggle_btn = menu.findItem(R.id.toggle_button);
         return true;
     }
 
@@ -364,6 +359,9 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         switch (item.getItemId()) {
             case android.R.id.home:
                 drawerLayout.openDrawer(GravityCompat.START);
+                return true;
+            case R.id.toggle_button:
+                toggleSearch(false);
                 return true;
         }
 
