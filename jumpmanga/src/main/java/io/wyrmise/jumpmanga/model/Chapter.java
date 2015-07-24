@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 import java.util.ArrayList;
 
-public class Chapter implements Parcelable, Comparable<Chapter> {
+public class Chapter implements Comparable<Chapter>, Parcelable {
 
     private String mangaName;
     private String name;
@@ -80,6 +80,10 @@ public class Chapter implements Parcelable, Comparable<Chapter> {
         this.mangaName = mangaName;
     }
 
+    @Override
+    public int compareTo(Chapter c) {
+        return -(name.compareTo(c.getName()));
+    }
 
     protected Chapter(Parcel in) {
         mangaName = in.readString();
@@ -87,6 +91,12 @@ public class Chapter implements Parcelable, Comparable<Chapter> {
         url = in.readString();
         isRead = in.readByte() != 0x00;
         isFav = in.readByte() != 0x00;
+        if (in.readByte() == 0x01) {
+            path = new ArrayList<String>();
+            in.readList(path, String.class.getClassLoader());
+        } else {
+            path = null;
+        }
     }
 
     @Override
@@ -101,6 +111,12 @@ public class Chapter implements Parcelable, Comparable<Chapter> {
         dest.writeString(url);
         dest.writeByte((byte) (isRead ? 0x01 : 0x00));
         dest.writeByte((byte) (isFav ? 0x01 : 0x00));
+        if (path == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeList(path);
+        }
     }
 
     @SuppressWarnings("unused")
@@ -115,9 +131,4 @@ public class Chapter implements Parcelable, Comparable<Chapter> {
             return new Chapter[size];
         }
     };
-
-    @Override
-    public int compareTo(Chapter c) {
-        return -(name.compareTo(c.getName()));
-    }
 }

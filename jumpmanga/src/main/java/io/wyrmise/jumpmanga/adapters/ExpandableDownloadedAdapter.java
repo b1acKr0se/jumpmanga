@@ -16,8 +16,11 @@ import com.bignerdranch.expandablerecyclerview.Model.ParentObject;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.activities.DownloadedReadActivity;
 import io.wyrmise.jumpmanga.activities.MainActivity;
@@ -30,6 +33,7 @@ public class ExpandableDownloadedAdapter
 
     private LayoutInflater mInflater;
     private FileUtils fileUtils;
+    private ArrayList<Chapter> chapters;
 
     public ExpandableDownloadedAdapter(Context context, List<ParentObject> itemList) {
         super(context, itemList);
@@ -60,11 +64,11 @@ public class ExpandableDownloadedAdapter
                 File sdcard = Environment.getExternalStorageDirectory();
                 File directory = new File(sdcard.getAbsolutePath() + "/.Jump Manga/"+wrapper.getName());
                 fileUtils.delete(directory);
-                notifyItemRangeRemoved(i, wrapper.getChildObjectList().size()+1);
-//                if(mContext instanceof MainActivity) {
-//                    Toast.makeText(mContext, "Deleted", Toast.LENGTH_SHORT).show();
-//                    ((MainActivity)mContext).GetDownloaded();
-//                }
+//                notifyItemRangeRemoved(i, wrapper.getChildObjectList().size()+1);
+                if(mContext instanceof MainActivity) {
+                    Toast.makeText(mContext, "Deleted", Toast.LENGTH_SHORT).show();
+                    ((MainActivity)mContext).GetDownloaded();
+                }
 
             }
         });
@@ -77,37 +81,42 @@ public class ExpandableDownloadedAdapter
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, DownloadedReadActivity.class);
+                intent.putExtra("manga_name", chapter.getMangaName());
                 intent.putExtra("chapter_name", chapter.getName());
                 intent.putStringArrayListExtra("image_path", chapter.getPath());
                 mContext.startActivity(intent);
             }
         });
         viewHolder.chapterName.setText(chapter.getName());
+        if(chapter.isRead())
+            viewHolder.readStatus.setVisibility(View.VISIBLE);
+        else viewHolder.readStatus.setVisibility(View.INVISIBLE);
     }
 
 
 
     public class ParentViewHolder extends com.bignerdranch.expandablerecyclerview.ViewHolder.ParentViewHolder {
-        public TextView mangaName;
-        public ImageView mangaThumbnail;
-        public ImageView deleteBtn;
+
+        @Bind(R.id.mangaName) TextView mangaName;
+        @Bind(R.id.mangaThumbnail) ImageView mangaThumbnail;
+        @Bind(R.id.delete) ImageView deleteBtn;
 
         public ParentViewHolder(View view) {
             super(view);
-            mangaName = (TextView) view.findViewById(R.id.mangaName);
-            mangaThumbnail = (ImageView) view.findViewById(R.id.mangaThumbnail);
-            deleteBtn = (ImageView) view.findViewById(R.id.delete);
+            ButterKnife.bind(this,view);
         }
     }
 
     public class ChildViewHolder extends com.bignerdranch.expandablerecyclerview.ViewHolder.ChildViewHolder {
-        public TextView chapterName;
+
+        @Bind(R.id.chapterName) TextView chapterName;
+        @Bind(R.id.readStatus) ImageView readStatus;
         public View view;
 
         public ChildViewHolder(View view) {
             super(view);
+            ButterKnife.bind(this,view);
             this.view = view;
-            chapterName = (TextView) view.findViewById(R.id.chapterName);
         }
     }
 }

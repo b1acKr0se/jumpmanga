@@ -9,16 +9,20 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.adapters.ViewPagerAdapter;
 import io.wyrmise.jumpmanga.model.Manga;
 
 public class DetailActivity extends AppCompatActivity {
 
-    Toolbar toolbar;
-    ViewPager pager;
+    @Bind(R.id.toolbar) Toolbar toolbar;
+    @Bind(R.id.pager) ViewPager pager;
+    @Bind(R.id.sliding_tabs) TabLayout tabLayout;
+
     ViewPagerAdapter adapter;
-    TabLayout tabLayout;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,19 +30,16 @@ public class DetailActivity extends AppCompatActivity {
         //Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
         setContentView(R.layout.activity_detail);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        ButterKnife.bind(this);
+
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         setTitle(getManga().getName());
 
-        pager = (ViewPager) findViewById(R.id.pager);
-
         adapter =  new ViewPagerAdapter(getSupportFragmentManager(),DetailActivity.this);
 
         pager.setAdapter(adapter);
-
-        tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
 
         tabLayout.setTabTextColors(getResources().getColor(R.color.green_dark),getResources().getColor(android.R.color.white));
 

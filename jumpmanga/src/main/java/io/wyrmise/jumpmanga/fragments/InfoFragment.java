@@ -48,13 +48,16 @@ public class InfoFragment extends Fragment {
     private JumpDatabaseHelper db;
     private Context context;
     private String[] str;
-    private TextView detail, summary;
-    private CardView descriptionCardView, plotCardView;
-    private FloatingActionButton fab;
     private AnimationHelper anim;
     private Manga manga;
-    @Bind(R.id.loadingText) TextView loadingText;
 
+    @Bind(R.id.cardView) CardView descriptionCardView;
+    @Bind(R.id.cardView2) CardView plotCardView;
+    @Bind(R.id.loadingText) TextView loadingText;
+    @Bind(R.id.fab) FloatingActionButton fab;
+    @Bind(R.id.detail) TextView detail;
+    @Bind(R.id.description) TextView summary;
+    @Bind(R.id.image) ImageView img;
 
     public InfoFragment() {
         // Required empty public constructor
@@ -85,24 +88,11 @@ public class InfoFragment extends Fragment {
 
         anim = new AnimationHelper(context);
 
-
-        ImageView img = (ImageView) view.findViewById(R.id.image);
-
         if (!image.equals("") && image != null) {
             Picasso.with(context).load(image).into(img);
         } else {
             img.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.error));
         }
-
-        detail = (TextView) view.findViewById(R.id.detail);
-
-        summary = (TextView) view.findViewById(R.id.description);
-
-        descriptionCardView = (CardView) view.findViewById(R.id.cardView);
-
-        plotCardView = (CardView) view.findViewById(R.id.cardView2);
-
-        fab = (FloatingActionButton) view.findViewById(R.id.fab);
 
         if (db.isMangaFavorited(manga.getName()))
             fab.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_action_favorite));

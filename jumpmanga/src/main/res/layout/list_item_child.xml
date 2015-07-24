@@ -11,6 +11,19 @@
         android:layout_height="wrap_content"
         android:padding="16dp"
         android:layout_marginLeft="8dp"
-        tools:text="Crime Date" />
+        android:layout_marginRight="50dp"
+        android:fontFamily="sans-serif-light"
+        tools:text="Chapter 320" />
+
+    <ImageView
+        android:id="@+id/readStatus"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="18dp"
+        android:paddingTop="2dp"
+        android:src="@drawable/ic_read"
+        android:visibility="invisible"/>
 
 </RelativeLayout>

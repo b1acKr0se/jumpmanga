@@ -1,6 +1,7 @@
 package io.wyrmise.jumpmanga.activities;
 
 import android.content.Intent;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -12,40 +13,55 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.adapters.DownloadedImageAdapter;
 import io.wyrmise.jumpmanga.adapters.FullScreenImageAdapter;
 import io.wyrmise.jumpmanga.animation.AnimationHelper;
 import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
+import io.wyrmise.jumpmanga.model.Chapter;
+import io.wyrmise.jumpmanga.utils.FileUtils;
 import io.wyrmise.jumpmanga.widget.CustomViewPager;
 import io.wyrmise.jumpmanga.widget.TouchImageView;
 
 public class DownloadedReadActivity extends AppCompatActivity {
 
     private JumpDatabaseHelper db;
-
-    private FullScreenImageAdapter adapter;
-
-    private CustomViewPager viewPager;
-
-    private Toolbar toolbar;
-
-    private View control;
-
-    private TextView pageIndicator;
-
-    private SeekBar seekBar;
-
-    private ImageView next, previous;
-
     Handler mHideHandler = new Handler();
-
     private AnimationHelper anim;
-
     private int calculatedPixel;
+    private ArrayList<Chapter> chapters;
+    private FileUtils fileUtils = new FileUtils();
+    private int position = -1;
+
+    @Bind(R.id.viewPager)
+    CustomViewPager viewPager;
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
+    @Bind(R.id.seekBar)
+    SeekBar seekBar;
+    @Bind(R.id.fullscreen_content_controls)
+    View control;
+    @Bind(R.id.indicator)
+    TextView pageIndicator;
+
+    @OnClick(R.id.next)
+    public void next(){
+        nextChapter();
+    }
+
+    @OnClick(R.id.previous)
+    public void prev(){
+        previousChapter();
+    }
 
     private void hideSystemUI() {
         View decorView = getWindow().getDecorView();
@@ -107,19 +123,17 @@ public class DownloadedReadActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_downloaded_read);
 
+        ButterKnife.bind(this);
+
         db = new JumpDatabaseHelper(DownloadedReadActivity.this);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        fileUtils = new FileUtils();
 
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         anim = new AnimationHelper(this);
-
-        viewPager = (CustomViewPager) findViewById(R.id.viewPager);
-
-        seekBar = (SeekBar) findViewById(R.id.seekBar);
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
@@ -177,29 +191,107 @@ public class DownloadedReadActivity extends AppCompatActivity {
 
         calculatedPixel = convertToPx(20);
 
-        control = findViewById(R.id.fullscreen_content_controls);
-
         Intent intent = getIntent();
+
+        String manga_name = intent.getStringExtra("manga_name");
 
         String chapter_name = intent.getStringExtra("chapter_name");
 
         ArrayList<String> path = intent.getStringArrayListExtra("image_path");
 
-        if(path!=null) {
-            DownloadedImageAdapter adapter = new DownloadedImageAdapter(DownloadedReadActivity.this, path,true);
-            viewPager.setAdapter(adapter);
-            viewPager.setCurrentItem(0);
-            viewPager.setPageMargin(calculatedPixel);
-            pageIndicator.setText("Page 1/" + adapter.getCount());
-            seekBar.setProgress(0);
-            seekBar.setMax(adapter.getCount() - 1);
+        Chapter c = new Chapter();
+        c.setMangaName(manga_name);
+        c.setName(chapter_name);
+        c.setPath(path);
+
+        chapters = getAllDownloadedChapter(manga_name);
+
+        for (int i = 0; i < chapters.size(); i++) {
+            if (chapters.get(i).getName().equals(chapter_name))
+                position = i;
         }
 
-        setTitle(chapter_name);
+        if (path != null) {
+            setUpAdapter(chapter_name, path);
+        }
 
-        setSupportActionBar(toolbar);
+        db.markChapterAsRead(c,manga_name);
 
         mHideHandler.postDelayed(hideControllerThread, 3000);
+
+    }
+
+    private ArrayList<Chapter> getAllDownloadedChapter(String mangaName) {
+        ArrayList<Chapter> list = new ArrayList<>();
+        File sdCard = Environment.getExternalStorageDirectory();
+        File dir = new File(sdCard.getAbsolutePath() + "/.Jump Manga/" + mangaName);
+        if (dir.exists() && dir.isDirectory() && dir.listFiles().length > 0) {
+            File[] chapter = dir.listFiles();
+            for (int i = 0; i < chapter.length; i++) {
+                if (chapter[i].isDirectory() && chapter[i].listFiles().length > 0) {
+                    Chapter c = new Chapter();
+                    c.setMangaName(mangaName);
+                    c.setName(chapter[i].getName());
+                    if (fileUtils.isChapterDownloaded(mangaName, c.getName())) {
+                        c.setPath(fileUtils.getFilePaths());
+                        list.add(c);
+                    }
+                }
+            }
+        }
+        Collections.sort(list);
+        return list;
+    }
+
+    private void nextChapter() {
+        if (position - 1 >= 0) {
+            position--;
+            Chapter c = chapters.get(position);
+            String chapterName = c.getName();
+            ArrayList<String> path = c.getPath();
+            db.markChapterAsRead(c,c.getMangaName());
+            setUpAdapter(chapterName, path);
+        } else
+            Toast.makeText(DownloadedReadActivity.this,"Next chapter not found",Toast.LENGTH_SHORT).show();
+    }
+
+    private void previousChapter() {
+        if (position + 1 != chapters.size()) {
+            position++;
+            Chapter c = chapters.get(position);
+            String chapterName = c.getName();
+            ArrayList<String> path = c.getPath();
+            db.markChapterAsRead(c,c.getMangaName());
+            setUpAdapter(chapterName, path);
+        } else
+            Toast.makeText(DownloadedReadActivity.this,"First chapter",Toast.LENGTH_SHORT).show();
+    }
+
+    private void setUpAdapter(String chapterName, ArrayList<String> path) {
+        getSupportActionBar().setTitle(chapterName);
+        DownloadedImageAdapter adapter = new DownloadedImageAdapter(DownloadedReadActivity.this, path, true);
+        viewPager.setAdapter(adapter);
+        viewPager.setOnSwipeOutListener(new CustomViewPager.OnSwipeOutListener() {
+            boolean callHappened = false;
+
+            @Override
+            public void onSwipeOutAtEnd() {
+                if (!callHappened) {
+                    callHappened = true;
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            nextChapter();
+                        }
+                    }, 500);
+                }
+            }
+        });
+        viewPager.setCurrentItem(0);
+        viewPager.setPageMargin(calculatedPixel);
+        pageIndicator.setText("Page 1/" + adapter.getCount());
+        seekBar.setProgress(0);
+        seekBar.setMax(adapter.getCount() - 1);
 
     }
 

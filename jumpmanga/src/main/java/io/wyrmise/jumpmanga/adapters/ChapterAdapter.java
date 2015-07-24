@@ -1,11 +1,6 @@
 package io.wyrmise.jumpmanga.adapters;
 
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.content.Context;
-import android.content.Intent;
-import android.os.AsyncTask;
-import android.support.v4.app.NotificationCompat;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,20 +11,13 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import io.wyrmise.jumpmanga.R;
-import io.wyrmise.jumpmanga.activities.DetailActivity;
 import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
-import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
 import io.wyrmise.jumpmanga.model.Chapter;
-import io.wyrmise.jumpmanga.model.Page;
-import io.wyrmise.jumpmanga.service.DownloaderService;
-import io.wyrmise.jumpmanga.utils.FileDownloader;
 import io.wyrmise.jumpmanga.utils.FileUtils;
-import io.wyrmise.jumpmanga.utils.NotificationUtils;
 
 public class ChapterAdapter extends ArrayAdapter<Chapter> implements Filterable {
     private ArrayList<Chapter> chapters;

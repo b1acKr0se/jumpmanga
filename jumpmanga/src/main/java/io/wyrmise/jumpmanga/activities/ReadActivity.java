@@ -20,9 +20,10 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import io.wyrmise.jumpmanga.adapters.DownloadedImageAdapter;
 import io.wyrmise.jumpmanga.fragments.ChapterFragment;
-import io.wyrmise.jumpmanga.utils.FileDownloader;
 import io.wyrmise.jumpmanga.utils.FileUtils;
 import io.wyrmise.jumpmanga.widget.CustomViewPager;
 import io.wyrmise.jumpmanga.R;
@@ -38,50 +39,31 @@ import io.wyrmise.jumpmanga.widget.TouchImageView;
 public class ReadActivity extends AppCompatActivity {
 
     private JumpDatabaseHelper db;
-
     private FullScreenImageAdapter adapter;
-
-    private CustomViewPager viewPager;
-
     private ArrayList<Page> pages;
-
-    private Toolbar toolbar;
-
-    private View control;
-
-    private TextView pageIndicator;
-
-    private ProgressBar progressBar;
-
-    private SeekBar seekBar;
-
-    private ImageView next, previous;
-
     private int increment = 0;
-
     private int chapter_position;
-
     private int chapter_position_temp;
-
     private Manga manga;
-
     private String name;
-
     private String img;
-
     private ArrayList<Chapter> chapters;
-
     Handler mHideHandler = new Handler();
-
     private AnimationHelper anim;
-
     private int calculatedPixel;
-
     private ProgressDialog progressDialog;
-
     private boolean isRefreshing = false;
-
     private MenuItem fv_button;
+
+    @Bind(R.id.viewPager) CustomViewPager viewPager;
+    @Bind(R.id.toolbar) Toolbar toolbar;
+    @Bind(R.id.seekBar) SeekBar seekBar;
+    @Bind(R.id.progress) ProgressBar progressBar;
+    @Bind(R.id.fullscreen_content_controls) View control;
+    @Bind(R.id.indicator) TextView pageIndicator;
+    @Bind(R.id.next) ImageView next;
+    @Bind(R.id.previous) ImageView previous;
+
 
     private void hideSystemUI() {
         View decorView = getWindow().getDecorView();
@@ -152,19 +134,15 @@ public class ReadActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_read);
 
-        db = new JumpDatabaseHelper(ReadActivity.this);
+        ButterKnife.bind(this);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        db = new JumpDatabaseHelper(ReadActivity.this);
 
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         anim = new AnimationHelper(this);
-
-        viewPager = (CustomViewPager) findViewById(R.id.viewPager);
-
-        seekBar = (SeekBar) findViewById(R.id.seekBar);
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
@@ -230,18 +208,12 @@ public class ReadActivity extends AppCompatActivity {
             }
         });
 
-        pageIndicator = (TextView) findViewById(R.id.indicator);
-
-        progressBar = (ProgressBar) findViewById(R.id.progress);
-
         calculatedPixel = convertToPx(20);
 
         progressDialog = new ProgressDialog(ReadActivity.this);
         progressDialog.setMessage("Loading chapter, please wait...");
         progressDialog.setIndeterminate(true);
         progressDialog.setCancelable(false);
-
-        next = (ImageView) findViewById(R.id.next);
 
         next.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -252,7 +224,6 @@ public class ReadActivity extends AppCompatActivity {
             }
         });
 
-        previous = (ImageView) findViewById(R.id.previous);
         previous.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -261,9 +232,6 @@ public class ReadActivity extends AppCompatActivity {
                 autoHideControllers();
             }
         });
-
-
-        control = findViewById(R.id.fullscreen_content_controls);
 
         Intent intent = getIntent();
 
@@ -355,7 +323,7 @@ public class ReadActivity extends AppCompatActivity {
 
     public void setRead() {
         if (!chapters.get(chapter_position).isRead()) {
-            db.insertChapter(chapters.get(chapter_position), name);
+            db.markChapterAsRead(chapters.get(chapter_position), name);
             if (ChapterFragment.getAdapter() != null)
                 ChapterFragment.getAdapter().getItem(chapter_position).setIsRead(true);
             else chapters.get(chapter_position).setIsRead(true);

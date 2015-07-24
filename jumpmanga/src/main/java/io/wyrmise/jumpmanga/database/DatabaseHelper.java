@@ -105,7 +105,7 @@
 //        return true;
 //    }
 //
-//    public boolean insertChapter(Chapter chapter, String mangaName) {
+//    public boolean markChapterAsRead(Chapter chapter, String mangaName) {
 //        SQLiteDatabase db = this.getWritableDatabase();
 //        ContentValues contentValues = new ContentValues();
 //        contentValues.put(KEY_NAME, chapter.getName());

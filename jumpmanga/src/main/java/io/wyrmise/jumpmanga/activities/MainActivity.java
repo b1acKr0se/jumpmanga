@@ -47,6 +47,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import io.wyrmise.jumpmanga.fragments.CategoryFragment;
 import io.wyrmise.jumpmanga.fragments.DownloadedFragment;
 import io.wyrmise.jumpmanga.widget.CustomAutoCompleteTextView;
@@ -66,45 +68,32 @@ import io.wyrmise.jumpmanga.service.FetchLatestService;
 public class MainActivity extends AppCompatActivity implements Spinner.OnItemSelectedListener {
 
     public static final String AVATAR_URL = "http://lorempixel.com/200/200/people/1/";
-
     private ArrayList<Manga> mangas;
-
     private ArrayList<Manga> temp;
-
     private ArrayList<Category> categories;
-
-    private Toolbar toolbar;
-
-    private DrawerLayout drawerLayout;
-
     private int savedMenuId = -1;
-
     private int category_position = -1;
-
     private JumpDatabaseHelper db;
-
     private SearchAdapter adapter;
-
-    private CustomAutoCompleteTextView searchBox;
-
     private MenuItem toggle_btn;
-
     private Spinner spinner;
-
     private SpinnerAdapter spinnerAdapter;
-
     private View spinnerContainer;
-
     private boolean isManuallySelected = true;
-
     private SharedPreferences prefs;
 
+    @Bind(R.id.toolbar) Toolbar toolbar;
+    @Bind(R.id.drawer_layout) DrawerLayout drawerLayout;
+    @Bind(R.id.search_box) CustomAutoCompleteTextView searchBox;
+    @Bind(R.id.avatar) ImageView avatar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
         setContentView(R.layout.activity_main);
+
+        ButterKnife.bind(this);
 
         db = new JumpDatabaseHelper(MainActivity.this);
 
@@ -114,10 +103,6 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         categories = db.getAllCategories();
 
         prefs = getSharedPreferences("Alarm", MODE_PRIVATE);
-
-        searchBox = (CustomAutoCompleteTextView) findViewById(R.id.search_box);
-
-
 
         searchBox.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -138,8 +123,6 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
             }
         });
 
-
-        final ImageView avatar = (ImageView) findViewById(R.id.avatar);
 
         Picasso.with(this).load(AVATAR_URL).transform(new CircleTransform()).into(avatar);
 
@@ -369,7 +352,6 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
     }
 
     private void initToolbar() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
     }
 
@@ -407,7 +389,6 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
     }
 
     private void setupDrawerLayout() {
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         NavigationView view = (NavigationView) findViewById(R.id.navigation_view);
 

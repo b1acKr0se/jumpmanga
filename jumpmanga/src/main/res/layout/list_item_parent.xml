@@ -34,8 +34,9 @@
             android:layout_marginRight="50dp"
             android:layout_toRightOf="@id/mangaThumbnail"
             android:paddingLeft="@dimen/spacing_medium"
-            android:text="Crime Title"
-            android:textSize="17sp" />
+            android:text="Fairy Tail"
+            android:fontFamily="sans-serif"
+            android:textSize="18sp" />
 
         <com.andexert.library.RippleView
             android:layout_width="40dp"

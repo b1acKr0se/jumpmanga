@@ -81,17 +81,18 @@ public class FetchLatestService extends Service {
                 for (int i = 0; i < list.size(); i++) {
                     Manga manga = list.get(i);
                     Chapter latest = downloadUtils.GetLatestChapter(manga);
-                    if (latest != null && !latest.getName().equals(manga.getLatest()) && !latest.getName().equals("")) {
-                        manga.setLatest(latest.getName());
-                        manga.setChapter(latest);
-                        if (db.isMangaFavorited(manga.getName())) {
-                            db.updateLatestChapter(manga);
-                            tempNotificationArr.add(manga);
+                    if (latest != null)
+                        if (!latest.getName().equals(manga.getLatest()) && !latest.getName().equals("")) {
+                            manga.setLatest(latest.getName());
+                            manga.setChapter(latest);
+                            if (db.isMangaFavorited(manga.getName())) {
+                                db.updateLatestChapter(manga);
+                                tempNotificationArr.add(manga);
+                            }
                         }
-                    }
                 }
                 return tempNotificationArr;
-            }catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 return null;
             }
@@ -100,9 +101,9 @@ public class FetchLatestService extends Service {
         @Override
         public void onPostExecute(ArrayList<Manga> result) {
             writeLog();
-            if (result!=null && result.size() > 0) {
-                for(int i = 0; i < result.size(); i++) {
-                    db.insertSubscription(result.get(i),result.get(i).getChapter());
+            if (result != null && result.size() > 0) {
+                for (int i = 0; i < result.size(); i++) {
+                    db.insertSubscription(result.get(i), result.get(i).getChapter());
                 }
                 showNotification(result);
             }
@@ -157,7 +158,7 @@ public class FetchLatestService extends Service {
             SimpleDateFormat format = new SimpleDateFormat(
                     "dd-M-yyyy hh:mm:ss", Locale.US);
             Date date = new Date();
-            String dateFormat = "Service #" + index + ": at " +format.format(date);
+            String dateFormat = "Service #" + index + ": at " + format.format(date);
 
             index++;
 

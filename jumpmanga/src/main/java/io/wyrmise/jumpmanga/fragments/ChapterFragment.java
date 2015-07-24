@@ -10,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SwitchCompat;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -23,7 +22,6 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.CompoundButton;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,7 +40,7 @@ import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
 import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
 import io.wyrmise.jumpmanga.model.Chapter;
 import io.wyrmise.jumpmanga.model.Manga;
-import io.wyrmise.jumpmanga.service.DownloaderService;
+import io.wyrmise.jumpmanga.service.DownloadService;
 
 
 /**
@@ -51,29 +49,22 @@ import io.wyrmise.jumpmanga.service.DownloaderService;
 public class ChapterFragment extends Fragment {
 
     private JumpDatabaseHelper db;
-    private ListView listView;
     private ArrayList<Chapter> chapters;
-
     private static ChapterAdapter adapter;
-
     private Context context;
-
     private Manga manga;
-
     private String url;
-
-    private SwipeRefreshLayout refreshLayout;
-
     private boolean isChecked = false;
-
     private ArrayList<Chapter> temp;
 
     private SwitchCompat switchCompat;
 
     private SearchView actionSearchView;
 
-    @Bind(R.id.loadingText)
-    TextView loadingText;
+    @Bind(R.id.loadingText) TextView loadingText;
+    @Bind(R.id.listView) ListView listView;
+    @Bind(R.id.refresh_list) SwipeRefreshLayout refreshLayout;
+
 
     private JumpingBeans jumpingBeans;
 
@@ -100,14 +91,12 @@ public class ChapterFragment extends Fragment {
 
         setHasOptionsMenu(true);
 
-        listView = (ListView) view.findViewById(R.id.listView);
-
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent(context, ReadActivity.class);
                 if (!adapter.getItem(i).isRead()) {
-                    db.insertChapter(adapter.getItem(i), manga.getName());
+                    db.markChapterAsRead(adapter.getItem(i), manga.getName());
                     adapter.getItem(i).setIsRead(true);
                 }
                 db.insertRecentChapter(manga, adapter.getItem(i));
@@ -127,8 +116,6 @@ public class ChapterFragment extends Fragment {
         manga = ((DetailActivity) getActivity()).getManga();
 
         url = ((DetailActivity) getActivity()).getManga().getUrl();
-
-        refreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refresh_list);
 
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -197,7 +184,7 @@ public class ChapterFragment extends Fragment {
                         }
                         if (chapters.size() > 0) {
                             String image = ((DetailActivity) context).getManga().getImage();
-                            Intent intent = new Intent(context, DownloaderService.class);
+                            Intent intent = new Intent(context, DownloadService.class);
                             intent.putExtra("image", image);
                             intent.putParcelableArrayListExtra("list", chapters);
                             context.startService(intent);

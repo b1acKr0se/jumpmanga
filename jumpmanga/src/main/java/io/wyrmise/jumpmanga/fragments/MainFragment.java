@@ -27,6 +27,8 @@ import com.jpardogo.android.googleprogressbar.library.GoogleProgressBar;
 
 import java.util.ArrayList;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import io.wyrmise.jumpmanga.utils.OnLoadMoreListener;
 import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.activities.DetailActivity;
@@ -47,14 +49,15 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
 
     private Context context;
     private JumpDatabaseHelper db;
-    private GoogleProgressBar progressBar;
-    private RecyclerView recyclerView;
     private ArrayList<Manga> mangas = new ArrayList<>();
     private ArrayList<Manga> moreManga;
-    private TextView empty;
     private MangaAdapter adapter;
     private int page = 2;
     private int i;
+
+    @Bind(R.id.progressBar) GoogleProgressBar progressBar;
+    @Bind(R.id.recycler) RecyclerView recyclerView;
+    @Bind(R.id.empty) TextView empty;
 
 
     public MainFragment() {
@@ -77,15 +80,11 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
 
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 
+        ButterKnife.bind(this,view);
+
         context = getActivity().getApplicationContext();
 
         db = new JumpDatabaseHelper(context);
-
-        progressBar = (GoogleProgressBar) view.findViewById(R.id.progressBar);
-
-        recyclerView = (RecyclerView) view.findViewById(R.id.recycler);
-
-        empty = (TextView) view.findViewById(R.id.empty);
 
         switch (i) {
             case RETRIEVE_HOT_MANGA:

@@ -24,9 +24,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.adapters.DownloadedAdapter;
 import io.wyrmise.jumpmanga.adapters.ExpandableDownloadedAdapter;
+import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
 import io.wyrmise.jumpmanga.model.Chapter;
 import io.wyrmise.jumpmanga.model.Manga;
 import io.wyrmise.jumpmanga.model.Wrapper;
@@ -38,10 +41,11 @@ import io.wyrmise.jumpmanga.widget.SimpleDividerItemDecoration;
  */
 public class DownloadedFragment extends Fragment {
 
+    private JumpDatabaseHelper db;
     private List<Wrapper> wrappers;
     private ExpandableDownloadedAdapter adapter;
-    private RecyclerView recyclerView;
-    private TextView empty;
+    @Bind(R.id.list) RecyclerView recyclerView;
+    @Bind(R.id.empty)TextView empty;
     private Context context;
 
     public DownloadedFragment() {
@@ -67,10 +71,9 @@ public class DownloadedFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_downloaded, container, false);
 
+        ButterKnife.bind(this,view);
 
-        recyclerView = (RecyclerView) view.findViewById(R.id.list);
-        empty = (TextView) view.findViewById(R.id.empty);
-
+        db = new JumpDatabaseHelper(getActivity());
 
         wrappers = new ArrayList<>();
 
@@ -80,7 +83,6 @@ public class DownloadedFragment extends Fragment {
         File dir = new File(sdCard.getAbsolutePath() + "/.Jump Manga/");
         if (dir.exists() && dir.isDirectory() && dir.listFiles().length > 0) {
             File[] mangaNames = dir.listFiles();
-
             for (int i = mangaNames.length - 1; i >= 0; i--) {
                 if (mangaNames[i].isDirectory() && mangaNames[i].listFiles().length > 0) {
                     File[] chapterNames = mangaNames[i].listFiles();
@@ -95,11 +97,11 @@ public class DownloadedFragment extends Fragment {
                             FileUtils fileUtils = new FileUtils();
                             if (fileUtils.isChapterDownloaded(c.getMangaName(), c.getName())) {
                                 c.setPath(fileUtils.getFilePaths());
+                                c.setIsRead(db.isChapterRead(c,c.getMangaName()));
                                 chapters.add(c);
                             }
                         } else if (f.isFile()) {
                             w.setImagePath(f);
-                            System.out.println(f.getName());
                         }
                     }
                     Collections.sort(chapters);
@@ -130,6 +132,15 @@ public class DownloadedFragment extends Fragment {
 
         return view;
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
+    }
+
 
 
 

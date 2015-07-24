@@ -97,7 +97,7 @@ public class JumpDatabaseHelper extends SQLiteAssetHelper {
         return true;
     }
 
-    public boolean insertChapter(Chapter chapter, String mangaName) {
+    public boolean markChapterAsRead(Chapter chapter, String mangaName) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(TABLE_CHAPTER_NAME, chapter.getName());
