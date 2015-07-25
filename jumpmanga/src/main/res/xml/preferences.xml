@@ -9,6 +9,17 @@
         android:numeric="integer"
         android:title="@string/pref_download_title"
         android:summary="@string/pref_download_summary"/>
-    
+    <CheckBoxPreference
+        android:key="pref_show_notification"
+        android:defaultValue="true"
+        android:title="@string/pref_show_notification_title"
+        android:summary="@string/pref_show_notification_summary"/>
+    <ListPreference
+        android:key="pref_update_frequency"
+        android:defaultValue="1440"
+        android:entries="@array/update_frequency"
+        android:entryValues="@array/update_frequency_values"
+        android:title="@string/pref_update_frequency_title"
+        android:summary="@string/pref_update_frequency_summary"/>
 
 </PreferenceScreen>

@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -414,6 +415,15 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
                         break;
                     case R.id.drawer_downloaded:
                         GetDownloaded();
+                        break;
+                    case R.id.drawer_settings:
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(MainActivity.this, SettingActivity.class);
+                                startActivity(intent);
+                            }
+                        },200);
                         break;
                 }
                 menuItem.setChecked(true);

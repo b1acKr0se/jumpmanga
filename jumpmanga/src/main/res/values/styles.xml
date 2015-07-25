@@ -17,10 +17,11 @@
         <item name="actionModeStyle">@style/CustomActionMode</item>
     </style>
 
-    <style name="SettingTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="SettingTheme" parent="Theme.AppCompat.Light">
         <item name="colorPrimary">@color/grey_100</item>
-        <item name="colorPrimaryDark">@color/grey_300</item>
+        <item name="colorPrimaryDark">@color/grey_700</item>
         <item name="colorAccent">@color/teal_500</item>
+        <item name="android:colorBackground">@color/grey_50</item>
     </style>
 
     <style name="FabStyle">

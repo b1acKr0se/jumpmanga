@@ -14,6 +14,7 @@
     <string name="title_activity_read">ReadActivity</string>
     <string name="title_activity_splash_screen">SplashScreenActivity</string>
     <string name="title_activity_exception">Exception</string>
+    <string name="title_activity_setting">Settings</string>
     <string name="send">Send this report</string>
     <string name="quit">Exit</string>
     <string name="search_hint">Search...</string>
@@ -27,4 +28,9 @@
     <string name="confirm_delete">Do you really want to delete this manga and all of its chapters?</string>
     <string name="pref_download_title">Number of concurrent downloads</string>
     <string name="pref_download_summary">Lower this if you experience any issue</string>
+    <string name="pref_show_notification_title">Show download progress on status bar</string>
+    <string name="pref_show_notification_summary">Uncheck this if you don\'t want a crowded status bar</string>
+    <string name="pref_update_frequency_title">Check for new chapter frequency</string>
+    <string name="pref_update_frequency_summary">Recommend to leave it at the default value</string>
+
 </resources>

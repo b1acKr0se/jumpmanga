@@ -12,4 +12,16 @@
         <item>4</item>
         <item>5</item>
     </string-array>
+
+    <string-array name="update_frequency">
+        <item>Every 3 hours</item>
+        <item>Every 8 hours</item>
+        <item>Once every day</item>
+    </string-array>
+
+    <string-array name="update_frequency_values">
+        <item>180</item>
+        <item>480</item>
+        <item>1440</item>
+    </string-array>
 </resources>
