@@ -22,8 +22,10 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
@@ -31,6 +33,7 @@ import java.util.ArrayList;
 
 import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.activities.DownloadedReadActivity;
+import io.wyrmise.jumpmanga.activities.SettingActivity;
 import io.wyrmise.jumpmanga.manga24hbaseapi.FetchingMachine;
 import io.wyrmise.jumpmanga.model.Chapter;
 import io.wyrmise.jumpmanga.model.Page;
@@ -45,8 +48,11 @@ public class DownloadService extends Service {
     private FileUtils fileUtils;
     private String image;
     private static int numberOfDownload = 0;
+    private int maxDownload = 3;
+    private boolean isNotificationEnabled = true;
     NotificationManager notificationManager;
     NotificationCompat.Builder builder;
+    SharedPreferences prefs;
 
 
     @Nullable
@@ -57,6 +63,13 @@ public class DownloadService extends Service {
 
     private void handleIntent(Intent intent) {
 
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        String numberString = prefs.getString(SettingActivity.KEY_DOWNLOAD_NUM, "3");
+        maxDownload = Integer.parseInt(numberString);
+
+        isNotificationEnabled = prefs.getBoolean(SettingActivity.KEY_SHOW_NOTIFICATION, true);
+
         fileUtils = new FileUtils();
         image = intent.getStringExtra("image");
 
@@ -64,7 +77,7 @@ public class DownloadService extends Service {
 
         list.addAll(chapters);
 
-        if(notificationManager==null && builder==null) {
+        if (notificationManager == null && builder == null) {
             notificationManager = (NotificationManager) DownloadService.this.getSystemService(Context.NOTIFICATION_SERVICE);
             builder = new NotificationCompat.Builder(DownloadService.this);
             builder.setContentTitle("Jump Manga")
@@ -81,17 +94,18 @@ public class DownloadService extends Service {
         if (list.size() > 0 && list != null) {
             getChapterToDownload();
         }
-
     }
 
     private void getChapterToDownload() {
         synchronized (list) {
-            while (numberOfDownload < 3 && list.size() > 0) {
+            while (numberOfDownload < maxDownload && list.size() > 0) {
                 Chapter c = list.get(0);
                 RetrieveAllPages task = new RetrieveAllPages(c.getMangaName(), c.getName());
                 task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, c.getUrl());
                 numberOfDownload++;
                 list.remove(0);
+                builder.setContentText("Downloading: " + numberOfDownload +". Queuing: "+list.size()+".");
+                notificationManager.notify(1337, builder.build());
             }
         }
     }
@@ -131,7 +145,7 @@ public class DownloadService extends Service {
 
         public void onPostExecute(ArrayList<Page> result) {
             if (result != null) {
-                DownloadAsync task = new DownloadAsync(mangaName, chapterName);
+                DownloadAsync task = new DownloadAsync(mangaName, chapterName, isNotificationEnabled);
                 task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, result);
             } else {
                 numberOfDownload--;
@@ -148,26 +162,30 @@ public class DownloadService extends Service {
     class DownloadAsync extends AsyncTask<ArrayList<Page>, Integer, Boolean> {
         private String mangaName;
         private String chapterName;
+        private boolean enabledNotification;
         private int id = NotificationUtils.getID();
         private NotificationManager mNotifyManager;
         private NotificationCompat.Builder mBuilder;
         private PendingIntent pendingIntent;
 
-        public DownloadAsync(String m, String c) {
+        public DownloadAsync(String m, String c, boolean isEnabled) {
             mangaName = m;
             chapterName = c;
+            enabledNotification = isEnabled;
         }
 
         @Override
         public void onPreExecute() {
-            mNotifyManager = (NotificationManager) DownloadService.this.getSystemService(Context.NOTIFICATION_SERVICE);
-            mBuilder = new NotificationCompat.Builder(DownloadService.this);
-            mBuilder.setContentTitle(mangaName)
-                    .setContentText("Downloading: " + chapterName)
-                    .setSmallIcon(android.R.drawable.stat_sys_download)
-                    .setAutoCancel(false);
-            mBuilder.setProgress(100, 0, false);
-            mNotifyManager.notify(id, mBuilder.build());
+            if (enabledNotification) {
+                mNotifyManager = (NotificationManager) DownloadService.this.getSystemService(Context.NOTIFICATION_SERVICE);
+                mBuilder = new NotificationCompat.Builder(DownloadService.this);
+                mBuilder.setContentTitle(mangaName)
+                        .setContentText("Downloading: " + chapterName)
+                        .setSmallIcon(android.R.drawable.stat_sys_download)
+                        .setAutoCancel(false);
+                mBuilder.setProgress(100, 0, false);
+                mNotifyManager.notify(id, mBuilder.build());
+            }
         }
 
         public Boolean doInBackground(ArrayList<Page>... page) {
@@ -201,16 +219,18 @@ public class DownloadService extends Service {
                 return false;
             }
 
-            Intent intent = new Intent(DownloadService.this, DownloadedReadActivity.class);
-            intent.putExtra("manga_name",mangaName);
-            intent.putExtra("chapter_name", chapterName);
-            if (fileUtils.isChapterDownloaded(mangaName, chapterName)) {
-                intent.putStringArrayListExtra("image_path", fileUtils.getFilePaths());
+            if(enabledNotification) {
+                Intent intent = new Intent(DownloadService.this, DownloadedReadActivity.class);
+                intent.putExtra("manga_name", mangaName);
+                intent.putExtra("chapter_name", chapterName);
+                if (fileUtils.isChapterDownloaded(mangaName, chapterName)) {
+                    intent.putStringArrayListExtra("image_path", fileUtils.getFilePaths());
+                }
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                        Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                pendingIntent = PendingIntent.getActivity(DownloadService.this, id,
+                        intent, 0);
             }
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
-                    Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            pendingIntent = PendingIntent.getActivity(DownloadService.this, id,
-                    intent, 0);
 
             return true;
         }
@@ -218,30 +238,41 @@ public class DownloadService extends Service {
         @Override
         protected void onProgressUpdate(Integer... values) {
             // Update progress
-            mBuilder.setProgress(100, values[0], false);
-            mNotifyManager.notify(id, mBuilder.build());
-            super.onProgressUpdate(values);
+            if(enabledNotification) {
+                mBuilder.setProgress(100, values[0], false);
+                mNotifyManager.notify(id, mBuilder.build());
+                super.onProgressUpdate(values);
+            }
         }
 
         @Override
         public void onPostExecute(Boolean result) {
-            if (result) {
-                mBuilder.setContentText("Download completed: " + chapterName);
-                mBuilder.setProgress(0, 0, false);
-                mBuilder.setSmallIcon(android.R.drawable.stat_sys_download_done);
-                mBuilder.setAutoCancel(true);
-                mBuilder.setContentIntent(pendingIntent);
-                mNotifyManager.notify(id, mBuilder.build());
-            } else {
-                System.out.println(fileUtils.deleteChapter(mangaName, chapterName));
-                mBuilder.setContentText("Download failed: " + chapterName);
-                mBuilder.setProgress(0, 0, false);
-                mBuilder.setAutoCancel(true);
-                mBuilder.setSmallIcon(android.R.drawable.stat_sys_download_done);
-                mNotifyManager.notify(id, mBuilder.build());
+            if (enabledNotification) {
+                if (result) {
+                    mBuilder.setContentText("Download completed: " + chapterName);
+                    mBuilder.setProgress(0, 0, false);
+                    mBuilder.setSmallIcon(android.R.drawable.stat_sys_download_done);
+                    mBuilder.setAutoCancel(true);
+                    mBuilder.setContentIntent(pendingIntent);
+                    mNotifyManager.notify(id, mBuilder.build());
+                } else {
+                    System.out.println(fileUtils.deleteChapter(mangaName, chapterName));
+                    mBuilder.setContentText("Download failed: " + chapterName);
+                    mBuilder.setProgress(0, 0, false);
+                    mBuilder.setAutoCancel(true);
+                    mBuilder.setSmallIcon(android.R.drawable.stat_sys_download_done);
+                    mNotifyManager.notify(id, mBuilder.build());
+                }
             }
             numberOfDownload--;
             if (numberOfDownload == 0 && list.size() == 0) {
+                notificationManager = (NotificationManager) DownloadService.this.getSystemService(Context.NOTIFICATION_SERVICE);
+                builder = new NotificationCompat.Builder(DownloadService.this);
+                builder.setContentTitle("Jump Manga")
+                        .setContentText("Background task completed")
+                        .setSmallIcon(R.drawable.ic_stat_notification)
+                        .setAutoCancel(true);
+                notificationManager.notify(2304,builder.build());
                 stopSelf();
             } else if (list.size() > 0) {
                 getChapterToDownload();

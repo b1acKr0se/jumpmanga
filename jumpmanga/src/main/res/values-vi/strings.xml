@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">Jump Manga</string>
+
+    <string name="home">Trang chính</string>
+    <string name="favourite">Yêu thích</string>
+    <string name="recent">Lịch sử</string>
+    <string name="settings">Cài đặt</string>
+    <string name="new_">Mới</string>
+    <string name="downloaded">Đã tải</string>
+    <string name="openDrawer">Open</string>
+    <string name="closeDrawer">Close</string>
+    <string name="detail_placeholder">Thể loại:\nTác giả:\nTình trạng:\nNguồn:\nLượt xem:\nNgày đăng:</string>
+    <string name="title_activity_detail">DetailActivity</string>
+    <string name="title_activity_read">ReadActivity</string>
+    <string name="title_activity_splash_screen">SplashScreenActivity</string>
+    <string name="title_activity_exception">Exception</string>
+    <string name="title_activity_setting">Cài đặt</string>
+    <string name="send">Gửi báo cáo</string>
+    <string name="quit">Thoát</string>
+    <string name="search_hint">Tìm kiếm...</string>
+    <string name="category">Thể loại</string>
+    <string name="personal">Personal</string>
+    <string name="feeds">Đăng kí của tôi</string>
+    <string name="action_settings">Cài đặt</string>
+    <string name="loading">ĐANG TẢI</string>
+    <string name="empty"> KHÔNG CÓ DỮ LIỆU</string>
+    <string name="size_info">Dung lượng chiếm</string>
+    <string name="confirm_delete">Bạn có muốn xóa truyện này không?</string>
+    <string name="pref_download_title">Số lượt tải đồng thời</string>
+    <string name="pref_download_summary">Giảm số lượt tải nếu có lỗi gì đó xảy ra</string>
+    <string name="pref_show_notification_title">Hiện các mục đang tải trên thanh status</string>
+    <string name="pref_show_notification_summary"> Đừng chọn nếu bạn không muốn lấp đầy thanh status với các thông báo</string>
+    <string name="pref_update_frequency_title">Tần suất kiểm tra chap mới</string>
+    <string name="pref_update_frequency_summary"> Nên để ở mức mặc định (1 ngày)</string>
+
+</resources>

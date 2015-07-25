@@ -285,7 +285,7 @@ public class DownloadedReadActivity extends AppCompatActivity {
                         public void run() {
                             nextChapter();
                         }
-                    }, 100);
+                    }, 500);
                 }
             }
         });

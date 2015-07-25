@@ -61,6 +61,7 @@ public class DownloadedFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        ButterKnife.unbind(this);
         context = null;
     }
 
@@ -138,6 +139,7 @@ public class DownloadedFragment extends Fragment {
 
         return view;
     }
+
 
     @Override
     public void onResume() {

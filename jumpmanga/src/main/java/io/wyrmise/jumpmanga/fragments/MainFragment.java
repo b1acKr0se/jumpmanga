@@ -21,6 +21,7 @@ import com.jpardogo.android.googleprogressbar.library.GoogleProgressBar;
 import java.util.ArrayList;
 
 import butterknife.Bind;
+import butterknife.BindString;
 import butterknife.ButterKnife;
 import io.wyrmise.jumpmanga.utils.OnLoadMoreListener;
 import io.wyrmise.jumpmanga.R;
@@ -51,6 +52,9 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
     @Bind(R.id.progressBar) GoogleProgressBar progressBar;
     @Bind(R.id.recycler) RecyclerView recyclerView;
     @Bind(R.id.empty) TextView empty;
+    @BindString(R.string.load_error) String load_error;
+    @BindString(R.string.last_page) String last_page;
+    @BindString(R.string.no_fav_manga) String no_fav_manga;
 
 
     public MainFragment() {
@@ -99,6 +103,12 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
         return view;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
+    }
+
     public void setUpAdapter(Bundle savedInstanceState) {
         progressBar.setVisibility(ProgressBar.GONE);
         recyclerView.setVisibility(RecyclerView.VISIBLE);
@@ -120,7 +130,7 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
                     if (page <= 75)
                         new LoadMoreManga().execute("http://manga24h.com/status/hot.html/" + page);
                     else
-                        Toast.makeText(context, "Reach the end of page!", Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, last_page, Toast.LENGTH_LONG).show();
 
                 }
             });
@@ -180,7 +190,7 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
                     adapter.notifyItemInserted(mangas.size());
                 }
             } else {
-                Toast.makeText(context, "There's something wrong with your network, please check", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, load_error , Toast.LENGTH_LONG).show();
             }
             adapter.setLoaded();
         }
@@ -235,7 +245,7 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
             } else {
                 recyclerView.setVisibility(RecyclerView.GONE);
                 empty.setVisibility(TextView.VISIBLE);
-                Toast.makeText(context, "There's something wrong with your network, please check", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, load_error, Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -272,7 +282,7 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
             } else {
                 recyclerView.setVisibility(RecyclerView.GONE);
                 empty.setVisibility(TextView.VISIBLE);
-                Toast.makeText(context, "No favorite manga", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, no_fav_manga, Toast.LENGTH_LONG).show();
             }
         }
     }

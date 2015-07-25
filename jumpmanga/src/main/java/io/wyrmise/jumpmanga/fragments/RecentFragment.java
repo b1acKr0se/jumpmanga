@@ -70,6 +70,7 @@ public class RecentFragment extends Fragment implements MangaAdapter.OnItemClick
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        ButterKnife.unbind(this);
         context = null;
     }
 
@@ -95,12 +96,13 @@ public class RecentFragment extends Fragment implements MangaAdapter.OnItemClick
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_recent, container, false);
 
-        ButterKnife.bind(this,view);
+        ButterKnife.bind(this, view);
 
         db = new JumpDatabaseHelper(context);
 
         return view;
     }
+
 
     @Override
     public void onItemClick(View view, Manga manga) {

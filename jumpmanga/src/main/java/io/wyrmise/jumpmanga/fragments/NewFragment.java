@@ -16,8 +16,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jpardogo.android.googleprogressbar.library.GoogleProgressBar;
+
 import java.util.ArrayList;
 
+import butterknife.Bind;
+import butterknife.BindString;
+import butterknife.ButterKnife;
 import io.wyrmise.jumpmanga.utils.OnLoadMoreListener;
 import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.activities.DetailActivity;
@@ -34,13 +39,17 @@ public class NewFragment extends Fragment implements MangaAdapter.OnItemClickLis
 
     private Context context;
     private JumpDatabaseHelper db;
-    private ProgressBar progressBar;
-    private RecyclerView recyclerView;
     private ArrayList<Manga> mangas = new ArrayList<>();
     private ArrayList<Manga> moreManga;
-    private TextView empty;
     private MangaAdapter adapter;
     private int page = 2;
+
+    @Bind(R.id.progressBar)
+    GoogleProgressBar progressBar;
+    @Bind(R.id.recycler) RecyclerView recyclerView;
+    @Bind(R.id.empty) TextView empty;
+    @BindString(R.string.load_error) String load_error;
+    @BindString(R.string.last_page) String last_page;
 
     public NewFragment() {
         // Required empty public constructor
@@ -53,15 +62,11 @@ public class NewFragment extends Fragment implements MangaAdapter.OnItemClickLis
 
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 
+        ButterKnife.bind(this, view);
+
         context = getActivity().getApplicationContext();
 
         db = new JumpDatabaseHelper(context);
-
-        progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
-
-        recyclerView = (RecyclerView) view.findViewById(R.id.recycler);
-
-        empty = (TextView) view.findViewById(R.id.empty);
 
         if (savedInstanceState == null)
             new GetMangas().execute("http://manga24h.com/status/new.html");
@@ -70,6 +75,12 @@ public class NewFragment extends Fragment implements MangaAdapter.OnItemClickLis
         }
 
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
     }
 
     public void setUpAdapter(Bundle savedInstanceState) {
@@ -92,7 +103,7 @@ public class NewFragment extends Fragment implements MangaAdapter.OnItemClickLis
                 if (page <= 146)
                     new LoadMoreManga().execute("http://manga24h.com/status/new.html/" + page);
                 else
-                    Toast.makeText(context, "Reach the end of page!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, last_page, Toast.LENGTH_LONG).show();
 
             }
         });
@@ -149,7 +160,7 @@ public class NewFragment extends Fragment implements MangaAdapter.OnItemClickLis
                     adapter.notifyItemInserted(mangas.size());
                 }
             } else {
-                Toast.makeText(context, "There's something wrong with your network, please check", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, load_error, Toast.LENGTH_LONG).show();
             }
             adapter.setLoaded();
         }
@@ -205,7 +216,7 @@ public class NewFragment extends Fragment implements MangaAdapter.OnItemClickLis
             } else {
                 recyclerView.setVisibility(RecyclerView.GONE);
                 empty.setVisibility(TextView.VISIBLE);
-                Toast.makeText(context, "There's something wrong with your network, please check", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, load_error, Toast.LENGTH_LONG).show();
             }
 
         }

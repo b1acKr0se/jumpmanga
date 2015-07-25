@@ -16,6 +16,7 @@
 
 package io.wyrmise.jumpmanga.activities;
 
+import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -23,10 +24,13 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -65,7 +69,6 @@ import io.wyrmise.jumpmanga.service.FetchLatestService;
 
 public class MainActivity extends AppCompatActivity implements Spinner.OnItemSelectedListener {
 
-    public static final String AVATAR_URL = "http://lorempixel.com/200/200/people/1/";
     private ArrayList<Manga> mangas;
     private ArrayList<Manga> temp;
     private ArrayList<Category> categories;
@@ -79,11 +82,25 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
     private View spinnerContainer;
     private boolean isManuallySelected = true;
     private SharedPreferences prefs;
+    SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            switch (key) {
+                case SettingActivity.KEY_UPDATE_FREQUENCY:
+                    System.out.println("Setting alarm");
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putBoolean("Alarm", false);
+                    editor.commit();
+                    setAlarmService();
+                    break;
+            }
+        }
+    };
 
     @Bind(R.id.toolbar) Toolbar toolbar;
     @Bind(R.id.drawer_layout) DrawerLayout drawerLayout;
     @Bind(R.id.search_box) CustomAutoCompleteTextView searchBox;
-    @Bind(R.id.avatar) ImageView avatar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
 
         categories = db.getAllCategories();
 
-        prefs = getSharedPreferences("Alarm", MODE_PRIVATE);
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         searchBox.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -121,8 +138,6 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
             }
         });
 
-
-        Picasso.with(this).load(AVATAR_URL).transform(new CircleTransform()).into(avatar);
 
         boolean isOpenFromNotification = getIntent().getBooleanExtra("favorite", false);
 
@@ -184,15 +199,21 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
     @Override
     public void onResume() {
         super.onResume();
+        prefs.registerOnSharedPreferenceChangeListener(listener);
+        setAlarmService();
+    }
+
+    private void setAlarmService() {
         if (!prefs.getBoolean("Alarm", false)) {
             Intent i = new Intent(this, FetchLatestService.class);
             PendingIntent pi = PendingIntent.getService(this, 0, i, 0);
             AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
             am.cancel(pi);
+            String frequency = prefs.getString(SettingActivity.KEY_UPDATE_FREQUENCY, "1440");
+            int minute = Integer.parseInt(frequency);
             am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                    SystemClock.elapsedRealtime() + 480 * 60 * 1000,
-                    480 * 60 * 1000, pi);
-
+                    SystemClock.elapsedRealtime() + minute * 60 * 1000,
+                    minute * 60 * 1000, pi);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean("Alarm", true);
             editor.commit();
@@ -217,7 +238,6 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.showSoftInput(searchBox, InputMethodManager.SHOW_IMPLICIT);
         }
-
     }
 
 

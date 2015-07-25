@@ -30,6 +30,7 @@ import net.frakbot.jumpingbeans.JumpingBeans;
 import java.util.ArrayList;
 
 import butterknife.Bind;
+import butterknife.BindString;
 import butterknife.ButterKnife;
 import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.activities.DetailActivity;
@@ -58,6 +59,10 @@ public class InfoFragment extends Fragment {
     @Bind(R.id.detail) TextView detail;
     @Bind(R.id.description) TextView summary;
     @Bind(R.id.image) ImageView img;
+
+    @BindString(R.string.manga_fav) String manga_fav;
+    @BindString(R.string.manga_unfav) String manga_unfav;
+    @BindString(R.string.retrieve_failed) String retrieve_failed;
 
     public InfoFragment() {
         // Required empty public constructor
@@ -102,92 +107,35 @@ public class InfoFragment extends Fragment {
             public void onClick(View view) {
                 if (manga.isFav()) {
                     fab.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_action_unfavorite));
-                    Snackbar.make(getView(), "Manga unfavorited", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(getView(), manga_unfav, Snackbar.LENGTH_SHORT).show();
                     manga.setIsFav(false);
                     db.unfavoritedManga(manga.getName());
                 } else {
                     fab.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_action_favorite));
-                    Snackbar.make(getView(), "Manga favorited", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(getView(), manga_fav, Snackbar.LENGTH_SHORT).show();
                     db.insertManga(manga);
                     manga.setIsFav(true);
-
-                    ArrayList<Manga> mangas = new ArrayList<Manga>();
-                    for(int i = 0; i<5;i++)
-                        mangas.add(manga);
-
-                    showNotification(mangas);
                 }
-
             }
         });
 
-//        if (savedInstanceState != null) {
-//            str = savedInstanceState.getStringArray("info");
-//            detail.setText(str[0]);
-//            summary.setText(str[1]);
-//            descriptionCardView.setVisibility(CardView.VISIBLE);
-//            plotCardView.setVisibility(CardView.VISIBLE);
-//            fab.setVisibility(FloatingActionButton.VISIBLE);
-//        } else
         new GetMangaDetails().execute(url);
-
 
         return view;
     }
 
-    private void showNotification(ArrayList<Manga> mangas) {
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
-        if(mangas.size()==1) {
-            mBuilder.setContentTitle(mangas.get(0).getName());
-            mBuilder.setContentText("New chapter: " +mangas.get(0).getLatest());
-        } else {
-            mBuilder.setContentTitle("New chapters");
-            mBuilder.setContentText("New chapters found for your favorite manga");
-        }
-
-        mBuilder.setSmallIcon(R.drawable.ic_stat_notification);
-
-        mBuilder.setNumber(mangas.size());
-
-        mBuilder.setDefaults(Notification.DEFAULT_ALL);
-
-        NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
-
-        for(int i = 0 ; i < mangas.size(); i++) {
-            inboxStyle.addLine(mangas.get(i).toString());
-        }
-
-        mBuilder.setStyle(inboxStyle);
-
-        Intent notificationIntent = new Intent(context,MainActivity.class);
-        notificationIntent.putExtra("favorite", true);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,notificationIntent, 0);
-        mBuilder.setContentIntent(pendingIntent);
-        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        Notification note = mBuilder.build();
-        note.defaults |= Notification.DEFAULT_VIBRATE;
-        note.defaults |= Notification.DEFAULT_SOUND;
-        note.defaults |= Notification.DEFAULT_LIGHTS;
-
-        /* notificationID allows you to update the notification later on. */
-        mNotificationManager.notify(1, mBuilder.build());
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
     }
 
-//    @Override
-//    public void onSaveInstanceState(Bundle bundle) {
-//        if (str != null)
-//            bundle.putStringArray("info", str);
-//        super.onSaveInstanceState(bundle);
-//
-//    }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
 
     }
-
 
     public class GetMangaDetails extends AsyncTask<String, Void, String[]> {
 
@@ -240,7 +188,7 @@ public class InfoFragment extends Fragment {
                     }
                 }, 300);
             } else {
-                Toast.makeText(context, "Failed to retrieve manga info!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, retrieve_failed, Toast.LENGTH_SHORT).show();
             }
         }
     }

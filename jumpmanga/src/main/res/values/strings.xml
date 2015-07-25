@@ -28,9 +28,19 @@
     <string name="confirm_delete">Do you really want to delete this manga and all of its chapters?</string>
     <string name="pref_download_title">Number of concurrent downloads</string>
     <string name="pref_download_summary">Lower this if you experience any issue</string>
-    <string name="pref_show_notification_title">Show download progress on status bar</string>
-    <string name="pref_show_notification_summary">Uncheck this if you don\'t want a crowded status bar</string>
+    <string name="pref_show_notification_title">Show downloads on status bar</string>
+    <string name="pref_show_notification_summary">Uncheck this if you don\'t want to flood the status bar with notifications</string>
     <string name="pref_update_frequency_title">Check for new chapter frequency</string>
     <string name="pref_update_frequency_summary">Recommend to leave it at the default value</string>
+
+    <string name="load_error">Please check your network!</string>
+    <string name="no_fav_manga">No favorite manga</string>
+    <string name="last_page">This is the last page!</string>
+
+    <string name="manga_fav">Manga favorited</string>
+    <string name="manga_unfav">Manga unfavorited</string>
+
+    <string name="retrieve_failed">Failed to retrieve manga info!</string>
+
 
 </resources>

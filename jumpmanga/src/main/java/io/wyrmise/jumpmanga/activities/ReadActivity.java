@@ -543,7 +543,6 @@ public class ReadActivity extends AppCompatActivity {
                 setRead();
                 getSupportActionBar().setTitle(chapters.get(chapter_position).getName());
 
-                mHideHandler.postDelayed(hideControllerThread, 2000);
             } else {
                 Toast.makeText(getApplicationContext(), "Cannot retrieve new chapter, please check your network", Toast.LENGTH_SHORT).show();
                 if (!isRefreshing)

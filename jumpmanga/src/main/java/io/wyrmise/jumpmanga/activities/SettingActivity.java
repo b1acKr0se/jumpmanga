@@ -39,6 +39,7 @@ public class SettingActivity extends AppCompatActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.preferences);
             final Preference downloadNumPref = (ListPreference) getPreferenceManager().findPreference(KEY_DOWNLOAD_NUM);
+            downloadNumPref.setSummary(((ListPreference) downloadNumPref).getEntry());
             downloadNumPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object o) {
@@ -49,6 +50,7 @@ public class SettingActivity extends AppCompatActivity {
             });
 
             final Preference updatePref = (ListPreference) getPreferenceManager().findPreference(KEY_UPDATE_FREQUENCY);
+            updatePref.setSummary(((ListPreference) updatePref).getEntry());
             updatePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object o) {
@@ -64,12 +66,13 @@ public class SettingActivity extends AppCompatActivity {
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             switch (key) {
                 case KEY_DOWNLOAD_NUM:
-                    Preference downloadNumPref = findPreference(key);
-                    downloadNumPref.setSummary(((ListPreference) downloadNumPref).getEntry());
+                    ListPreference downloadNumPref = (ListPreference) findPreference(key);
+                    downloadNumPref.setSummary(downloadNumPref.getEntry());
+                    System.out.println(downloadNumPref.getEntry());
                     break;
                 case KEY_UPDATE_FREQUENCY:
-                    Preference updatePref = findPreference(key);
-                    updatePref.setSummary(((ListPreference) updatePref).getEntry());
+                    ListPreference updatePref = (ListPreference) findPreference(key);
+                    updatePref.setSummary(updatePref.getEntry());
             }
         }
 

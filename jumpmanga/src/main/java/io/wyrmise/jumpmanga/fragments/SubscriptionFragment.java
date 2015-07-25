@@ -71,6 +71,7 @@ public class SubscriptionFragment extends Fragment implements MangaAdapter.OnIte
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        ButterKnife.unbind(this);
         context = null;
     }
 
