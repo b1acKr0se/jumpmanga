@@ -13,12 +13,11 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.model.Manga;
 
-/**
- * Created by Thanh on 7/18/2015.
- */
 public class SubscriptionAdapter extends RecyclerView.Adapter<SubscriptionAdapter.ViewHolder> implements View.OnClickListener {
     private ArrayList<Manga> recent_list;
     private MangaAdapter.OnItemClickListener onItemClickListener;
@@ -70,14 +69,13 @@ public class SubscriptionAdapter extends RecyclerView.Adapter<SubscriptionAdapte
     }
 
     protected class ViewHolder extends RecyclerView.ViewHolder {
-        public ImageView image;
-        public TextView manga_name, chapter_name;
+        @Bind(R.id.manga_thumbnail) ImageView image;
+        @Bind(R.id.manga_name) TextView manga_name;
+        @Bind(R.id.chapter_name) TextView chapter_name;
 
         public ViewHolder(View v) {
             super(v);
-            image = (ImageView) v.findViewById(R.id.manga_thumbnail);
-            manga_name = (TextView) v.findViewById(R.id.manga_name);
-            chapter_name = (TextView) v.findViewById(R.id.chapter_name);
+            ButterKnife.bind(this,v);
         }
     }
 }

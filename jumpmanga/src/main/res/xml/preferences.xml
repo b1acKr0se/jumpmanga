@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:key="pref_num_of_downloads"
+        android:defaultValue="3"
+        android:entries="@array/number_of_downloads"
+        android:entryValues="@array/number_of_downloads_values"
+        android:numeric="integer"
+        android:title="@string/pref_download_title"
+        android:summary="@string/pref_download_summary"/>
+    
+
+</PreferenceScreen>

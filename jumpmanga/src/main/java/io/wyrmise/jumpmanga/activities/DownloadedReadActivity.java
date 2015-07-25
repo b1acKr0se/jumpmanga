@@ -217,6 +217,8 @@ public class DownloadedReadActivity extends AppCompatActivity {
 
         db.markChapterAsRead(c,manga_name);
 
+        getSupportActionBar().setSubtitle(manga_name);
+
         mHideHandler.postDelayed(hideControllerThread, 3000);
 
     }
@@ -283,7 +285,7 @@ public class DownloadedReadActivity extends AppCompatActivity {
                         public void run() {
                             nextChapter();
                         }
-                    }, 500);
+                    }, 100);
                 }
             }
         });

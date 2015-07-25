@@ -31,7 +31,7 @@ import java.util.ArrayList;
 
 import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.activities.DownloadedReadActivity;
-import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
+import io.wyrmise.jumpmanga.manga24hbaseapi.FetchingMachine;
 import io.wyrmise.jumpmanga.model.Chapter;
 import io.wyrmise.jumpmanga.model.Page;
 import io.wyrmise.jumpmanga.utils.FileDownloader;
@@ -118,7 +118,7 @@ public class DownloadService extends Service {
         }
 
         public ArrayList<Page> doInBackground(String... params) {
-            DownloadUtils download = new DownloadUtils(params[0]);
+            FetchingMachine download = new FetchingMachine(params[0]);
             ArrayList<Page> arr;
             try {
                 arr = download.GetPages();
@@ -163,7 +163,7 @@ public class DownloadService extends Service {
             mNotifyManager = (NotificationManager) DownloadService.this.getSystemService(Context.NOTIFICATION_SERVICE);
             mBuilder = new NotificationCompat.Builder(DownloadService.this);
             mBuilder.setContentTitle(mangaName)
-                    .setContentText("Download in progress: " + chapterName)
+                    .setContentText("Downloading: " + chapterName)
                     .setSmallIcon(android.R.drawable.stat_sys_download)
                     .setAutoCancel(false);
             mBuilder.setProgress(100, 0, false);

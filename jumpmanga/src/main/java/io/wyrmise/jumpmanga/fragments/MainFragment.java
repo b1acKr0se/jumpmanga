@@ -1,22 +1,15 @@
 package io.wyrmise.jumpmanga.fragments;
 
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.graphics.Point;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Display;
 import android.view.LayoutInflater;
-import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -34,7 +27,7 @@ import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.activities.DetailActivity;
 import io.wyrmise.jumpmanga.adapters.MangaAdapter;
 import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
-import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
+import io.wyrmise.jumpmanga.manga24hbaseapi.FetchingMachine;
 import io.wyrmise.jumpmanga.model.Manga;
 
 
@@ -170,7 +163,7 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
 
         @Override
         public ArrayList<Manga> doInBackground(String... params) {
-            DownloadUtils download = new DownloadUtils(params[0]);
+            FetchingMachine download = new FetchingMachine(params[0]);
             ArrayList<Manga> result = download.GetMangas(10);
             return result;
         }
@@ -205,7 +198,7 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
 
         @Override
         public ArrayList<Manga> doInBackground(String... params) {
-            DownloadUtils download = new DownloadUtils(params[0]);
+            FetchingMachine download = new FetchingMachine(params[0]);
             ArrayList<Manga> arrayList = download.GetMangas(10);
             if (arrayList != null) {
                 for (Manga m : arrayList) {

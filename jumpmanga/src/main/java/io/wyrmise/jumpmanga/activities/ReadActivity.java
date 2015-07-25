@@ -30,7 +30,7 @@ import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.adapters.FullScreenImageAdapter;
 import io.wyrmise.jumpmanga.animation.AnimationHelper;
 import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
-import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
+import io.wyrmise.jumpmanga.manga24hbaseapi.FetchingMachine;
 import io.wyrmise.jumpmanga.model.Chapter;
 import io.wyrmise.jumpmanga.model.Manga;
 import io.wyrmise.jumpmanga.model.Page;
@@ -142,6 +142,7 @@ public class ReadActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+
         anim = new AnimationHelper(this);
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -245,7 +246,7 @@ public class ReadActivity extends AppCompatActivity {
 
         setTitle(name);
 
-        setSupportActionBar(toolbar);
+        getSupportActionBar().setSubtitle(this.name);
 
         mHideHandler.postDelayed(hideControllerThread, 5000);
 
@@ -415,7 +416,7 @@ public class ReadActivity extends AppCompatActivity {
         }
 
         public ArrayList<Page> doInBackground(String... params) {
-            DownloadUtils download = new DownloadUtils(params[0]);
+            FetchingMachine download = new FetchingMachine(params[0]);
             ArrayList<Page> arr;
             try {
                 arr = download.GetPages();
@@ -487,12 +488,13 @@ public class ReadActivity extends AppCompatActivity {
         public void onPreExecute() {
             next.setVisibility(ImageView.INVISIBLE);
             previous.setVisibility(ImageView.INVISIBLE);
+            showControllers();
             if (dialog != null)
                 dialog.show();
         }
 
         public ArrayList<Page> doInBackground(String... params) {
-            DownloadUtils download = new DownloadUtils(params[0]);
+            FetchingMachine download = new FetchingMachine(params[0]);
             ArrayList<Page> arr;
             try {
                 arr = download.GetPages();
@@ -513,14 +515,6 @@ public class ReadActivity extends AppCompatActivity {
                 viewPager.setOnSwipeOutListener(new CustomViewPager.OnSwipeOutListener() {
 
                     boolean callHappened = false;
-
-//                    @Override
-//                    public void onSwipeOutAtStart() {
-//                        if (!callHappened) {
-//                            callHappened = true;
-//                            prevChapter();
-//                        }
-//                    }
 
                     @Override
                     public void onSwipeOutAtEnd() {
@@ -548,6 +542,8 @@ public class ReadActivity extends AppCompatActivity {
                 getFavoriteStatus();
                 setRead();
                 getSupportActionBar().setTitle(chapters.get(chapter_position).getName());
+
+                mHideHandler.postDelayed(hideControllerThread, 2000);
             } else {
                 Toast.makeText(getApplicationContext(), "Cannot retrieve new chapter, please check your network", Toast.LENGTH_SHORT).show();
                 if (!isRefreshing)
@@ -555,14 +551,6 @@ public class ReadActivity extends AppCompatActivity {
                 viewPager.setOnSwipeOutListener(new CustomViewPager.OnSwipeOutListener() {
 
                     boolean callHappened = false;
-
-//                    @Override
-//                    public void onSwipeOutAtStart() {
-//                        if (!callHappened) {
-//                            callHappened = true;
-//                            prevChapter();
-//                        }
-//                    }
 
                     @Override
                     public void onSwipeOutAtEnd() {

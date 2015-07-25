@@ -65,7 +65,7 @@
 
         <activity
             android:name=".activities.DownloadedReadActivity"
-            android:label="@string/title_activity_downloaded_read"
+            android:screenOrientation="portrait"
             android:parentActivityName=".activities.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

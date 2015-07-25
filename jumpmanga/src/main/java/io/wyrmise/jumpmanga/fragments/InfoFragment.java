@@ -36,7 +36,7 @@ import io.wyrmise.jumpmanga.activities.DetailActivity;
 import io.wyrmise.jumpmanga.activities.MainActivity;
 import io.wyrmise.jumpmanga.animation.AnimationHelper;
 import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
-import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
+import io.wyrmise.jumpmanga.manga24hbaseapi.FetchingMachine;
 import io.wyrmise.jumpmanga.model.Manga;
 
 
@@ -202,7 +202,7 @@ public class InfoFragment extends Fragment {
         @Override
         public String[] doInBackground(String... params) {
             str = new String[2];
-            DownloadUtils download = new DownloadUtils(params[0]);
+            FetchingMachine download = new FetchingMachine(params[0]);
             String detail = download.GetMangaDetail();
             manga.setLatest(download.GetLatestChapter(manga).getName());
             if (db.isMangaFavorited(manga.getName())) {

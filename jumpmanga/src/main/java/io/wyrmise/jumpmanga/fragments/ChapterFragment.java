@@ -37,7 +37,7 @@ import io.wyrmise.jumpmanga.activities.DetailActivity;
 import io.wyrmise.jumpmanga.activities.ReadActivity;
 import io.wyrmise.jumpmanga.adapters.ChapterAdapter;
 import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
-import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
+import io.wyrmise.jumpmanga.manga24hbaseapi.FetchingMachine;
 import io.wyrmise.jumpmanga.model.Chapter;
 import io.wyrmise.jumpmanga.model.Manga;
 import io.wyrmise.jumpmanga.service.DownloadService;
@@ -61,9 +61,14 @@ public class ChapterFragment extends Fragment {
 
     private SearchView actionSearchView;
 
-    @Bind(R.id.loadingText) TextView loadingText;
-    @Bind(R.id.listView) ListView listView;
-    @Bind(R.id.refresh_list) SwipeRefreshLayout refreshLayout;
+    @Bind(R.id.loadingText)
+    TextView loadingText;
+    @Bind(R.id.empty)
+    TextView empty;
+    @Bind(R.id.listView)
+    ListView listView;
+    @Bind(R.id.refresh_list)
+    SwipeRefreshLayout refreshLayout;
 
 
     private JumpingBeans jumpingBeans;
@@ -300,7 +305,7 @@ public class ChapterFragment extends Fragment {
         }
 
         public ArrayList<Chapter> doInBackground(String... params) {
-            DownloadUtils download = new DownloadUtils(params[0]);
+            FetchingMachine download = new FetchingMachine(params[0]);
             ArrayList<Chapter> arr = download.GetChapters();
             if (arr != null)
                 for (Chapter c : arr) {
@@ -322,25 +327,28 @@ public class ChapterFragment extends Fragment {
 
 
             if (arr != null) {
+                if (arr.size() > 0) {
+                    chapters = arr;
 
-                chapters = arr;
+                    temp = new ArrayList<>(chapters);
 
-                temp = new ArrayList<>(chapters);
+                    adapter = new ChapterAdapter(context, R.layout.chapter_list_item, chapters);
 
-                adapter = new ChapterAdapter(context, R.layout.chapter_list_item, chapters);
+                    listView.setAdapter(adapter);
 
-                listView.setAdapter(adapter);
+                    setChoiceModeListener();
 
-                setChoiceModeListener();
+                    listView.setVisibility(ListView.VISIBLE);
 
+                    listView.setTextFilterEnabled(true);
 
-                listView.setVisibility(ListView.VISIBLE);
+                    if (switchCompat != null)
+                        switchCompat.setVisibility(View.VISIBLE);
+                } else if (arr.size() == 0) {
+                    empty.setVisibility(View.VISIBLE);
+                    listView.setVisibility(View.GONE);
 
-                listView.setTextFilterEnabled(true);
-
-                if (switchCompat != null)
-                    switchCompat.setVisibility(View.VISIBLE);
-
+                }
             } else {
                 Toast.makeText(context, "Cannot retrieve the chapters, please check your network", Toast.LENGTH_LONG).show();
             }

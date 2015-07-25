@@ -42,11 +42,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.Spinner;
-
 import com.squareup.picasso.Picasso;
-
 import java.util.ArrayList;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.wyrmise.jumpmanga.fragments.CategoryFragment;
@@ -460,8 +457,8 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
 
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
-    }
 
+    }
 
     public class getAllMangas extends AsyncTask<Void, Void, ArrayList<Manga>> {
 

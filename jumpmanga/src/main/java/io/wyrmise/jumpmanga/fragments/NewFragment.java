@@ -23,9 +23,8 @@ import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.activities.DetailActivity;
 import io.wyrmise.jumpmanga.adapters.MangaAdapter;
 import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
-import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
+import io.wyrmise.jumpmanga.manga24hbaseapi.FetchingMachine;
 import io.wyrmise.jumpmanga.model.Manga;
-import io.wyrmise.jumpmanga.utils.OrientationLocker;
 
 
 /**
@@ -133,7 +132,7 @@ public class NewFragment extends Fragment implements MangaAdapter.OnItemClickLis
 
         @Override
         public ArrayList<Manga> doInBackground(String... params) {
-            DownloadUtils download = new DownloadUtils(params[0]);
+            FetchingMachine download = new FetchingMachine(params[0]);
             ArrayList<Manga> result = download.GetMangas(10);
             return result;
         }
@@ -168,7 +167,7 @@ public class NewFragment extends Fragment implements MangaAdapter.OnItemClickLis
 
         @Override
         public ArrayList<Manga> doInBackground(String... params) {
-            DownloadUtils download = new DownloadUtils(params[0]);
+            FetchingMachine download = new FetchingMachine(params[0]);
             ArrayList<Manga> arrayList = download.GetMangas(10);
             if (arrayList != null) {
                 for (Manga m : arrayList) {

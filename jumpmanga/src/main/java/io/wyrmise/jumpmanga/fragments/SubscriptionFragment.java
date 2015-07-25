@@ -2,12 +2,13 @@ package io.wyrmise.jumpmanga.fragments;
 
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,37 +19,36 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.activities.ReadActivity;
 import io.wyrmise.jumpmanga.adapters.MangaAdapter;
 import io.wyrmise.jumpmanga.adapters.SubscriptionAdapter;
 import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
-import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
+import io.wyrmise.jumpmanga.manga24hbaseapi.FetchingMachine;
 import io.wyrmise.jumpmanga.model.Chapter;
 import io.wyrmise.jumpmanga.model.Manga;
-import io.wyrmise.jumpmanga.utils.OrientationLocker;
+import io.wyrmise.jumpmanga.utils.AsyncTaskCallback;
 import io.wyrmise.jumpmanga.widget.SimpleDividerItemDecoration;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class SubscriptionFragment extends Fragment implements MangaAdapter.OnItemClickListener{
+public class SubscriptionFragment extends Fragment implements MangaAdapter.OnItemClickListener, AsyncTaskCallback {
 
     private JumpDatabaseHelper db;
-
     private Context context;
-
     private ArrayList<Manga> mangas;
-
-    private RecyclerView recyclerView;
-
     private SubscriptionAdapter adapter;
-
-    private TextView empty;
-
     private ProgressDialog progressDialog;
+    private boolean isTaskRunning = false;
 
+    @Bind(R.id.list)
+    RecyclerView recyclerView;
+    @Bind(R.id.empty)
+    TextView empty;
 
     public SubscriptionFragment() {
         // Required empty public constructor
@@ -61,15 +61,33 @@ public class SubscriptionFragment extends Fragment implements MangaAdapter.OnIte
     }
 
     @Override
+    public void onDetach() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+        super.onDetach();
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         context = null;
     }
 
     @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (isTaskRunning) {
+            progressDialog = ProgressDialog.show(getActivity(), null, "Preparing...");
+        }
+    }
+
+    @Override
     public void onItemClick(View view, Manga manga) {
-        GetChapterList task = new GetChapterList(manga, progressDialog);
-        task.execute(manga.getUrl());
+        if (!isTaskRunning) {
+            GetChapterList task = new GetChapterList(manga, this);
+            task.execute(manga.getUrl());
+        }
     }
 
     @Override
@@ -78,19 +96,18 @@ public class SubscriptionFragment extends Fragment implements MangaAdapter.OnIte
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_subscription, container, false);
 
+        ButterKnife.bind(this, view);
+
         db = new JumpDatabaseHelper(context);
-
-        recyclerView = (RecyclerView) view.findViewById(R.id.list);
-
-        empty = (TextView) view.findViewById(R.id.empty);
-
-        progressDialog = new ProgressDialog(context);
-        progressDialog.setMessage("Preparing...");
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCancelable(true);
 
         return view;
 
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
     }
 
     @Override
@@ -111,38 +128,46 @@ public class SubscriptionFragment extends Fragment implements MangaAdapter.OnIte
         }
     }
 
+
+    @Override
+    public void onTaskStarted() {
+        isTaskRunning = true;
+        progressDialog = ProgressDialog.show(getActivity(), null, "Preparing...");
+    }
+
+    @Override
+    public void onTaskFinished() {
+        if (progressDialog != null) {
+            progressDialog.dismiss();
+        }
+        isTaskRunning = false;
+    }
+
     private class GetChapterList extends AsyncTask<String, Void, ArrayList<Chapter>> {
 
         private Manga manga;
+        private AsyncTaskCallback callback;
 
-        private ProgressDialog progressDialog;
-
-        public GetChapterList(Manga m, ProgressDialog progressDialog) {
+        public GetChapterList(Manga m, AsyncTaskCallback c) {
             this.manga = m;
-            this.progressDialog = progressDialog;
+            callback = c;
         }
 
         @Override
         public void onPreExecute() {
-            OrientationLocker.lock(getActivity());
-            progressDialog.show();
+            callback.onTaskStarted();
         }
 
         @Override
         public ArrayList<Chapter> doInBackground(String... params) {
-            DownloadUtils download = new DownloadUtils(params[0]);
+            FetchingMachine download = new FetchingMachine(params[0]);
             ArrayList<Chapter> arr = download.GetChapters();
             return arr;
         }
 
         @Override
-        public void onPostExecute(ArrayList<Chapter> arr) {
-            try {
-                if (progressDialog != null && progressDialog.isShowing())
-                    progressDialog.dismiss();
-            } catch (Exception e) {
-
-            }
+        public void onPostExecute(final ArrayList<Chapter> arr) {
+            callback.onTaskFinished();
             if (arr != null) {
                 Intent intent = new Intent(context, ReadActivity.class);
                 intent.putExtra("manga", manga);
@@ -156,15 +181,12 @@ public class SubscriptionFragment extends Fragment implements MangaAdapter.OnIte
                 intent.putExtra("position", position);
                 intent.putParcelableArrayListExtra("list", arr);
 
-                db.deleteFromSubscription(manga.getName(),manga.getChapter().getName());
+                db.deleteFromSubscription(manga.getName(), manga.getChapter().getName());
 
                 startActivity(intent);
             } else {
                 Toast.makeText(context, "There's an error with your network, please check", Toast.LENGTH_SHORT).show();
             }
-
-            OrientationLocker.unlock(getActivity());
         }
     }
-
 }

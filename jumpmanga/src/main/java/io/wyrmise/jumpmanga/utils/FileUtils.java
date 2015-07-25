@@ -8,16 +8,21 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 
+/**
+ * Utility class which is used to handle all sort of file operations.
+ */
 public class FileUtils {
     private String mangaName;
     private String chapterName;
 
     public boolean isChapterDownloaded(String m, String c) {
         File sdcard = Environment.getExternalStorageDirectory();
-        File directory = new File(sdcard.getAbsolutePath() + "/.Jump Manga/"+m+"/"+c);
-        if(directory.exists() && directory.isDirectory() && directory.listFiles().length>0) {
+        File directory = new File(sdcard.getAbsolutePath() + "/.Jump Manga/" + m + "/" + c);
+        if (directory.exists() && directory.isDirectory() && directory.listFiles().length > 0) {
             mangaName = m;
             chapterName = c;
             return true;
@@ -29,7 +34,7 @@ public class FileUtils {
         ArrayList<String> filePaths = new ArrayList<String>();
 
         File sdcard = Environment.getExternalStorageDirectory();
-        File directory = new File(sdcard.getAbsolutePath() + "/.Jump Manga/"+mangaName+"/"+chapterName);
+        File directory = new File(sdcard.getAbsolutePath() + "/.Jump Manga/" + mangaName + "/" + chapterName);
 
         // check for directory
         if (directory.isDirectory()) {
@@ -45,18 +50,18 @@ public class FileUtils {
                     // get file path
                     String filePath = listFiles[i].getAbsolutePath();
 
-                        // Add image path to array list
-                        filePaths.add(filePath);
+                    // Add image path to array list
+                    filePaths.add(filePath);
                 }
             }
         }
         return filePaths;
     }
 
-    public boolean hasPoster(String mangaName){
+    public boolean hasPoster(String mangaName) {
         File sdcard = Environment.getExternalStorageDirectory();
         File directory = new File(sdcard.getAbsolutePath() + "/.Jump Manga/" + mangaName + "/");
-        if(directory.exists() && directory.isDirectory()) {
+        if (directory.exists() && directory.isDirectory()) {
             for (File f : directory.listFiles()) {
                 if (f.isFile()) return true;
             }
@@ -66,13 +71,13 @@ public class FileUtils {
 
     public boolean deleteChapter(String mangaName, String chapterName) {
         File sdcard = Environment.getExternalStorageDirectory();
-        File directory = new File(sdcard.getAbsolutePath() + "/.Jump Manga/"+mangaName+"/"+chapterName);
-        if(directory.exists() && directory.isDirectory()) {
+        File directory = new File(sdcard.getAbsolutePath() + "/.Jump Manga/" + mangaName + "/" + chapterName);
+        if (directory.exists() && directory.isDirectory()) {
             File[] files = directory.listFiles();
             if (files == null) {
                 return true;
             }
-            for(int i=0; i<files.length; i++) {
+            for (int i = 0; i < files.length; i++) {
                 files[i].delete();
             }
         }
@@ -80,9 +85,36 @@ public class FileUtils {
     }
 
     public boolean delete(File path) {
-        if(path.isDirectory() && path.exists())
-            for (File f: path.listFiles())
+        if (path.isDirectory() && path.exists())
+            for (File f : path.listFiles())
                 delete(f);
         return path.delete();
+    }
+
+    public long getTotalSize() {
+        File sdcard = Environment.getExternalStorageDirectory();
+        File file = new File(sdcard.getAbsolutePath() + "/.Jump Manga/");
+        if (file == null || !file.exists())
+            return 0;
+        if (!file.isDirectory())
+            return file.length();
+        final List<File> dirs = new LinkedList<File>();
+        dirs.add(file);
+        long result = 0;
+        while (!dirs.isEmpty()) {
+            final File dir = dirs.remove(0);
+            if (!dir.exists())
+                continue;
+            final File[] listFiles = dir.listFiles();
+            if (listFiles == null || listFiles.length == 0)
+                continue;
+            for (final File child : listFiles) {
+                result += child.length();
+                if (child.isDirectory())
+                    dirs.add(child);
+            }
+        }
+
+        return result / (1024 * 1024);
     }
 }

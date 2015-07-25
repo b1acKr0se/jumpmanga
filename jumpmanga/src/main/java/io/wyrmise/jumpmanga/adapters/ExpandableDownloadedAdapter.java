@@ -1,6 +1,8 @@
 package io.wyrmise.jumpmanga.adapters;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -61,15 +63,28 @@ public class ExpandableDownloadedAdapter
         viewHolder.deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                File sdcard = Environment.getExternalStorageDirectory();
-                File directory = new File(sdcard.getAbsolutePath() + "/.Jump Manga/"+wrapper.getName());
-                fileUtils.delete(directory);
-//                notifyItemRangeRemoved(i, wrapper.getChildObjectList().size()+1);
-                if(mContext instanceof MainActivity) {
-                    Toast.makeText(mContext, "Deleted", Toast.LENGTH_SHORT).show();
-                    ((MainActivity)mContext).GetDownloaded();
-                }
-
+                AlertDialog alertDialog = new AlertDialog.Builder(mContext).create();
+                alertDialog.setMessage(mContext.getResources().getString(R.string.confirm_delete));
+                alertDialog.setCanceledOnTouchOutside(true);
+                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        File sdcard = Environment.getExternalStorageDirectory();
+                        File directory = new File(sdcard.getAbsolutePath() + "/.Jump Manga/" + wrapper.getName());
+                        fileUtils.delete(directory);
+                        if (mContext instanceof MainActivity) {
+                            Toast.makeText(mContext, "Deleted", Toast.LENGTH_SHORT).show();
+                            ((MainActivity) mContext).GetDownloaded();
+                        }
+                    }
+                });
+                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Just kidding", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
+                alertDialog.show();
             }
         });
     }

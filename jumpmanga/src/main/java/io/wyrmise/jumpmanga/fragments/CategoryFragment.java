@@ -25,7 +25,7 @@ import io.wyrmise.jumpmanga.activities.DetailActivity;
 import io.wyrmise.jumpmanga.activities.MainActivity;
 import io.wyrmise.jumpmanga.adapters.CategoryAdapter;
 import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
-import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
+import io.wyrmise.jumpmanga.manga24hbaseapi.FetchingMachine;
 import io.wyrmise.jumpmanga.model.Manga;
 import io.wyrmise.jumpmanga.widget.SimpleDividerItemDecoration;
 
@@ -152,7 +152,7 @@ public class CategoryFragment extends Fragment implements CategoryAdapter.OnItem
 
         @Override
         public ArrayList<Manga> doInBackground(String... params) {
-            DownloadUtils download = new DownloadUtils(params[0]);
+            FetchingMachine download = new FetchingMachine(params[0]);
             ArrayList<Manga> arrayList = download.GetMangasFromCategory();
             if (arrayList != null) {
                 for (Manga m : arrayList) {
@@ -201,7 +201,7 @@ public class CategoryFragment extends Fragment implements CategoryAdapter.OnItem
 
         @Override
         public ArrayList<Manga> doInBackground(String... params) {
-            DownloadUtils download = new DownloadUtils(params[0]);
+            FetchingMachine download = new FetchingMachine(params[0]);
             ArrayList<Manga> result = download.GetMangasFromCategory();
             return result;
         }

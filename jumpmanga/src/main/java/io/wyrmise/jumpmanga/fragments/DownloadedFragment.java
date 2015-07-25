@@ -2,9 +2,11 @@ package io.wyrmise.jumpmanga.fragments;
 
 
 import android.app.Activity;
-import android.content.Context;
-import android.os.Bundle;
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,32 +22,30 @@ import com.bignerdranch.expandablerecyclerview.Model.ParentObject;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.wyrmise.jumpmanga.R;
-import io.wyrmise.jumpmanga.adapters.DownloadedAdapter;
 import io.wyrmise.jumpmanga.adapters.ExpandableDownloadedAdapter;
 import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
 import io.wyrmise.jumpmanga.model.Chapter;
-import io.wyrmise.jumpmanga.model.Manga;
 import io.wyrmise.jumpmanga.model.Wrapper;
 import io.wyrmise.jumpmanga.utils.FileUtils;
-import io.wyrmise.jumpmanga.widget.SimpleDividerItemDecoration;
 
 /**
  * A simple {@link Fragment} subclass.
+ * Containing downloaded manga and their respective chapters.
  */
 public class DownloadedFragment extends Fragment {
 
-    private JumpDatabaseHelper db;
     private List<Wrapper> wrappers;
     private ExpandableDownloadedAdapter adapter;
-    @Bind(R.id.list) RecyclerView recyclerView;
-    @Bind(R.id.empty)TextView empty;
+    @Bind(R.id.list)
+    RecyclerView recyclerView;
+    @Bind(R.id.empty)
+    TextView empty;
     private Context context;
 
     public DownloadedFragment() {
@@ -64,6 +64,12 @@ public class DownloadedFragment extends Fragment {
         context = null;
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -71,9 +77,9 @@ public class DownloadedFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_downloaded, container, false);
 
-        ButterKnife.bind(this,view);
+        ButterKnife.bind(this, view);
 
-        db = new JumpDatabaseHelper(getActivity());
+        JumpDatabaseHelper db = new JumpDatabaseHelper(getActivity());
 
         wrappers = new ArrayList<>();
 
@@ -90,14 +96,14 @@ public class DownloadedFragment extends Fragment {
                     w.setName(mangaNames[i].getName());
                     ArrayList<Chapter> chapters = new ArrayList<>();
                     for (File f : chapterNames) {
-                        if(f.isDirectory()) {
+                        if (f.isDirectory()) {
                             Chapter c = new Chapter();
                             c.setMangaName(mangaNames[i].getName());
                             c.setName(f.getName());
                             FileUtils fileUtils = new FileUtils();
                             if (fileUtils.isChapterDownloaded(c.getMangaName(), c.getName())) {
                                 c.setPath(fileUtils.getFilePaths());
-                                c.setIsRead(db.isChapterRead(c,c.getMangaName()));
+                                c.setIsRead(db.isChapterRead(c, c.getMangaName()));
                                 chapters.add(c);
                             }
                         } else if (f.isFile()) {
@@ -106,13 +112,13 @@ public class DownloadedFragment extends Fragment {
                     }
                     Collections.sort(chapters);
                     ArrayList<Object> list = new ArrayList<>();
-                    for(Chapter c: chapters) list.add(c);
+                    for (Chapter c : chapters) list.add(c);
                     w.setChildObjectList(list);
                     parentObjects.add(w);
                 }
             }
 
-            if (parentObjects.size() > 0 && parentObjects != null) {
+            if (parentObjects.size()>0) {
                 adapter = new ExpandableDownloadedAdapter(getActivity(), parentObjects);
                 recyclerView.setVisibility(View.VISIBLE);
                 recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
@@ -141,9 +147,6 @@ public class DownloadedFragment extends Fragment {
         }
     }
 
-
-
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -153,17 +156,39 @@ public class DownloadedFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_downloaded_fragment, menu);
-        super.onCreateOptionsMenu(menu,inflater);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-
+        super.onPrepareOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_info:
+                showInfo();
+                break;
+        }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showInfo() {
+        FileUtils fileUtils = new FileUtils();
+        long bytes = fileUtils.getTotalSize();
+        String message = "Total space taken: "+bytes+"MB.";
+        AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
+        alertDialog.setTitle("Information");
+        alertDialog.setMessage(message);
+        alertDialog.setCanceledOnTouchOutside(true);
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
     }
 
 }

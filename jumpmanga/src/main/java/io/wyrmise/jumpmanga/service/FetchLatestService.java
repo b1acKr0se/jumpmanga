@@ -22,10 +22,14 @@ import java.util.Locale;
 import io.wyrmise.jumpmanga.activities.MainActivity;
 import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
-import io.wyrmise.jumpmanga.manga24hbaseapi.DownloadUtils;
+import io.wyrmise.jumpmanga.manga24hbaseapi.FetchingMachine;
 import io.wyrmise.jumpmanga.model.Chapter;
 import io.wyrmise.jumpmanga.model.Manga;
 
+
+/**
+ * A service used for gathering latest chapters of the user's subscribed manga
+ */
 public class FetchLatestService extends Service {
 
     private PowerManager.WakeLock wakeLock;
@@ -77,7 +81,7 @@ public class FetchLatestService extends Service {
             try {
                 ArrayList<Manga> list = mangas[0];
                 ArrayList<Manga> tempNotificationArr = new ArrayList<>();
-                DownloadUtils downloadUtils = new DownloadUtils();
+                FetchingMachine downloadUtils = new FetchingMachine();
                 for (int i = 0; i < list.size(); i++) {
                     Manga manga = list.get(i);
                     Chapter latest = downloadUtils.GetLatestChapter(manga);
@@ -101,11 +105,13 @@ public class FetchLatestService extends Service {
         @Override
         public void onPostExecute(ArrayList<Manga> result) {
             writeLog();
-            if (result != null && result.size() > 0) {
-                for (int i = 0; i < result.size(); i++) {
-                    db.insertSubscription(result.get(i), result.get(i).getChapter());
+            if (result != null) {
+                if (result.size() > 0) {
+                    for (int i = 0; i < result.size(); i++) {
+                        db.insertSubscription(result.get(i), result.get(i).getChapter());
+                    }
+                    showNotification(result);
                 }
-                showNotification(result);
             }
         }
     }
@@ -125,6 +131,8 @@ public class FetchLatestService extends Service {
         mBuilder.setNumber(mangas.size());
 
         mBuilder.setDefaults(Notification.DEFAULT_ALL);
+
+        mBuilder.setAutoCancel(true);
 
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
 

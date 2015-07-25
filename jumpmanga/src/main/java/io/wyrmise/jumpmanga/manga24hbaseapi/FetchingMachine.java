@@ -1,6 +1,5 @@
 package io.wyrmise.jumpmanga.manga24hbaseapi;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -14,18 +13,18 @@ import io.wyrmise.jumpmanga.model.Manga;
 import io.wyrmise.jumpmanga.model.Page;
 
 /**
- * Created by Thanh on 6/29/2015.
+ * An utility class which is used to extract specific data from http://manga24h.com/
  */
-public class DownloadUtils {
+public class FetchingMachine {
 
     private String url;
     private Document document;
 
-    public DownloadUtils() {
+    public FetchingMachine() {
 
     }
 
-    public DownloadUtils(String u) {
+    public FetchingMachine(String u) {
         url = u;
         try {
             document = Jsoup.connect(url).get();
