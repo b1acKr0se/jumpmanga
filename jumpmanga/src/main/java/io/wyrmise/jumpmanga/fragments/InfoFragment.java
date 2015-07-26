@@ -201,7 +201,6 @@ public class InfoFragment extends Fragment {
                     @Override
                     public void onClick(View view) {
                         new GetMangaDetails().execute(manga.getUrl());
-                        Toast.makeText(context, "button clicked", Toast.LENGTH_SHORT).show();
                     }
                 });
             }

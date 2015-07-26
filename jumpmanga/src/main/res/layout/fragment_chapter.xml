@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="@dimen/spacing_medium"
-    android:background="@android:color/white"
+    android:background="@color/grey_50"
     tools:context="io.wyrmise.jumpmanga.fragments.ChapterFragment">
 
     <TextView
@@ -25,6 +25,18 @@
         android:textSize="22sp"
         android:visibility="gone"/>
 
+    <Button
+        android:id="@+id/reload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textColor="@color/green"
+        android:text="@string/reload"
+        android:textSize="18sp"
+        style="?android:attr/borderlessButtonStyle"
+        android:elevation="4dp"
+        android:visibility="invisible" />
+
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/refresh_list"
         android:layout_width="match_parent"
@@ -35,7 +47,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:drawSelectorOnTop="true"
-            android:visibility="gone"></ListView>
+            android:visibility="gone"/>
     </android.support.v4.widget.SwipeRefreshLayout>
 
 </FrameLayout>

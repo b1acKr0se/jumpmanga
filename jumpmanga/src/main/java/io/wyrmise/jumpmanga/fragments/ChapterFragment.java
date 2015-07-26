@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import butterknife.Bind;
 import butterknife.BindString;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.activities.DetailActivity;
 import io.wyrmise.jumpmanga.activities.ReadActivity;
@@ -70,10 +72,17 @@ public class ChapterFragment extends Fragment {
     ListView listView;
     @Bind(R.id.refresh_list)
     SwipeRefreshLayout refreshLayout;
+    @Bind(R.id.reload)
+    Button reload;
 
     @BindString(R.string.chapter_retrieve_failed) String chapter_retrieve_failed;
     @BindString(R.string.no_fav_chapter) String no_fav_chapter;
     @BindString(R.string.refresh_list) String refresh_list;
+
+    @OnClick(R.id.reload)
+    public void reload(){
+        new GetMangaDetails().execute(url);
+    }
 
 
     private JumpingBeans jumpingBeans;
@@ -301,6 +310,7 @@ public class ChapterFragment extends Fragment {
         public void onPreExecute() {
             if (switchCompat != null)
                 switchCompat.setVisibility(View.GONE);
+            reload.setVisibility(View.GONE);
         }
 
         public ArrayList<Chapter> doInBackground(String... params) {
@@ -323,7 +333,6 @@ public class ChapterFragment extends Fragment {
             jumpingBeans.stopJumping();
 
             loadingText.setVisibility(View.GONE);
-
 
             if (arr != null) {
                 if (arr.size() > 0) {
@@ -350,6 +359,7 @@ public class ChapterFragment extends Fragment {
                 }
             } else {
                 Toast.makeText(context, chapter_retrieve_failed, Toast.LENGTH_LONG).show();
+                reload.setVisibility(View.VISIBLE);
             }
         }
     }

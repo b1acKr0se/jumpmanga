@@ -148,7 +148,6 @@ public class ReadActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-
         anim = new AnimationHelper(this);
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -183,18 +182,6 @@ public class ReadActivity extends AppCompatActivity {
             @Override
             public void onPageScrollStateChanged(int state) {
 
-            }
-        });
-
-        viewPager.setOnSwipeOutListener(new CustomViewPager.OnSwipeOutListener() {
-//            @Override
-//            public void onSwipeOutAtStart() {
-//                prevChapter();
-//            }
-
-            @Override
-            public void onSwipeOutAtEnd() {
-                nextChapter();
             }
         });
 
@@ -268,6 +255,23 @@ public class ReadActivity extends AppCompatActivity {
                 progressBar.setVisibility(View.INVISIBLE);
                 DownloadedImageAdapter adapter = new DownloadedImageAdapter(ReadActivity.this, filePath,false);
                 viewPager.setAdapter(adapter);
+                viewPager.setOnSwipeOutListener(new CustomViewPager.OnSwipeOutListener() {
+
+                    boolean callHappened = false;
+
+                    @Override
+                    public void onSwipeOutAtEnd() {
+                        if (!callHappened) {
+                            callHappened = true;
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    nextChapter();
+                                }
+                            }, 500);
+                        }
+                    }
+                });
                 viewPager.setCurrentItem(0);
                 viewPager.setPageMargin(calculatedPixel);
                 pageIndicator.setText("1/" + adapter.getCount());
@@ -289,6 +293,23 @@ public class ReadActivity extends AppCompatActivity {
                 progressBar.setVisibility(View.INVISIBLE);
                 DownloadedImageAdapter adapter = new DownloadedImageAdapter(ReadActivity.this, filePath,false);
                 viewPager.setAdapter(adapter);
+                viewPager.setOnSwipeOutListener(new CustomViewPager.OnSwipeOutListener() {
+
+                    boolean callHappened = false;
+
+                    @Override
+                    public void onSwipeOutAtEnd() {
+                        if (!callHappened) {
+                            callHappened = true;
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    nextChapter();
+                                }
+                            }, 500);
+                        }
+                    }
+                });
                 viewPager.setCurrentItem(0);
                 viewPager.setPageMargin(calculatedPixel);
                 pageIndicator.setText("1/" + adapter.getCount());
@@ -339,7 +360,7 @@ public class ReadActivity extends AppCompatActivity {
     }
 
     public void getFavoriteStatus() {
-        System.out.println(fv_button==null);
+        System.out.println(fv_button == null);
         if(fv_button!=null) {
             if (!chapters.get(chapter_position).isFav()) {
                 fv_button.setIcon(ContextCompat.getDrawable(ReadActivity.this, R.drawable.ic_action_star_unfav));
@@ -444,14 +465,6 @@ public class ReadActivity extends AppCompatActivity {
                 viewPager.setOnSwipeOutListener(new CustomViewPager.OnSwipeOutListener() {
                     boolean callHappened = false;
 
-//                    @Override
-//                    public void onSwipeOutAtStart() {
-//                        if (!callHappened) {
-//                            callHappened = true;
-//                            prevChapter();
-//                        }
-//                    }
-
                     @Override
                     public void onSwipeOutAtEnd() {
                         if (!callHappened) {
@@ -526,7 +539,12 @@ public class ReadActivity extends AppCompatActivity {
                     public void onSwipeOutAtEnd() {
                         if (!callHappened) {
                             callHappened = true;
-                            nextChapter();
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    nextChapter();
+                                }
+                            }, 500);
                         }
                     }
                 });
@@ -561,7 +579,13 @@ public class ReadActivity extends AppCompatActivity {
                     public void onSwipeOutAtEnd() {
                         if (!callHappened) {
                             callHappened = true;
-                            nextChapter();
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    nextChapter();
+                                }
+                            },500);
+
                         }
                     }
                 });
