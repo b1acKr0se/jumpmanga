@@ -52,10 +52,9 @@ public class FetchingMachine {
                 mangas.add(manga);
             }
             return mangas;
-        } catch (IOException e) {
-
+        } catch (IOException | IndexOutOfBoundsException | NullPointerException e) {
+            return null;
         }
-        return null;
     }
 
     public ArrayList<Manga> GetMangasFromCategory() {
@@ -69,16 +68,16 @@ public class FetchingMachine {
                 String name = e.select("h4").select("a[href]").text();
                 String url = e.select("h4").select("a[href]").attr("abs:href");
                 String latest = e.select("span.featured-item-new-chapt").select("a[href]").text();
-                if(latest.equals(""))
+                if (latest.equals(""))
                     latest = "Unknown";
-                Manga manga = new Manga(name,url,img,latest);
+                Manga manga = new Manga(name, url, img, latest);
                 mangas.add(manga);
             }
             return mangas;
         } catch (IOException e) {
-
+            return null;
         }
-        return null;
+
     }
 
     public String GetMangaDetail() {
@@ -113,7 +112,7 @@ public class FetchingMachine {
                 return summary.substring(1, summary.length());
 
             return summary;
-        }catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -121,11 +120,8 @@ public class FetchingMachine {
     public ArrayList<Chapter> GetChapters() {
         ArrayList<Chapter> chapters = new ArrayList<>();
         try {
-
             Document document = Jsoup.connect(url).get();
-
             Element table = document.select("table.table.chapt-table").first();
-
             Elements els = table.select("tr.item-odd,tr.item-even");
 
             for (int i = 0; i < els.size(); i++) {
@@ -134,8 +130,9 @@ public class FetchingMachine {
                 c.setUrl(els.get(i).select("a[href]").attr("abs:href"));
                 chapters.add(c);
             }
+
             return chapters;
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException | IndexOutOfBoundsException e) {
             e.printStackTrace();
             return null;
         }
@@ -177,9 +174,9 @@ public class FetchingMachine {
             Element e = document.select("div.col-md-6.wrap-chapt-chosen-info").first();
             String latest = e.select("a[href]").text();
             String latest_url = e.select("a[href]").attr("abs:href");
-            Chapter chapter = new Chapter(latest,latest_url);
+            Chapter chapter = new Chapter(latest, latest_url);
             return chapter;
-        }catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
@@ -195,9 +192,9 @@ public class FetchingMachine {
                 Elements e = els.get(i).select("td.panel-update-each-item-title ");
                 Manga manga = new Manga();
                 String name = e.select("a[href]").attr("title");
-                if(name.isEmpty())
+                if (name.isEmpty())
                     name = e.select("a.tooltip-content-title[href]").text();
-                System.out.println("Name : " +name);
+                System.out.println("Name : " + name);
                 String manga_url = e.select("a[href]").attr("abs:href");
                 System.out.println(manga_url);
                 String img = e.select("img").attr("data-original");

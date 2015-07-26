@@ -23,13 +23,13 @@ import java.util.ArrayList;
 import butterknife.Bind;
 import butterknife.BindString;
 import butterknife.ButterKnife;
-import io.wyrmise.jumpmanga.utils.OnLoadMoreListener;
 import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.activities.DetailActivity;
 import io.wyrmise.jumpmanga.adapters.MangaAdapter;
 import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
 import io.wyrmise.jumpmanga.manga24hbaseapi.FetchingMachine;
 import io.wyrmise.jumpmanga.model.Manga;
+import io.wyrmise.jumpmanga.utils.OnLoadMoreListener;
 
 
 /**
@@ -49,12 +49,18 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
     private int page = 2;
     private int i;
 
-    @Bind(R.id.progressBar) GoogleProgressBar progressBar;
-    @Bind(R.id.recycler) RecyclerView recyclerView;
-    @Bind(R.id.empty) TextView empty;
-    @BindString(R.string.network_error) String load_error;
-    @BindString(R.string.last_page) String last_page;
-    @BindString(R.string.no_fav_manga) String no_fav_manga;
+    @Bind(R.id.progressBar)
+    GoogleProgressBar progressBar;
+    @Bind(R.id.recycler)
+    RecyclerView recyclerView;
+    @Bind(R.id.empty)
+    TextView empty;
+    @BindString(R.string.network_error)
+    String load_error;
+    @BindString(R.string.last_page)
+    String last_page;
+    @BindString(R.string.no_fav_manga)
+    String no_fav_manga;
 
 
     public MainFragment() {
@@ -68,7 +74,6 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
     }
 
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -77,7 +82,7 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
 
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 
-        ButterKnife.bind(this,view);
+        ButterKnife.bind(this, view);
 
         context = getActivity().getApplicationContext();
 
@@ -168,7 +173,6 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
         public void onPostExecute(ArrayList<Manga> result) {
             mangas.remove(mangas.size() - 1);
             adapter.notifyItemRemoved(mangas.size());
-
             if (result != null) {
                 moreManga = result;
                 page++;
@@ -177,7 +181,7 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
                     adapter.notifyItemInserted(mangas.size());
                 }
             } else {
-                Toast.makeText(context, load_error , Toast.LENGTH_LONG).show();
+                Toast.makeText(context, load_error, Toast.LENGTH_LONG).show();
             }
             adapter.setLoaded();
         }
@@ -273,7 +277,6 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
             }
         }
     }
-
 
 
 }

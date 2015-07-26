@@ -46,10 +46,14 @@ public class NewFragment extends Fragment implements MangaAdapter.OnItemClickLis
 
     @Bind(R.id.progressBar)
     GoogleProgressBar progressBar;
-    @Bind(R.id.recycler) RecyclerView recyclerView;
-    @Bind(R.id.empty) TextView empty;
-    @BindString(R.string.network_error) String load_error;
-    @BindString(R.string.last_page) String last_page;
+    @Bind(R.id.recycler)
+    RecyclerView recyclerView;
+    @Bind(R.id.empty)
+    TextView empty;
+    @BindString(R.string.network_error)
+    String load_error;
+    @BindString(R.string.last_page)
+    String last_page;
 
     public NewFragment() {
         // Required empty public constructor

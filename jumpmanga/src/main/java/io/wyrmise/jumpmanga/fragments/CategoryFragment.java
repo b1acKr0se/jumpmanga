@@ -157,7 +157,6 @@ public class CategoryFragment extends Fragment implements CategoryAdapter.OnItem
         public void onPostExecute(ArrayList<Manga> result) {
             progressBar.setVisibility(ProgressBar.GONE);
             if (result != null) {
-
                 recyclerView.setVisibility(RecyclerView.VISIBLE);
                 empty.setVisibility(View.GONE);
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));

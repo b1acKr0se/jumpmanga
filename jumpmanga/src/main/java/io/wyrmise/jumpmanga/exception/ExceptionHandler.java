@@ -1,4 +1,4 @@
-package io.wyrmise.jumpmanga.activities;
+package io.wyrmise.jumpmanga.exception;
 
 import android.app.Activity;
 import android.content.Intent;
