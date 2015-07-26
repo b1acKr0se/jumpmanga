@@ -469,7 +469,12 @@ public class ReadActivity extends AppCompatActivity {
                     public void onSwipeOutAtEnd() {
                         if (!callHappened) {
                             callHappened = true;
-                            nextChapter();
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    nextChapter();
+                                }
+                            }, 500);
                         }
                     }
                 });
@@ -534,7 +539,6 @@ public class ReadActivity extends AppCompatActivity {
                 viewPager.setOnSwipeOutListener(new CustomViewPager.OnSwipeOutListener() {
 
                     boolean callHappened = false;
-
                     @Override
                     public void onSwipeOutAtEnd() {
                         if (!callHappened) {
