@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 
 import butterknife.Bind;
+import butterknife.BindString;
 import butterknife.ButterKnife;
 import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.adapters.ExpandableDownloadedAdapter;
@@ -42,11 +43,16 @@ public class DownloadedFragment extends Fragment {
 
     private List<Wrapper> wrappers;
     private ExpandableDownloadedAdapter adapter;
+    private Context context;
+
+
     @Bind(R.id.list)
     RecyclerView recyclerView;
     @Bind(R.id.empty)
     TextView empty;
-    private Context context;
+    @BindString(R.string.size_info) String size_info;
+    @BindString(R.string.info) String info;
+
 
     public DownloadedFragment() {
         // Required empty public constructor
@@ -179,9 +185,9 @@ public class DownloadedFragment extends Fragment {
     private void showInfo() {
         FileUtils fileUtils = new FileUtils();
         long bytes = fileUtils.getTotalSize();
-        String message = "Total space taken: "+bytes+"MB.";
+        String message = size_info+bytes+"MB.";
         AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
-        alertDialog.setTitle("Information");
+        alertDialog.setTitle(info);
         alertDialog.setMessage(message);
         alertDialog.setCanceledOnTouchOutside(true);
         alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",

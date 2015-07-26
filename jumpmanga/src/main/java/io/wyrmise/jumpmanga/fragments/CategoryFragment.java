@@ -19,6 +19,9 @@ import com.jpardogo.android.googleprogressbar.library.GoogleProgressBar;
 
 import java.util.ArrayList;
 
+import butterknife.Bind;
+import butterknife.BindString;
+import butterknife.ButterKnife;
 import io.wyrmise.jumpmanga.utils.OnLoadMoreListener;
 import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.activities.DetailActivity;
@@ -36,29 +39,20 @@ import io.wyrmise.jumpmanga.widget.SimpleDividerItemDecoration;
 public class CategoryFragment extends Fragment implements CategoryAdapter.OnItemClickListener {
 
     private JumpDatabaseHelper db;
-
     private Context context;
-
     private ArrayList<Manga> mangas;
-
     private ArrayList<Manga> moreManga;
-
-    private RecyclerView recyclerView;
-
     private CategoryAdapter adapter;
-
-    private GoogleProgressBar progressBar;
-
-    private TextView empty;
-
     private String url = "";
-
     private int page = 2;
-
     private int max_page = 1;
-
     private int position = -1;
 
+    @Bind(R.id.progressBar) GoogleProgressBar progressBar;
+    @Bind(R.id.list) RecyclerView recyclerView;
+    @Bind(R.id.empty) TextView empty;
+
+    @BindString(R.string.network_error) String network_error;
 
     public CategoryFragment() {
         // Required empty public constructor
@@ -70,15 +64,11 @@ public class CategoryFragment extends Fragment implements CategoryAdapter.OnItem
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_category, container, false);
 
+        ButterKnife.bind(this,view);
+
         context = getActivity().getApplicationContext();
 
         db = new JumpDatabaseHelper(context);
-
-        progressBar = (GoogleProgressBar) view.findViewById(R.id.progressBar);
-
-        recyclerView = (RecyclerView) view.findViewById(R.id.list);
-
-        empty = (TextView) view.findViewById(R.id.empty);
 
         max_page = getArguments().getInt("max_page");
         url = getArguments().getString("url");
@@ -190,7 +180,7 @@ public class CategoryFragment extends Fragment implements CategoryAdapter.OnItem
             } else {
                 recyclerView.setVisibility(RecyclerView.GONE);
                 empty.setVisibility(TextView.VISIBLE);
-                Toast.makeText(context, "There's something wrong with your network, please check", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, network_error, Toast.LENGTH_LONG).show();
             }
 
         }
@@ -218,7 +208,7 @@ public class CategoryFragment extends Fragment implements CategoryAdapter.OnItem
                     adapter.notifyItemInserted(mangas.size());
                 }
             } else {
-                Toast.makeText(context, "There's something wrong with your network, please check", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, network_error, Toast.LENGTH_LONG).show();
             }
             adapter.setLoaded();
         }

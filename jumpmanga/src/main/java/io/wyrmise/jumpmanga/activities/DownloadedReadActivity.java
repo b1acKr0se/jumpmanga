@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import butterknife.Bind;
+import butterknife.BindString;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.wyrmise.jumpmanga.R;
@@ -52,6 +53,9 @@ public class DownloadedReadActivity extends AppCompatActivity {
     View control;
     @Bind(R.id.indicator)
     TextView pageIndicator;
+
+    @BindString(R.string.first_chapter) String first_chapter;
+    @BindString(R.string.last_chapter) String last_chapter;
 
     @OnClick(R.id.next)
     public void next(){
@@ -254,7 +258,7 @@ public class DownloadedReadActivity extends AppCompatActivity {
             db.markChapterAsRead(c,c.getMangaName());
             setUpAdapter(chapterName, path);
         } else
-            Toast.makeText(DownloadedReadActivity.this,"Next chapter not found",Toast.LENGTH_SHORT).show();
+            Toast.makeText(DownloadedReadActivity.this,last_chapter,Toast.LENGTH_SHORT).show();
     }
 
     private void previousChapter() {
@@ -266,7 +270,7 @@ public class DownloadedReadActivity extends AppCompatActivity {
             db.markChapterAsRead(c,c.getMangaName());
             setUpAdapter(chapterName, path);
         } else
-            Toast.makeText(DownloadedReadActivity.this,"First chapter",Toast.LENGTH_SHORT).show();
+            Toast.makeText(DownloadedReadActivity.this,first_chapter,Toast.LENGTH_SHORT).show();
     }
 
     private void setUpAdapter(String chapterName, ArrayList<String> path) {

@@ -31,6 +31,7 @@ import net.frakbot.jumpingbeans.JumpingBeans;
 import java.util.ArrayList;
 
 import butterknife.Bind;
+import butterknife.BindString;
 import butterknife.ButterKnife;
 import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.activities.DetailActivity;
@@ -69,6 +70,10 @@ public class ChapterFragment extends Fragment {
     ListView listView;
     @Bind(R.id.refresh_list)
     SwipeRefreshLayout refreshLayout;
+
+    @BindString(R.string.chapter_retrieve_failed) String chapter_retrieve_failed;
+    @BindString(R.string.no_fav_chapter) String no_fav_chapter;
+    @BindString(R.string.refresh_list) String refresh_list;
 
 
     private JumpingBeans jumpingBeans;
@@ -125,34 +130,22 @@ public class ChapterFragment extends Fragment {
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                Toast.makeText(context, "Refreshing chapter list...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, refresh_list, Toast.LENGTH_SHORT).show();
                 listView.setVisibility(ListView.GONE);
                 new GetMangaDetails().execute(url);
             }
         });
 
-//        if (savedInstanceState != null && savedInstanceState.containsKey("list")) {
-//            chapters = savedInstanceState.getParcelableArrayList("list");
-//            adapter = new ChapterAdapter(context, R.layout.chapter_list_item, chapters);
-//            listView.setAdapter(adapter);
-//            progressBar.setVisibility(ProgressBar.GONE);
-//
-//            listView.setVisibility(ListView.VISIBLE);
-//
-//            listView.setTextFilterEnabled(true);
-//        } else {
         jumpingBeans = JumpingBeans.with(loadingText).appendJumpingDots().build();
         listView.setVisibility(ListView.GONE);
         new GetMangaDetails().execute(url);
 
-//        }
         return view;
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.unbind(this);
     }
 
     @Override
@@ -262,7 +255,7 @@ public class ChapterFragment extends Fragment {
                         adapter = new ChapterAdapter(context, R.layout.chapter_list_item, chapters);
                         listView.setAdapter(adapter);
                     } else {
-                        Toast.makeText(context, "You have no favorite chapter for this manga", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, no_fav_chapter, Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     chapters = new ArrayList<Chapter>(temp);
@@ -356,7 +349,7 @@ public class ChapterFragment extends Fragment {
 
                 }
             } else {
-                Toast.makeText(context, "Cannot retrieve the chapters, please check your network", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, chapter_retrieve_failed, Toast.LENGTH_LONG).show();
             }
         }
     }

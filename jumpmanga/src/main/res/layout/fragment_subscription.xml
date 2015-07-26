@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="There's nothing new, apparently"
+        android:text="@string/empty_fragment"
         android:visibility="gone" />
 
 </FrameLayout>

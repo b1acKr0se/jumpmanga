@@ -21,6 +21,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import butterknife.Bind;
+import butterknife.BindString;
 import butterknife.ButterKnife;
 import io.wyrmise.jumpmanga.adapters.DownloadedImageAdapter;
 import io.wyrmise.jumpmanga.fragments.ChapterFragment;
@@ -64,6 +65,11 @@ public class ReadActivity extends AppCompatActivity {
     @Bind(R.id.next) ImageView next;
     @Bind(R.id.previous) ImageView previous;
 
+    @BindString(R.string.first_chapter) String first_chapter;
+    @BindString(R.string.last_chapter) String last_chapter;
+    @BindString(R.string.network_error) String network_error;
+    @BindString(R.string.chapter_fav) String chapter_fav;
+    @BindString(R.string.chapter_unfav) String chapter_unfav;
 
     private void hideSystemUI() {
         View decorView = getWindow().getDecorView();
@@ -264,7 +270,7 @@ public class ReadActivity extends AppCompatActivity {
                 viewPager.setAdapter(adapter);
                 viewPager.setCurrentItem(0);
                 viewPager.setPageMargin(calculatedPixel);
-                pageIndicator.setText("Page 1/" + adapter.getCount());
+                pageIndicator.setText("1/" + adapter.getCount());
                 seekBar.setProgress(0);
                 seekBar.setMax(adapter.getCount() - 1);
                 getFavoriteStatus();
@@ -285,7 +291,7 @@ public class ReadActivity extends AppCompatActivity {
                 viewPager.setAdapter(adapter);
                 viewPager.setCurrentItem(0);
                 viewPager.setPageMargin(calculatedPixel);
-                pageIndicator.setText("Page 1/" + adapter.getCount());
+                pageIndicator.setText("1/" + adapter.getCount());
                 seekBar.setProgress(0);
                 seekBar.setMax(adapter.getCount() - 1);
                 getFavoriteStatus();
@@ -308,7 +314,7 @@ public class ReadActivity extends AppCompatActivity {
             chapter_position--;
             changeDownloadedChapter();
         } else {
-            Toast.makeText(getApplicationContext(), "This is the last chapter", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), last_chapter, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -318,7 +324,7 @@ public class ReadActivity extends AppCompatActivity {
             chapter_position++;
             changeDownloadedChapter();
         } else {
-            Toast.makeText(getApplicationContext(), "This is the first chapter", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), first_chapter, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -371,14 +377,14 @@ public class ReadActivity extends AppCompatActivity {
                 ChapterFragment.getAdapter().getItem(chapter_position).setIsFav(false);
             chapters.get(chapter_position).setIsFav(false);
             fv_button.setIcon(ContextCompat.getDrawable(ReadActivity.this, R.drawable.ic_action_star_unfav));
-            Toast.makeText(ReadActivity.this, "Successfully unfavorited this chapter", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ReadActivity.this, chapter_unfav, Toast.LENGTH_SHORT).show();
         } else {
             db.favChapter(chapters.get(chapter_position), manga.getName());
             if (ChapterFragment.getAdapter() != null)
                 ChapterFragment.getAdapter().getItem(chapter_position).setIsFav(true);
             chapters.get(chapter_position).setIsFav(true);
             fv_button.setIcon(ContextCompat.getDrawable(ReadActivity.this, R.drawable.ic_action_star_fav));
-            Toast.makeText(ReadActivity.this, "Successfully favorited this chapter", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ReadActivity.this, chapter_fav, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -470,7 +476,7 @@ public class ReadActivity extends AppCompatActivity {
                 getFavoriteStatus();
 
             } else {
-                Toast.makeText(getApplicationContext(), "Failed to retrieve this chapter, please check your network", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), network_error, Toast.LENGTH_SHORT).show();
                 finish();
             }
 
@@ -544,7 +550,7 @@ public class ReadActivity extends AppCompatActivity {
                 getSupportActionBar().setTitle(chapters.get(chapter_position).getName());
 
             } else {
-                Toast.makeText(getApplicationContext(), "Cannot retrieve new chapter, please check your network", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), network_error, Toast.LENGTH_SHORT).show();
                 if (!isRefreshing)
                     chapter_position = chapter_position_temp;
                 viewPager.setOnSwipeOutListener(new CustomViewPager.OnSwipeOutListener() {

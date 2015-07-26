@@ -14,7 +14,7 @@
         <item
             android:id="@+id/drawer_new"
             android:icon="@drawable/ic_action_new"
-            android:title="@string/new_" />
+            android:title="@string/drawer_new" />
 
         <item
             android:id="@+id/drawer_category"

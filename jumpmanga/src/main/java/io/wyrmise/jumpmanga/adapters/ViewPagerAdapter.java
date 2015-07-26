@@ -14,13 +14,14 @@ import io.wyrmise.jumpmanga.fragments.InfoFragment;
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
     final int PAGE_COUNT = 2;
-    private String titles[] = new String[]{"Information", "Chapter"};
+    private String titles[];
     private Context context;
 
 
-    public ViewPagerAdapter(FragmentManager fm, Context context) {
+    public ViewPagerAdapter(FragmentManager fm, Context context, String[] t) {
         super(fm);
         this.context = context;
+        titles = t;
     }
 
     @Override
@@ -47,6 +48,5 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     public int getCount() {
         return PAGE_COUNT;
     }
-
 
 }

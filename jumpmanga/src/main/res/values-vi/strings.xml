@@ -5,7 +5,7 @@
     <string name="favourite">Yêu thích</string>
     <string name="recent">Lịch sử</string>
     <string name="settings">Cài đặt</string>
-    <string name="new_">Mới</string>
+    <string name="drawer_new">Mới</string>
     <string name="downloaded">Đã tải</string>
     <string name="openDrawer">Open</string>
     <string name="closeDrawer">Close</string>
@@ -24,7 +24,7 @@
     <string name="action_settings">Cài đặt</string>
     <string name="loading">ĐANG TẢI</string>
     <string name="empty"> KHÔNG CÓ DỮ LIỆU</string>
-    <string name="size_info">Dung lượng chiếm</string>
+    <string name="size_info">Dung lượng chiếm: </string>
     <string name="confirm_delete">Bạn có muốn xóa truyện này không?</string>
     <string name="pref_download_title">Số lượt tải đồng thời</string>
     <string name="pref_download_summary">Giảm số lượt tải nếu có lỗi gì đó xảy ra</string>
@@ -32,5 +32,26 @@
     <string name="pref_show_notification_summary"> Đừng chọn nếu bạn không muốn lấp đầy thanh status với các thông báo</string>
     <string name="pref_update_frequency_title">Tần suất kiểm tra chap mới</string>
     <string name="pref_update_frequency_summary"> Nên để ở mức mặc định (1 ngày)</string>
+    <string name="no_fav_manga">Không có truyện nào yêu thích</string>
+    <string name="last_page">Đây là trang cuối!</string>
+    <string name="manga_fav">Đánh dấu yêu thích thành công!</string>
+    <string name="manga_unfav">Bỏ yêu thích thành công!</string>
+    <string name="chapter_fav">Đã đánh dấu yêu thích chap này</string>
+    <string name="chapter_unfav">Đã bỏ yêu thích chap này</string>
+    <string name="info_retrieve_failed">Không tải được thông tin truyện!</string>
+    <string name="chapter_retrieve_failed">Không tải được danh sách chap!</string>
+    <string name="no_fav_chapter">Không có chap yêu thích của truyện này!</string>
+    <string name="refresh_list">Đang tải lại...</string>
+    <string name="info">Thông tin</string>
+    <string name="preparing_chapter">Đang lấy danh sách chap...</string>
+    <string name="network_error">Kiểm tra lại mạng của bạn!</string>
+    <string name="first_chapter">Đây là chap đầu tiên</string>
+    <string name="last_chapter">Đây là chap cuối cùng</string>
+    <string name="empty_fragment">Không có dữ liệu</string>
+    <string name="download_empty">Bạn phải tải truyện về đã</string>
+    <string name="plot">Nội dung</string>
+    <string name="chapter">Danh sách chương</string>
+    <string name="refresh">Tải lại</string>
+    <string name="reload">Tải lại</string>
 
 </resources>

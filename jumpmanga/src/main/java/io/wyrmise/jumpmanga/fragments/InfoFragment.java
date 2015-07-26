@@ -19,6 +19,7 @@ import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +33,7 @@ import java.util.ArrayList;
 import butterknife.Bind;
 import butterknife.BindString;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.activities.DetailActivity;
 import io.wyrmise.jumpmanga.activities.MainActivity;
@@ -59,10 +61,11 @@ public class InfoFragment extends Fragment {
     @Bind(R.id.detail) TextView detail;
     @Bind(R.id.description) TextView summary;
     @Bind(R.id.image) ImageView img;
+    @Bind(R.id.reload) Button reload;
 
     @BindString(R.string.manga_fav) String manga_fav;
     @BindString(R.string.manga_unfav) String manga_unfav;
-    @BindString(R.string.retrieve_failed) String retrieve_failed;
+    @BindString(R.string.info_retrieve_failed) String retrieve_failed;
 
     public InfoFragment() {
         // Required empty public constructor
@@ -73,12 +76,11 @@ public class InfoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-
-        final String image = ((DetailActivity) getActivity()).getManga().getImage();
-
-        final String url = ((DetailActivity) getActivity()).getManga().getUrl();
-
         manga = ((DetailActivity) getActivity()).getManga();
+
+        final String image = manga.getImage();
+
+        final String url = manga.getUrl();
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_info, container, false);
@@ -127,7 +129,6 @@ public class InfoFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.unbind(this);
     }
 
 
@@ -144,31 +145,37 @@ public class InfoFragment extends Fragment {
         @Override
         public void onPreExecute() {
             loadingText.setVisibility(View.VISIBLE);
+            reload.setVisibility(View.GONE);
             jumpingBeans = JumpingBeans.with(loadingText).appendJumpingDots().build();
         }
 
         @Override
         public String[] doInBackground(String... params) {
-            str = new String[2];
-            FetchingMachine download = new FetchingMachine(params[0]);
-            String detail = download.GetMangaDetail();
-            manga.setLatest(download.GetLatestChapter(manga).getName());
-            if (db.isMangaFavorited(manga.getName())) {
-                db.updateLatestChapter(manga);
+            try {
+                str = new String[2];
+                FetchingMachine download = new FetchingMachine(params[0]);
+                String detail = download.GetMangaDetail();
+                manga.setLatest(download.GetLatestChapter(manga).getName());
+                if (db.isMangaFavorited(manga.getName())) {
+                    db.updateLatestChapter(manga);
+                }
+                String plot = download.GetMangaSummary();
+                if (detail != null && plot != null) {
+                    str[0] = detail;
+                    str[1] = plot;
+                    return str;
+                }
+                return null;
+            }catch(Exception e) {
+                return null;
             }
-            String plot = download.GetMangaSummary();
-            if (detail != null && plot != null) {
-                str[0] = detail;
-                str[1] = plot;
-                return str;
-            }
-            return null;
         }
 
         @Override
         public void onPostExecute(String[] str) {
             jumpingBeans.stopJumping();
             loadingText.setVisibility(View.GONE);
+
             if (str != null) {
                 detail.setText(str[0]);
                 summary.setText(str[1]);
@@ -189,6 +196,14 @@ public class InfoFragment extends Fragment {
                 }, 300);
             } else {
                 Toast.makeText(context, retrieve_failed, Toast.LENGTH_SHORT).show();
+                reload.setVisibility(View.VISIBLE);
+                reload.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        new GetMangaDetails().execute(manga.getUrl());
+                        Toast.makeText(context, "button clicked", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         }
     }

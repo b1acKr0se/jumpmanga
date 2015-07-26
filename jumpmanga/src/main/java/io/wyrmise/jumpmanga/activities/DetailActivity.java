@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import butterknife.Bind;
+import butterknife.BindString;
 import butterknife.ButterKnife;
 import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.adapters.ViewPagerAdapter;
@@ -20,6 +21,10 @@ public class DetailActivity extends AppCompatActivity {
     @Bind(R.id.toolbar) Toolbar toolbar;
     @Bind(R.id.pager) ViewPager pager;
     @Bind(R.id.sliding_tabs) TabLayout tabLayout;
+
+    @BindString(R.string.info) String info;
+    @BindString(R.string.chapter) String chapter;
+
 
     ViewPagerAdapter adapter;
 
@@ -37,7 +42,9 @@ public class DetailActivity extends AppCompatActivity {
 
         setTitle(getManga().getName());
 
-        adapter =  new ViewPagerAdapter(getSupportFragmentManager(),DetailActivity.this);
+        String[] titles = {info,chapter};
+
+        adapter =  new ViewPagerAdapter(getSupportFragmentManager(),DetailActivity.this, titles);
 
         pager.setAdapter(adapter);
 

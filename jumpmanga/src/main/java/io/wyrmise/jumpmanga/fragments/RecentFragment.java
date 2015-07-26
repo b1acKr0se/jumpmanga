@@ -19,6 +19,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import butterknife.Bind;
+import butterknife.BindString;
 import butterknife.ButterKnife;
 import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.activities.ReadActivity;
@@ -47,6 +48,9 @@ public class RecentFragment extends Fragment implements MangaAdapter.OnItemClick
     RecyclerView recyclerView;
     @Bind(R.id.empty)
     TextView empty;
+
+    @BindString(R.string.network_error) String network_error;
+    @BindString(R.string.preparing_chapter) String preparing;
 
 
     public RecentFragment() {
@@ -78,7 +82,7 @@ public class RecentFragment extends Fragment implements MangaAdapter.OnItemClick
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (isTaskRunning) {
-            progressDialog = ProgressDialog.show(getActivity(), null, "Preparing...");
+            progressDialog = ProgressDialog.show(getActivity(), null, preparing);
         }
     }
 
@@ -132,7 +136,7 @@ public class RecentFragment extends Fragment implements MangaAdapter.OnItemClick
     @Override
     public void onTaskStarted() {
         isTaskRunning = true;
-        progressDialog = ProgressDialog.show(getActivity(), null, "Picking up where you left off...");
+        progressDialog = ProgressDialog.show(getActivity(), null, preparing);
     }
 
     @Override
@@ -183,7 +187,7 @@ public class RecentFragment extends Fragment implements MangaAdapter.OnItemClick
                 intent.putParcelableArrayListExtra("list", arr);
                 startActivity(intent);
             } else {
-                Toast.makeText(context, "There's an error with your network, please check", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, network_error, Toast.LENGTH_SHORT).show();
             }
 
         }

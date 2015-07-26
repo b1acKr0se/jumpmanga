@@ -20,6 +20,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import butterknife.Bind;
+import butterknife.BindString;
 import butterknife.ButterKnife;
 import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.activities.ReadActivity;
@@ -50,6 +51,9 @@ public class SubscriptionFragment extends Fragment implements MangaAdapter.OnIte
     @Bind(R.id.empty)
     TextView empty;
 
+    @BindString(R.string.network_error) String network_error;
+    @BindString(R.string.preparing_chapter) String preparing;
+
     public SubscriptionFragment() {
         // Required empty public constructor
     }
@@ -79,7 +83,7 @@ public class SubscriptionFragment extends Fragment implements MangaAdapter.OnIte
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (isTaskRunning) {
-            progressDialog = ProgressDialog.show(getActivity(), null, "Preparing...");
+            progressDialog = ProgressDialog.show(getActivity(), null, preparing);
         }
     }
 
@@ -133,7 +137,7 @@ public class SubscriptionFragment extends Fragment implements MangaAdapter.OnIte
     @Override
     public void onTaskStarted() {
         isTaskRunning = true;
-        progressDialog = ProgressDialog.show(getActivity(), null, "Preparing...");
+        progressDialog = ProgressDialog.show(getActivity(), null, preparing);
     }
 
     @Override
@@ -186,7 +190,7 @@ public class SubscriptionFragment extends Fragment implements MangaAdapter.OnIte
 
                 startActivity(intent);
             } else {
-                Toast.makeText(context, "There's an error with your network, please check", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, network_error, Toast.LENGTH_SHORT).show();
             }
         }
     }

@@ -38,7 +38,7 @@ public class SettingActivity extends AppCompatActivity {
         public void onCreate(final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.preferences);
-            final Preference downloadNumPref = (ListPreference) getPreferenceManager().findPreference(KEY_DOWNLOAD_NUM);
+            final Preference downloadNumPref = getPreferenceManager().findPreference(KEY_DOWNLOAD_NUM);
             downloadNumPref.setSummary(((ListPreference) downloadNumPref).getEntry());
             downloadNumPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
@@ -49,7 +49,7 @@ public class SettingActivity extends AppCompatActivity {
                 }
             });
 
-            final Preference updatePref = (ListPreference) getPreferenceManager().findPreference(KEY_UPDATE_FREQUENCY);
+            final Preference updatePref = getPreferenceManager().findPreference(KEY_UPDATE_FREQUENCY);
             updatePref.setSummary(((ListPreference) updatePref).getEntry());
             updatePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override

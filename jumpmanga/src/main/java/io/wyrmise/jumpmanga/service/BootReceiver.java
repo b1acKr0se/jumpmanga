@@ -12,7 +12,7 @@ public class BootReceiver extends BroadcastReceiver {
     private SharedPreferences prefs;
 
     public void onReceive(Context context, Intent intent) {
-        prefs = context.getSharedPreferences("Alarm", context.MODE_PRIVATE);
+        prefs = context.getSharedPreferences("Alarm", Context.MODE_PRIVATE);
         if (!prefs.getBoolean("Alarm", false)) {
             Intent i = new Intent(context, FetchLatestService.class);
             PendingIntent pi = PendingIntent.getService(context, 0, i, 0);

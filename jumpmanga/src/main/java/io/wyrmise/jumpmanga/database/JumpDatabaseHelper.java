@@ -122,8 +122,7 @@ public class JumpDatabaseHelper extends SQLiteAssetHelper {
         int rowsAffected = db.update(TABLE_MANGA, contentValues, TABLE_MANGA_NAME + " = ?",
                 new String[]{manga.getName()});
 
-        if (rowsAffected > 0) return true;
-        return false;
+        return rowsAffected > 0;
 
     }
 
@@ -131,10 +130,7 @@ public class JumpDatabaseHelper extends SQLiteAssetHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         int rowsAffected = db.delete(TABLE_MANGA, TABLE_MANGA_NAME + " = ?",
                 new String[]{mangaName});
-        if (rowsAffected > 0) {
-            return true;
-        }
-        return false;
+        return rowsAffected > 0;
     }
 
     public boolean isMangaFavorited(String mangaName) {
@@ -183,8 +179,7 @@ public class JumpDatabaseHelper extends SQLiteAssetHelper {
         int rowsAffected = db.update(TABLE_MANGA, contentValues, TABLE_MANGA_NAME + " = ?",
                 new String[]{manga.getName()});
 
-        if (rowsAffected > 0) return true;
-        return false;
+        return rowsAffected > 0;
     }
 
     public boolean isChapterRead(Chapter chapter, String mangaName) {

@@ -47,9 +47,14 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.Spinner;
+
 import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
+import java.util.Random;
+
 import butterknife.Bind;
+import butterknife.BindString;
 import butterknife.ButterKnife;
 import io.wyrmise.jumpmanga.fragments.CategoryFragment;
 import io.wyrmise.jumpmanga.fragments.DownloadedFragment;
@@ -74,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
     private ArrayList<Category> categories;
     private int savedMenuId = -1;
     private int category_position = -1;
+    private int random_number = -1;
     private JumpDatabaseHelper db;
     private SearchAdapter adapter;
     private MenuItem toggle_btn;
@@ -97,10 +103,29 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         }
     };
 
-    @Bind(R.id.toolbar) Toolbar toolbar;
-    @Bind(R.id.drawer_layout) DrawerLayout drawerLayout;
-    @Bind(R.id.search_box) CustomAutoCompleteTextView searchBox;
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
+    @Bind(R.id.drawer_layout)
+    DrawerLayout drawerLayout;
+    @Bind(R.id.search_box)
+    CustomAutoCompleteTextView searchBox;
+    @Bind(R.id.background)
+    ImageView background;
 
+    @BindString(R.string.app_name)
+    String app_name;
+    @BindString(R.string.home)
+    String home;
+    @BindString(R.string.drawer_new)
+    String new_;
+    @BindString(R.string.downloaded)
+    String downloaded;
+    @BindString(R.string.recent)
+    String recent;
+    @BindString(R.string.feeds)
+    String feeds;
+    @BindString(R.string.favourite)
+    String favorite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,10 +167,12 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         boolean isOpenFromNotification = getIntent().getBooleanExtra("favorite", false);
 
         if (savedInstanceState == null && !isOpenFromNotification) {
+            getRandomBackgroundImage();
             GetHotMangas();
             new getAllMangas().execute();
 
         } else if (isOpenFromNotification) {
+            getRandomBackgroundImage();
             GetSubscription();
             new getAllMangas().execute();
             NavigationView view = (NavigationView) findViewById(R.id.navigation_view);
@@ -160,6 +187,8 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         } else if (savedInstanceState != null) {
             getSupportActionBar().setTitle(savedInstanceState.getString("title"));
             mangas = savedInstanceState.getParcelableArrayList("list");
+            random_number = savedInstanceState.getInt("number");
+            getRandomBackgroundImage();
             temp = new ArrayList<>(mangas);
             adapter = new SearchAdapter(getApplicationContext(), R.layout.search_dropdown_item, mangas);
             searchBox.setAdapter(adapter);
@@ -174,6 +203,33 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
             }
         }
 
+    }
+
+    private void getRandomBackgroundImage() {
+        if (random_number == -1) {
+            Random random = new Random();
+            random_number = random.nextInt(5 - 1 + 1) + 1;
+        }
+        switch (random_number) {
+            case 1:
+                Picasso.with(this).load(R.drawable.background1).into(background);
+                break;
+            case 2:
+                Picasso.with(this).load(R.drawable.background2).into(background);
+                break;
+            case 3:
+                Picasso.with(this).load(R.drawable.background3).into(background);
+                break;
+            case 4:
+                Picasso.with(this).load(R.drawable.background4).into(background);
+                break;
+            case 5:
+                Picasso.with(this).load(R.drawable.background5).into(background);
+                break;
+            default:
+                Picasso.with(this).load(R.drawable.background5).into(background);
+                break;
+        }
     }
 
     @Override
@@ -247,6 +303,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         bundle.putInt("menu", savedMenuId);
         bundle.putParcelableArrayList("list", mangas);
         bundle.putInt("category", category_position);
+        bundle.putInt("number", random_number);
         super.onSaveInstanceState(bundle);
     }
 
@@ -258,7 +315,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         fragmentTransaction.replace(R.id.content_frame, fragment, "NEW");
         fragmentTransaction.commit();
         removeSpinner();
-        getSupportActionBar().setTitle("New");
+        getSupportActionBar().setTitle(new_);
     }
 
 
@@ -272,7 +329,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         fragmentTransaction.replace(R.id.content_frame, fragment, "HOT");
         fragmentTransaction.commit();
         removeSpinner();
-        getSupportActionBar().setTitle("Jump Manga");
+        getSupportActionBar().setTitle(app_name);
     }
 
     private void GetFavoriteMangas() {
@@ -285,7 +342,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         fragmentTransaction.replace(R.id.content_frame, fragment, "FAVOURITE");
         fragmentTransaction.commit();
         removeSpinner();
-        getSupportActionBar().setTitle("Favourite");
+        getSupportActionBar().setTitle(favorite);
     }
 
     private void GetRecentList() {
@@ -295,7 +352,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         fragmentTransaction.replace(R.id.content_frame, fragment, "RECENT");
         fragmentTransaction.commit();
         removeSpinner();
-        getSupportActionBar().setTitle("Recent");
+        getSupportActionBar().setTitle(recent);
     }
 
     private void GetCategories(Category c) {
@@ -320,7 +377,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         fragmentTransaction.replace(R.id.content_frame, fragment, "FEEDS");
         fragmentTransaction.commit();
         removeSpinner();
-        getSupportActionBar().setTitle("My feeds");
+        getSupportActionBar().setTitle(feeds);
     }
 
     public void GetDownloaded() {
@@ -330,7 +387,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         fragmentTransaction.replace(R.id.content_frame, fragment, "DOWNLOADED");
         fragmentTransaction.commit();
         removeSpinner();
-        getSupportActionBar().setTitle("Downloaded");
+        getSupportActionBar().setTitle(downloaded);
     }
 
 //    @Override
@@ -434,7 +491,12 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
                         GetSubscription();
                         break;
                     case R.id.drawer_downloaded:
-                        GetDownloaded();
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                GetDownloaded();
+                            }
+                        }, 200);
                         break;
                     case R.id.drawer_settings:
                         new Handler().postDelayed(new Runnable() {
@@ -443,7 +505,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
                                 Intent intent = new Intent(MainActivity.this, SettingActivity.class);
                                 startActivity(intent);
                             }
-                        },200);
+                        }, 200);
                         break;
                 }
                 menuItem.setChecked(true);
@@ -514,10 +576,6 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
             }
         }
     }
-
-
-
-
 
 
 }

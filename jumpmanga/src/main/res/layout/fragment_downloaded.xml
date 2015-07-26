@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="There doesn't seem to be anything here"
+        android:text="@string/download_empty"
         android:visibility="gone" />
 
 </FrameLayout>

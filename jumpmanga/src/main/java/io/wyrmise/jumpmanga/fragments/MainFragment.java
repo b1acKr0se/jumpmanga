@@ -52,7 +52,7 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
     @Bind(R.id.progressBar) GoogleProgressBar progressBar;
     @Bind(R.id.recycler) RecyclerView recyclerView;
     @Bind(R.id.empty) TextView empty;
-    @BindString(R.string.load_error) String load_error;
+    @BindString(R.string.network_error) String load_error;
     @BindString(R.string.last_page) String last_page;
     @BindString(R.string.no_fav_manga) String no_fav_manga;
 
@@ -147,19 +147,6 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
         super.onSaveInstanceState(bundle);
 
     }
-
-//    @Override
-//    public void onConfigurationChanged(Configuration newConfig) {
-//        super.onConfigurationChanged(newConfig);
-//        // Checks the orientation of the screen
-//        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-//            recyclerView.setLayoutManager(new GridLayoutManager(context, 4));
-//            recyclerView.setAdapter(adapter);
-//        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
-//            recyclerView.setLayoutManager(new GridLayoutManager(context, 2));
-//            recyclerView.setAdapter(adapter);
-//        }
-//    }
 
     @Override
     public void onItemClick(View view, Manga manga) {

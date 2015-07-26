@@ -42,7 +42,7 @@ public class FullScreenImageAdapter extends PagerAdapter {
 
     @Override
     public boolean isViewFromObject(View view, Object object) {
-        return view == ((LinearLayout) object);
+        return view == object;
     }
 
     @Override
@@ -79,7 +79,7 @@ public class FullScreenImageAdapter extends PagerAdapter {
 
         imageView.resetZoom();
 
-        ((ViewPager) container).addView(layout);
+        container.addView(layout);
 
         return layout;
     }
@@ -87,6 +87,6 @@ public class FullScreenImageAdapter extends PagerAdapter {
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
-        ((ViewPager) container).removeView((LinearLayout) object);
+        container.removeView((LinearLayout) object);
     }
 }
