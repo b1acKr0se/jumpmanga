@@ -65,13 +65,12 @@
 
         <activity
             android:name=".activities.DownloadedReadActivity"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".activities.MainActivity" >
+            android:parentActivityName=".activities.MainActivity"
+            android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="io.wyrmise.jumpmanga.activities.MainActivity" />
         </activity>
-
         <activity
             android:name=".activities.SettingActivity"
             android:label="@string/title_activity_setting"
@@ -80,6 +79,43 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainActivity" />
+        </activity>
+        <activity
+            android:name=".activities.AboutActivity"
+            android:theme="@style/SettingTheme"
+            android:label="@string/title_activity_about" >
+            <intent-filter>
+                <action android:name="io.wyrmise.jumpmanga.activities.AboutActivity" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.SettingActivity" />
+        </activity>
+        <activity
+            android:name=".activities.LicenseActivity"
+            android:theme="@style/SettingTheme"
+            android:label="@string/licenses" >
+            <intent-filter>
+                <action android:name="io.wyrmise.jumpmanga.activities.LicenseActivity" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.SettingActivity" />
+        </activity>
+
+        <activity
+            android:name=".activities.GeneralSettingsActivity"
+            android:theme="@style/SettingTheme"
+            android:label="@string/general_pref" >
+            <intent-filter>
+                <action android:name="io.wyrmise.jumpmanga.activities.General_Settings_Activity" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.SettingActivity" />
         </activity>
     </application>
 

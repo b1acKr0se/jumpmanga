@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="@string/title_activity_about">
+    <Preference
+        android:summary="@string/feedback"
+        android:selectable="false"/>
+    <Preference
+        android:title="@string/my_facebook"
+        android:summary="@string/facebook_url"
+        android:icon="@drawable/facebook" >
+        <intent android:action="android.intent.action.VIEW"
+            android:data="https://www.facebook.com/zenith.wyrm" />
+    </Preference>
+    <Preference
+        android:title="@string/my_twitter"
+        android:summary="@string/twitter_url"
+        android:icon="@drawable/twitter" >
+        <intent android:action="android.intent.action.VIEW"
+            android:data="https://twitter.com/wyrmise" />
+    </Preference>
+    <Preference
+        android:title="@string/disclaimer"
+        android:summary="@string/disclaimer_content"
+        android:selectable="false"/>
+
+</PreferenceScreen>

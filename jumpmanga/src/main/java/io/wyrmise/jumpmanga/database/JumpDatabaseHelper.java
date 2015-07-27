@@ -161,7 +161,11 @@ public class JumpDatabaseHelper extends SQLiteAssetHelper {
                 String image = cursor.getString(cursor.getColumnIndex(TABLE_MANGA_IMAGE));
                 String url = cursor.getString(cursor.getColumnIndex(TABLE_MANGA_URL));
                 String latest = cursor.getString(cursor.getColumnIndex(TABLE_MANGA_LATEST));
-                Manga manga = new Manga(name, url, image, latest);
+                Manga manga = new Manga();
+                manga.setName(name);
+                manga.setImage(image);
+                manga.setUrl(url);
+                manga.setLatest(latest);
                 manga.setIsFav(true);
                 mangas.add(manga);
             }
@@ -375,20 +379,22 @@ public class JumpDatabaseHelper extends SQLiteAssetHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         String selectQuery = "SELECT * FROM " + TABLE_SUBSCRIPTION + " ORDER BY " + TABLE_SUBSCRIPTION_ID;
-
         Cursor cursor = db.rawQuery(selectQuery, null);
-
         if (cursor.getCount() > 0) {
             ArrayList<Manga> mangas = new ArrayList<>();
             while (cursor.moveToNext()) {
                 String manga_name = cursor.getString(cursor.getColumnIndex(TABLE_SUBSCRIPTION_MANGA_NAME));
                 String manga_image = cursor.getString(cursor.getColumnIndex(TABLE_SUBSCRIPTION_MANGA_IMAGE));
                 String manga_url = cursor.getString(cursor.getColumnIndex(TABLE_SUBSCRIPTION_MANGA_URL));
+                System.out.println("Manga image is " +manga_image);
                 String chapter_name = cursor.getString(cursor.getColumnIndex(TABLE_SUBSCRIPTION_CHAPTER_NAME));
                 String chapter_url = cursor.getString(cursor.getColumnIndex(TABLE_SUBSCRIPTION_CHAPTER_URL));
                 Chapter c = new Chapter(chapter_name, chapter_url);
-                Manga m = new Manga(manga_name, manga_image, c);
+                Manga m = new Manga();
+                m.setName(manga_name);
+                m.setImage(manga_image);
                 m.setUrl(manga_url);
+                m.setChapter(c);
                 mangas.add(m);
             }
             return mangas;
@@ -403,7 +409,7 @@ public class JumpDatabaseHelper extends SQLiteAssetHelper {
         contentValues.put(TABLE_SUBSCRIPTION_MANGA_IMAGE, manga.getImage());
         contentValues.put(TABLE_SUBSCRIPTION_MANGA_URL, manga.getUrl());
         contentValues.put(TABLE_SUBSCRIPTION_CHAPTER_NAME, chapter.getName());
-        contentValues.put(TABLE_SUBSCRIPTION_MANGA_IMAGE, manga.getUrl());
+        contentValues.put(TABLE_SUBSCRIPTION_CHAPTER_URL, chapter.getUrl());
         try {
             db.insertOrThrow(TABLE_SUBSCRIPTION, null, contentValues);
         } catch (SQLiteConstraintException e) {
@@ -417,5 +423,10 @@ public class JumpDatabaseHelper extends SQLiteAssetHelper {
         int rowsAffected = db.delete(TABLE_SUBSCRIPTION, TABLE_SUBSCRIPTION_MANGA_NAME + " = ?"
                 + " AND " + TABLE_SUBSCRIPTION_CHAPTER_NAME + " = ?", new String[]{mangaName, chapterName});
         return rowsAffected > 0;
+    }
+
+    public void deleteSubscription() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DELETE FROM " +TABLE_SUBSCRIPTION);
     }
 }

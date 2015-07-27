@@ -1,23 +1,16 @@
 package io.wyrmise.jumpmanga.activities;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.ListPreference;
-import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ListView;
 
 import io.wyrmise.jumpmanga.R;
 
-public class SettingActivity extends AppCompatActivity {
-
+public class LicenseActivity extends AppCompatActivity{
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTheme(R.style.SettingTheme);
         getFragmentManager().beginTransaction().replace(android.R.id.content, new MyPreferenceFragment()).commit();
     }
 
@@ -32,20 +25,10 @@ public class SettingActivity extends AppCompatActivity {
     }
 
     public static class MyPreferenceFragment extends PreferenceFragment {
-
-        @Override
-        public void onActivityCreated(Bundle savedInstanceState) {
-            super.onActivityCreated(savedInstanceState);
-            // remove dividers
-            View rootView = getView();
-            ListView list = (ListView) rootView.findViewById(android.R.id.list);
-            list.setDivider(null);
-        }
-
         @Override
         public void onCreate(final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.preferences);
+            addPreferencesFromResource(R.xml.license_nested_preference);
         }
     }
 }

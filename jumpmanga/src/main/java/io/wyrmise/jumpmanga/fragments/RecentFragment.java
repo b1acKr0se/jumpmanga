@@ -74,7 +74,6 @@ public class RecentFragment extends Fragment implements MangaAdapter.OnItemClick
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.unbind(this);
         context = null;
     }
 

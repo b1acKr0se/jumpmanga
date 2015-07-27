@@ -168,7 +168,7 @@ public class ChapterFragment extends Fragment {
             @Override
             public void onItemCheckedStateChanged(ActionMode actionMode, int i, long l, boolean b) {
                 final int checkedCount = listView.getCheckedItemCount();
-                actionMode.setTitle(checkedCount + " chapter(s) selected");
+                actionMode.setTitle(checkedCount + " selected");
                 adapter.toggleSelection(i);
             }
 

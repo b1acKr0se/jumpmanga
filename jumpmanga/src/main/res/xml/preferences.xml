@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <ListPreference
-        android:key="pref_num_of_downloads"
-        android:defaultValue="3"
-        android:entries="@array/number_of_downloads"
-        android:entryValues="@array/number_of_downloads_values"
-        android:numeric="integer"
-        android:title="@string/pref_download_title"
-        android:summary="@string/pref_download_summary"/>
-    <CheckBoxPreference
-        android:key="pref_show_notification"
-        android:defaultValue="true"
-        android:title="@string/pref_show_notification_title"
-        android:summary="@string/pref_show_notification_summary"/>
-    <ListPreference
-        android:key="pref_update_frequency"
-        android:defaultValue="1440"
-        android:entries="@array/update_frequency"
-        android:entryValues="@array/update_frequency_values"
-        android:title="@string/pref_update_frequency_title"
-        android:summary="@string/pref_update_frequency_summary"/>
+    <Preference
+        android:key="pref_general_settings"
+        android:title="@string/general_pref">
+        <intent android:action="io.wyrmise.jumpmanga.activities.General_Settings_Activity" />
+    </Preference>
 
+    <Preference
+        android:key="pref_about"
+        android:title="@string/title_activity_about">
+        <intent android:action="io.wyrmise.jumpmanga.activities.AboutActivity" />
+    </Preference>
+
+    <Preference
+        android:key="pref_license"
+        android:title="@string/licenses">
+        <intent android:action="io.wyrmise.jumpmanga.activities.LicenseActivity" />
+    </Preference>
+
+    <Preference
+        android:summary="@string/version_name"
+        android:title="@string/app_version" />
 </PreferenceScreen>

@@ -16,7 +16,6 @@
 
 package io.wyrmise.jumpmanga.activities;
 
-import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -24,8 +23,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -56,21 +53,20 @@ import java.util.Random;
 import butterknife.Bind;
 import butterknife.BindString;
 import butterknife.ButterKnife;
-import io.wyrmise.jumpmanga.fragments.CategoryFragment;
-import io.wyrmise.jumpmanga.fragments.DownloadedFragment;
-import io.wyrmise.jumpmanga.widget.CustomAutoCompleteTextView;
-import io.wyrmise.jumpmanga.fragments.MainFragment;
-import io.wyrmise.jumpmanga.fragments.NewFragment;
 import io.wyrmise.jumpmanga.R;
-import io.wyrmise.jumpmanga.fragments.RecentFragment;
-import io.wyrmise.jumpmanga.fragments.SubscriptionFragment;
 import io.wyrmise.jumpmanga.adapters.SearchAdapter;
 import io.wyrmise.jumpmanga.adapters.SpinnerAdapter;
 import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
+import io.wyrmise.jumpmanga.fragments.CategoryFragment;
+import io.wyrmise.jumpmanga.fragments.DownloadedFragment;
+import io.wyrmise.jumpmanga.fragments.MainFragment;
+import io.wyrmise.jumpmanga.fragments.NewFragment;
+import io.wyrmise.jumpmanga.fragments.RecentFragment;
+import io.wyrmise.jumpmanga.fragments.SubscriptionFragment;
 import io.wyrmise.jumpmanga.model.Category;
 import io.wyrmise.jumpmanga.model.Manga;
-import io.wyrmise.jumpmanga.picasso.CircleTransform;
 import io.wyrmise.jumpmanga.service.FetchLatestService;
+import io.wyrmise.jumpmanga.widget.CustomAutoCompleteTextView;
 
 public class MainActivity extends AppCompatActivity implements Spinner.OnItemSelectedListener {
 
@@ -92,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             switch (key) {
-                case SettingActivity.KEY_UPDATE_FREQUENCY:
+                case GeneralSettingsActivity.KEY_UPDATE_FREQUENCY:
                     System.out.println("Setting alarm");
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.putBoolean("Alarm", false);
@@ -265,7 +261,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
             PendingIntent pi = PendingIntent.getService(this, 0, i, 0);
             AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
             am.cancel(pi);
-            String frequency = prefs.getString(SettingActivity.KEY_UPDATE_FREQUENCY, "1440");
+            String frequency = prefs.getString(GeneralSettingsActivity.KEY_UPDATE_FREQUENCY, "1440");
             int minute = Integer.parseInt(frequency);
             am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
                     SystemClock.elapsedRealtime() + minute * 60 * 1000,

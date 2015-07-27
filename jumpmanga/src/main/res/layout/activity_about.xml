@@ -1,0 +1,100 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/spacing_medium"
+    android:paddingLeft="@dimen/spacing_medium"
+    android:paddingRight="@dimen/spacing_medium"
+    android:paddingTop="@dimen/spacing_medium"
+    tools:context="io.wyrmise.jumpmanga.activities.AboutActivity">
+
+    <RelativeLayout
+        android:id="@+id/facebook"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:clickable="true">
+
+        <ImageView
+            android:id="@+id/facebook_icon"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/facebook" />
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/facebook_icon"
+            android:layout_centerVertical="true">
+            <TextView
+                android:id="@+id/my_fb"
+                style="@style/TextAppearance.AppCompat.Medium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="6dp"
+                android:text="@string/my_facebook" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/my_fb"
+                android:layout_marginLeft="10dp"
+                android:text="@string/facebook_url" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/facebook"
+        android:background="@drawable/divider" />
+
+    <RelativeLayout
+        android:id="@+id/twitter"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_below="@id/divider"
+        android:clickable="true">
+
+        <ImageView
+            android:id="@+id/twitter_icon"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/twitter" />
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/twitter_icon">
+
+            <TextView
+                android:id="@+id/my_twitter"
+                style="@style/TextAppearance.AppCompat.Medium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:text="@string/my_twitter" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/my_twitter"
+                android:layout_marginLeft="10dp"
+                android:text="@string/twitter_url" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/twitter"
+        android:background="@drawable/divider" />
+
+
+
+
+</RelativeLayout>

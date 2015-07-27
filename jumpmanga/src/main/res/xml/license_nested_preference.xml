@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="@string/licenses">
+    <PreferenceCategory android:title="@string/mit_license">
+        <Preference android:title="@string/jsoup">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://jsoup.org/" />
+        </Preference>
+        <Preference android:title="@string/expandable_rv">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://github.com/bignerdranch/expandable-recycler-view" />
+        </Preference>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/apache_license">
+        <Preference android:title="@string/android_support_library">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://developer.android.com/tools/support-library/index.html" />
+        </Preference>
+        <Preference android:title="@string/picasso">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://square.github.io/picasso/" />
+        </Preference>
+        <Preference android:title="@string/sqlite_asset">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://github.com/jgilfelt/android-sqlite-asset-helper" />
+        </Preference>
+        <Preference android:title="@string/butterknife">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://jakewharton.github.io/butterknife/" />
+        </Preference>
+
+    </PreferenceCategory>
+
+
+</PreferenceScreen>

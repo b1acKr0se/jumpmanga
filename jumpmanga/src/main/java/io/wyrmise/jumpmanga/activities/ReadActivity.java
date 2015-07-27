@@ -274,7 +274,7 @@ public class ReadActivity extends AppCompatActivity {
                 });
                 viewPager.setCurrentItem(0);
                 viewPager.setPageMargin(calculatedPixel);
-                pageIndicator.setText("1/" + adapter.getCount());
+                pageIndicator.setText("Page 1/" + adapter.getCount());
                 seekBar.setProgress(0);
                 seekBar.setMax(adapter.getCount() - 1);
                 getFavoriteStatus();
@@ -443,6 +443,7 @@ public class ReadActivity extends AppCompatActivity {
         }
 
         public ArrayList<Page> doInBackground(String... params) {
+            System.out.println(params[0]);
             FetchingMachine download = new FetchingMachine(params[0]);
             ArrayList<Page> arr;
             try {

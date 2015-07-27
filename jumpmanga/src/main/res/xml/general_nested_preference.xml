@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="@string/general_pref">
+    <ListPreference
+        android:defaultValue="3"
+        android:entries="@array/number_of_downloads"
+        android:entryValues="@array/number_of_downloads_values"
+        android:key="pref_num_of_downloads"
+        android:numeric="integer"
+        android:summary="@string/pref_download_summary"
+        android:title="@string/pref_download_title" />
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="pref_show_notification"
+        android:summary="@string/pref_show_notification_summary"
+        android:title="@string/pref_show_notification_title" />
+    <ListPreference
+        android:defaultValue="1440"
+        android:entries="@array/update_frequency"
+        android:entryValues="@array/update_frequency_values"
+        android:key="pref_update_frequency"
+        android:summary="@string/pref_update_frequency_summary"
+        android:title="@string/pref_update_frequency_title" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="pref_preload"
+        android:title="@string/preload_title"
+        android:summary="@string/preload_summary"/>
+</PreferenceScreen>

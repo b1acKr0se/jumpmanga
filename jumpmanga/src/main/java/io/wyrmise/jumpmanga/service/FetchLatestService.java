@@ -6,9 +6,11 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.NotificationCompat;
 import android.widget.Toast;
@@ -19,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+import io.wyrmise.jumpmanga.activities.GeneralSettingsActivity;
 import io.wyrmise.jumpmanga.activities.MainActivity;
 import io.wyrmise.jumpmanga.R;
 import io.wyrmise.jumpmanga.database.JumpDatabaseHelper;
@@ -35,6 +38,7 @@ public class FetchLatestService extends Service {
     private PowerManager.WakeLock wakeLock;
     private JumpDatabaseHelper db;
     private int index = 1;
+    SharedPreferences prefs;
 
     @Nullable
     @Override
@@ -47,7 +51,7 @@ public class FetchLatestService extends Service {
         wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Wakelock service");
         wakeLock.acquire();
 
-        Toast.makeText(this, "Service started", Toast.LENGTH_SHORT).show();
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         try {
             db = new JumpDatabaseHelper(this);
@@ -71,7 +75,6 @@ public class FetchLatestService extends Service {
     public void onDestroy() {
         super.onDestroy();
         wakeLock.release();
-        Toast.makeText(this, "Service stopped", Toast.LENGTH_SHORT).show();
     }
 
     private class FetchLatestTask extends AsyncTask<ArrayList<Manga>, Void, ArrayList<Manga>> {
@@ -107,10 +110,12 @@ public class FetchLatestService extends Service {
             writeLog();
             if (result != null) {
                 if (result.size() > 0) {
+                    boolean preload = prefs.getBoolean(GeneralSettingsActivity.KEY_AUTO_PRELOAD, false);
                     for (int i = 0; i < result.size(); i++) {
                         db.insertSubscription(result.get(i), result.get(i).getChapter());
                     }
                     showNotification(result);
+                    if (preload) initDownload(result);
                 }
             }
         }
@@ -121,7 +126,7 @@ public class FetchLatestService extends Service {
         if (mangas.size() == 1) {
             mBuilder.setContentTitle(mangas.get(0).getName());
             mBuilder.setContentText("New chapter: " + mangas.get(0).getLatest());
-        } else {
+        } else if (mangas.size() > 1) {
             mBuilder.setContentTitle("New chapters");
             mBuilder.setContentText("New chapters found for your favorite manga");
         }
@@ -176,6 +181,17 @@ public class FetchLatestService extends Service {
             out.close();
 
         } catch (java.io.IOException e) {
+        }
+    }
+
+    private void initDownload(ArrayList<Manga> result) {
+        for (int i = 0; i < result.size(); i++) {
+            ArrayList<Chapter> list = new ArrayList<>();
+            list.add(result.get(i).getChapter());
+            Intent intent = new Intent(FetchLatestService.this, DownloadService.class);
+            intent.putExtra("image", result.get(i).getImage());
+            intent.putParcelableArrayListExtra("list", list);
+            startService(intent);
         }
     }
 }

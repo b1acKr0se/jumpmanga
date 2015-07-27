@@ -75,7 +75,6 @@ public class SubscriptionFragment extends Fragment implements MangaAdapter.OnIte
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.unbind(this);
         context = null;
     }
 
@@ -186,7 +185,7 @@ public class SubscriptionFragment extends Fragment implements MangaAdapter.OnIte
                 intent.putExtra("position", position);
                 intent.putParcelableArrayListExtra("list", arr);
 
-                db.deleteFromSubscription(manga.getName(), manga.getChapter().getName());
+//                db.deleteFromSubscription(manga.getName(), manga.getChapter().getName());
 
                 startActivity(intent);
             } else {

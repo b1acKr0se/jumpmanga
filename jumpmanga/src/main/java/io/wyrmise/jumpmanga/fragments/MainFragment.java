@@ -111,7 +111,6 @@ public class MainFragment extends Fragment implements MangaAdapter.OnItemClickLi
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.unbind(this);
     }
 
     public void setUpAdapter(Bundle savedInstanceState) {
