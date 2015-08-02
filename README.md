@@ -2,14 +2,12 @@
 
 Mobile client for http://manga24h.com/
 
-<img src="/screenshots/s1.png" alt="screenshot" title="screenshot" width="270" height="450"/> 
-<img src="/screenshots/s2.png" alt="screenshot" title="screenshot" width="270" height="450"/> 
-<img src="/screenshots/s3.png" alt="screenshot" title="screenshot" width="270" height="450"/> 
-<img src="/screenshots/s4.png" alt="screenshot" title="screenshot" width="270" height="450"/>
-<img src="/screenshots/s5.png" alt="screenshot" title="screenshot" width="270" height="450"/>
-<img src="/screenshots/s6.png" alt="screenshot" title="screenshot" width="270" height="450"/>
-<img src="/screenshots/s7.png" alt="screenshot" title="screenshot" width="270" height="450"/>
-<img src="/screenshots/s8.png" alt="screenshot" title="screenshot" width="270" height="450"/>
+<img src="http://i.imgur.com/GmQOPGW.png" alt="screenshot" title="screenshot" width="270" height="450"/> 
+<img src="http://i.imgur.com/FHK4HAz.png" alt="screenshot" title="screenshot" width="270" height="450"/> 
+<img src="http://i.imgur.com/JpCLorP.png" alt="screenshot" title="screenshot" width="270" height="450"/> 
+<img src="http://i.imgur.com/xMR7HcB.png" alt="screenshot" title="screenshot" width="270" height="450"/>
+<img src="http://i.imgur.com/cFrAF1E.png" alt="screenshot" title="screenshot" width="270" height="450"/>
+<img src="http://i.imgur.com/n2hFWUR.png" alt="screenshot" title="screenshot" width="270" height="450"/>
 
 Libraries used
 --------
@@ -19,12 +17,6 @@ Libraries used
 * [Support library](http://developer.android.com/tools/support-library/index.html)
 * [SQLiteAssetHelper 2.0.1](https://github.com/jgilfelt/android-sqlite-asset-helper)
 * [TouchImageView](https://github.com/MikeOrtiz/TouchImageView)
-
-
-Permissions
---------
-
-* ````INTERNET````: For accessing the internet
 
 
 License
