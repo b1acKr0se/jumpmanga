@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/cab_deselect_all"
+        android:icon="@drawable/ic_action_deselect"
+        android:title="@string/deselect_all"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/cab_select_all"
+        android:icon="@drawable/ic_action_select_all"
+        android:title="@string/select_all"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/cab_download"
+        android:icon="@drawable/ic_action_download"
+        android:title="@string/download"
+        app:showAsAction="always" />
+
+</menu>

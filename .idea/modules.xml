@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/JumpManga.iml" filepath="$PROJECT_DIR$/JumpManga.iml" />
-      <module fileurl="file://$PROJECT_DIR$/jumpmanga/jumpmanga.iml" filepath="$PROJECT_DIR$/jumpmanga/jumpmanga.iml" />
+      <module fileurl="file://$PROJECT_DIR$/JetReader.iml" filepath="$PROJECT_DIR$/JetReader.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jetreader/jetreader.iml" filepath="$PROJECT_DIR$/jetreader/jetreader.iml" />
     </modules>
   </component>
 </project>

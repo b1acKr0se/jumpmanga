@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:orientation="vertical">
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_xsmall">
+
+        <io.demiseq.jetreader.widget.SquareImageView
+            android:id="@+id/image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scaleType="centerCrop"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom">
+
+            <TextView
+                android:id="@+id/text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/transparent"
+                android:fontFamily="sans-serif-light"
+                android:padding="@dimen/spacing_medium"
+                android:singleLine="true"
+                android:textColor="@android:color/white" />
+            <TextView
+                android:id="@+id/latest"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/text"
+                android:background="@color/transparent"
+                android:fontFamily="sans-serif-light"
+                android:padding="@dimen/spacing_medium"
+                android:singleLine="true"
+                android:textColor="@android:color/white"
+                android:visibility="gone"/>
+        </RelativeLayout>
+
+
+    </FrameLayout>
+
+</FrameLayout>
