@@ -24,7 +24,7 @@ import io.demiseq.jetreader.activities.GeneralSettingsActivity;
 import io.demiseq.jetreader.activities.MainActivity;
 import io.demiseq.jetreader.R;
 import io.demiseq.jetreader.database.JumpDatabaseHelper;
-import io.demiseq.jetreader.manga24hbaseapi.FetchingMachine;
+import io.demiseq.jetreader.api.MangaLibrary;
 import io.demiseq.jetreader.model.Chapter;
 import io.demiseq.jetreader.model.Manga;
 
@@ -83,7 +83,7 @@ public class FetchLatestService extends Service {
             try {
                 ArrayList<Manga> list = mangas[0];
                 ArrayList<Manga> tempNotificationArr = new ArrayList<>();
-                FetchingMachine downloadUtils = new FetchingMachine();
+                MangaLibrary downloadUtils = new MangaLibrary();
                 for (int i = 0; i < list.size(); i++) {
                     Manga manga = list.get(i);
                     Chapter latest = downloadUtils.GetLatestChapter(manga);

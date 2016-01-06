@@ -1,18 +1,18 @@
-/*
- * Copyright (C) 2015 Hai Nguyen Thanh
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+///*
+// * Copyright (C) 2015 Hai Nguyen Thanh
+// *
+// * Licensed under the Apache License, Version 2.0 (the "License");
+// * you may not use this file except in compliance with the License.
+// * You may obtain a copy of the License at
+// *
+// *      http://www.apache.org/licenses/LICENSE-2.0
+// *
+// * Unless required by applicable law or agreed to in writing, software
+// * distributed under the License is distributed on an "AS IS" BASIS,
+// * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// * See the License for the specific language governing permissions and
+// * limitations under the License.
+//// */
 
 package io.demiseq.jetreader.service;
 
@@ -20,21 +20,26 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import io.demiseq.jetreader.R;
 import io.demiseq.jetreader.activities.DownloadedReadActivity;
 import io.demiseq.jetreader.activities.GeneralSettingsActivity;
-import io.demiseq.jetreader.manga24hbaseapi.FetchingMachine;
+import io.demiseq.jetreader.api.MangaLibrary;
 import io.demiseq.jetreader.model.Chapter;
 import io.demiseq.jetreader.model.Page;
 import io.demiseq.jetreader.utils.FileDownloader;
@@ -54,6 +59,15 @@ public class DownloadService extends Service {
     SharedPreferences prefs;
     private int numberOfCompleted = 0;
     private int numberOfFailed = 0;
+    private boolean stop;
+
+    protected BroadcastReceiver stopServiceReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            stop = true;
+            stopSelf();
+        }
+    };
 
 
     @Nullable
@@ -79,13 +93,18 @@ public class DownloadService extends Service {
         list.addAll(chapters);
 
         if (notificationManager == null && builder == null) {
+            registerReceiver(stopServiceReceiver, new IntentFilter("stopFilter"));
+            PendingIntent stopIntent = PendingIntent.getBroadcast(this, 0, new Intent("stopFilter"), 0);
             notificationManager = (NotificationManager) DownloadService.this.getSystemService(Context.NOTIFICATION_SERVICE);
             builder = new NotificationCompat.Builder(DownloadService.this);
             builder.setContentTitle("Jet Reader")
                     .setContentText(getResources().getString(R.string.background_progress))
                     .setSmallIcon(R.drawable.ic_stat_notification)
                     .setAutoCancel(false)
-                    .setOngoing(true);
+                    .setOngoing(true)
+                    .setPriority(NotificationCompat.PRIORITY_MAX)
+                    .addAction(R.drawable.ic_action_stop, getResources().getString(R.string.stop_download), stopIntent);
+
             Notification note = builder.build();
 
             notificationManager.notify(1337, builder.build());
@@ -100,6 +119,8 @@ public class DownloadService extends Service {
     private void getChapterToDownload() {
         synchronized (list) {
             while (numberOfDownload < maxDownload && list.size() > 0) {
+                if(stop)
+                    break;
                 Chapter c = list.get(0);
                 RetrieveAllPages task = new RetrieveAllPages(c.getMangaName(), c.getName());
                 task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, c.getUrl());
@@ -122,6 +143,8 @@ public class DownloadService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        unregisterReceiver(stopServiceReceiver);
+        list = new ArrayList<>();
         stopForeground(true);
     }
 
@@ -135,10 +158,12 @@ public class DownloadService extends Service {
         }
 
         public ArrayList<Page> doInBackground(String... params) {
-            FetchingMachine download = new FetchingMachine(params[0]);
+            MangaLibrary download = new MangaLibrary(params[0]);
             ArrayList<Page> arr;
             try {
                 arr = download.GetPages();
+                if(stop)
+                    throw new Exception("Interrupted");
                 return arr;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -205,6 +230,8 @@ public class DownloadService extends Service {
                 String fileExtension = pages.get(0).getUrl().substring(pages.get(0).getUrl().lastIndexOf("."));
 
                 for (int i = 0; i < pages.size(); i++) {
+                    if(stop)
+                        throw new Exception("Interrupted");
                     String fileName;
                     if (i < 10)
                         fileName = "000" + i + fileExtension;
@@ -217,8 +244,17 @@ public class DownloadService extends Service {
                     downloader.downloadAndRename(pages.get(i).getUrl(), fileName);
                     publishProgress((int) ((i * 100) / pages.size()));
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (final Exception e) {
+                Handler handler = new Handler(Looper.getMainLooper());
+                handler.post(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(),
+                                e.getLocalizedMessage(),
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
                 return false;
             }
 
@@ -267,7 +303,7 @@ public class DownloadService extends Service {
                     mNotifyManager.notify(id, mBuilder.build());
                 }
             }
-            if(result) numberOfCompleted ++;
+            if (result) numberOfCompleted++;
             else numberOfFailed++;
             numberOfDownload--;
             if (numberOfDownload == 0 && list.size() == 0) {
@@ -276,8 +312,12 @@ public class DownloadService extends Service {
                 builder.setContentTitle("Jet Reader")
                         .setSmallIcon(R.drawable.ic_stat_notification)
                         .setAutoCancel(true)
-                        .setStyle(new NotificationCompat.BigTextStyle()
-                                .bigText("Download completed: " + numberOfCompleted + "\nDownload failed: " + numberOfFailed));
+                        .setContentText(getResources().getString(R.string.completed) + " " + numberOfCompleted + "\n" + getResources().getString(R.string.failed) + " " + numberOfFailed);
+                Notification note = builder.build();
+                note.defaults |= Notification.DEFAULT_VIBRATE;
+                note.defaults |= Notification.DEFAULT_SOUND;
+                note.defaults |= Notification.DEFAULT_LIGHTS;
+
                 notificationManager.notify(2304, builder.build());
                 stopSelf();
             } else if (list.size() > 0) {

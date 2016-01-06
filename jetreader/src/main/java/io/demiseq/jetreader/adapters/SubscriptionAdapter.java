@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
@@ -45,7 +45,7 @@ public class SubscriptionAdapter extends RecyclerView.Adapter<SubscriptionAdapte
         holder.manga_name.setText(manga.getName());
         holder.chapter_name.setText(manga.getChapter().getName());
         if (!manga.getImage().equals("")) {
-            Picasso.with(context).load(manga.getImage()).error(R.drawable.error).into(holder.image);
+            Glide.with(context).load(manga.getImage()).error(R.drawable.error).into(holder.image);
         }
         holder.itemView.setTag(manga);
     }

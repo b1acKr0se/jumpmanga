@@ -3,6 +3,8 @@ package io.demiseq.jetreader.fragments;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,12 +18,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.squareup.picasso.Picasso;
-
-import net.frakbot.jumpingbeans.JumpingBeans;
+import com.bumptech.glide.Glide;
 
 import butterknife.Bind;
 import butterknife.BindString;
@@ -30,7 +31,7 @@ import io.demiseq.jetreader.R;
 import io.demiseq.jetreader.activities.DetailActivity;
 import io.demiseq.jetreader.animation.AnimationHelper;
 import io.demiseq.jetreader.database.JumpDatabaseHelper;
-import io.demiseq.jetreader.manga24hbaseapi.FetchingMachine;
+import io.demiseq.jetreader.api.MangaLibrary;
 import io.demiseq.jetreader.model.Manga;
 
 
@@ -47,12 +48,12 @@ public class InfoFragment extends Fragment {
 
     @Bind(R.id.cardView) CardView descriptionCardView;
     @Bind(R.id.cardView2) CardView plotCardView;
-    @Bind(R.id.loadingText) TextView loadingText;
     @Bind(R.id.fab) FloatingActionButton fab;
     @Bind(R.id.detail) TextView detail;
     @Bind(R.id.description) TextView summary;
     @Bind(R.id.image) ImageView img;
     @Bind(R.id.reload) Button reload;
+    @Bind(R.id.progress_bar)ProgressBar progressBar;
 
     @BindString(R.string.manga_fav) String manga_fav;
     @BindString(R.string.manga_unfav) String manga_unfav;
@@ -80,6 +81,8 @@ public class InfoFragment extends Fragment {
 
         ButterKnife.bind(this, view);
 
+        progressBar.getIndeterminateDrawable().setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_ATOP);
+
         db = new JumpDatabaseHelper(context);
 
         setHasOptionsMenu(false);
@@ -87,7 +90,7 @@ public class InfoFragment extends Fragment {
         anim = new AnimationHelper(context);
 
         if (!image.equals("") && image != null) {
-            Picasso.with(context).load(image).into(img);
+            Glide.with(context).load(image).into(img);
         } else {
             img.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.error));
         }
@@ -131,20 +134,18 @@ public class InfoFragment extends Fragment {
 
     public class GetMangaDetails extends AsyncTask<String, Void, String[]> {
 
-        JumpingBeans jumpingBeans;
 
         @Override
         public void onPreExecute() {
-            loadingText.setVisibility(View.VISIBLE);
             reload.setVisibility(View.GONE);
-            jumpingBeans = JumpingBeans.with(loadingText).appendJumpingDots().build();
+            progressBar.setVisibility(View.VISIBLE);
         }
 
         @Override
         public String[] doInBackground(String... params) {
             try {
                 str = new String[2];
-                FetchingMachine download = new FetchingMachine(params[0]);
+                MangaLibrary download = new MangaLibrary(params[0]);
                 String detail = download.GetMangaDetail();
                 manga.setLatest(download.GetLatestChapter(manga).getName());
                 if (db.isMangaFavorited(manga.getName())) {
@@ -156,16 +157,15 @@ public class InfoFragment extends Fragment {
                     str[1] = plot;
                     return str;
                 }
-                return null;
             }catch(Exception e) {
-                return null;
+                e.printStackTrace();
             }
+            return null;
         }
 
         @Override
         public void onPostExecute(String[] str) {
-            jumpingBeans.stopJumping();
-            loadingText.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
 
             if (str != null) {
                 detail.setText(str[0]);

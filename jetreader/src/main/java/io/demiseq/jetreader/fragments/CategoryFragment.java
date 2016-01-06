@@ -1,35 +1,32 @@
 package io.demiseq.jetreader.fragments;
 
 
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.jpardogo.android.googleprogressbar.library.GoogleProgressBar;
 
 import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.BindString;
 import butterknife.ButterKnife;
-import io.demiseq.jetreader.utils.OnLoadMoreListener;
 import io.demiseq.jetreader.R;
 import io.demiseq.jetreader.activities.DetailActivity;
 import io.demiseq.jetreader.activities.MainActivity;
 import io.demiseq.jetreader.adapters.CategoryAdapter;
 import io.demiseq.jetreader.database.JumpDatabaseHelper;
-import io.demiseq.jetreader.manga24hbaseapi.FetchingMachine;
+import io.demiseq.jetreader.api.MangaLibrary;
 import io.demiseq.jetreader.model.Manga;
+import io.demiseq.jetreader.utils.OnLoadMoreListener;
 import io.demiseq.jetreader.widget.SimpleDividerItemDecoration;
 
 
@@ -48,7 +45,6 @@ public class CategoryFragment extends Fragment implements CategoryAdapter.OnItem
     private int max_page = 1;
     private int position = -1;
 
-    @Bind(R.id.progressBar) GoogleProgressBar progressBar;
     @Bind(R.id.list) RecyclerView recyclerView;
     @Bind(R.id.empty) TextView empty;
 
@@ -102,7 +98,8 @@ public class CategoryFragment extends Fragment implements CategoryAdapter.OnItem
     }
 
     public void setUpAdapter(Bundle savedInstanceState) {
-        progressBar.setVisibility(ProgressBar.GONE);
+        if(getActivity() != null)
+            ((MainActivity)getActivity()).hideProgress();
         recyclerView.setVisibility(RecyclerView.VISIBLE);
         mangas = savedInstanceState.getParcelableArrayList("list");
         page = savedInstanceState.getInt("page");
@@ -137,12 +134,13 @@ public class CategoryFragment extends Fragment implements CategoryAdapter.OnItem
         public void onPreExecute() {
             recyclerView.setVisibility(RecyclerView.GONE);
             empty.setVisibility(TextView.GONE);
-            progressBar.setVisibility(ProgressBar.VISIBLE);
+            if(getActivity() != null)
+                ((MainActivity)getActivity()).showProgress();
         }
 
         @Override
         public ArrayList<Manga> doInBackground(String... params) {
-            FetchingMachine download = new FetchingMachine(params[0]);
+            MangaLibrary download = new MangaLibrary(params[0]);
             ArrayList<Manga> arrayList = download.GetMangasFromCategory();
             if (arrayList != null) {
                 for (Manga m : arrayList) {
@@ -155,7 +153,8 @@ public class CategoryFragment extends Fragment implements CategoryAdapter.OnItem
 
         @Override
         public void onPostExecute(ArrayList<Manga> result) {
-            progressBar.setVisibility(ProgressBar.GONE);
+            if(getActivity() != null)
+                ((MainActivity)getActivity()).hideProgress();
             if (result != null) {
                 recyclerView.setVisibility(RecyclerView.VISIBLE);
                 empty.setVisibility(View.GONE);
@@ -190,7 +189,7 @@ public class CategoryFragment extends Fragment implements CategoryAdapter.OnItem
 
         @Override
         public ArrayList<Manga> doInBackground(String... params) {
-            FetchingMachine download = new FetchingMachine(params[0]);
+            MangaLibrary download = new MangaLibrary(params[0]);
             ArrayList<Manga> result = download.GetMangasFromCategory();
             return result;
         }

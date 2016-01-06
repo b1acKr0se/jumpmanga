@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 import com.bignerdranch.expandablerecyclerview.Adapter.ExpandableRecyclerAdapter;
 import com.bignerdranch.expandablerecyclerview.Model.ParentObject;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -58,7 +58,7 @@ public class ExpandableDownloadedAdapter
     public void onBindParentViewHolder(ParentViewHolder viewHolder, final int i, final Object o) {
         final Wrapper wrapper = (Wrapper) o;
         viewHolder.mangaName.setText(wrapper.getName());
-        Picasso.with(mContext).load(wrapper.getImagePath()).error(R.drawable.error).into(viewHolder.mangaThumbnail);
+        Glide.with(mContext).load(wrapper.getImagePath()).error(R.drawable.error).into(viewHolder.mangaThumbnail);
         viewHolder.deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

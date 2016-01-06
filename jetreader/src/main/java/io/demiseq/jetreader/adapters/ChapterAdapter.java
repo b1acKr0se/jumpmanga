@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import io.demiseq.jetreader.R;
 import io.demiseq.jetreader.database.JumpDatabaseHelper;
@@ -37,6 +38,13 @@ public class ChapterAdapter extends ArrayAdapter<Chapter> implements Filterable 
         db = new JumpDatabaseHelper(context);
         fileUtils = new FileUtils();
         selectedItems = new SparseBooleanArray();
+    }
+
+    public void addAllChapter(List<Chapter> list) {
+        for(int i = 0; i < list.size(); i++) {
+            chapters.add(list.get(i));
+        }
+        notifyDataSetChanged();
     }
 
 
@@ -152,11 +160,18 @@ public class ChapterAdapter extends ArrayAdapter<Chapter> implements Filterable 
     }
 
     public void selectView(int position, boolean value) {
-        if (value)
+        if (value && !selectedItems.get(position))
             selectedItems.put(position, true);
         else
             selectedItems.delete(position);
         notifyDataSetChanged();
+    }
+
+    public void selectAll() {
+        for (int i = 0; i < getCount(); i++) {
+            if (!selectedItems.get(i))
+                selectedItems.put(i, true);
+        }
     }
 
     public int getSelectedCount() {

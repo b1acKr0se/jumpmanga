@@ -23,18 +23,18 @@ import java.util.ArrayList;
 import butterknife.Bind;
 import butterknife.BindString;
 import butterknife.ButterKnife;
-import io.demiseq.jetreader.adapters.DownloadedImageAdapter;
-import io.demiseq.jetreader.fragments.ChapterFragment;
-import io.demiseq.jetreader.utils.FileUtils;
-import io.demiseq.jetreader.widget.CustomViewPager;
 import io.demiseq.jetreader.R;
+import io.demiseq.jetreader.adapters.DownloadedImageAdapter;
 import io.demiseq.jetreader.adapters.FullScreenImageAdapter;
 import io.demiseq.jetreader.animation.AnimationHelper;
 import io.demiseq.jetreader.database.JumpDatabaseHelper;
-import io.demiseq.jetreader.manga24hbaseapi.FetchingMachine;
+import io.demiseq.jetreader.fragments.ChapterFragment;
+import io.demiseq.jetreader.api.MangaLibrary;
 import io.demiseq.jetreader.model.Chapter;
 import io.demiseq.jetreader.model.Manga;
 import io.demiseq.jetreader.model.Page;
+import io.demiseq.jetreader.utils.FileUtils;
+import io.demiseq.jetreader.widget.CustomViewPager;
 import io.demiseq.jetreader.widget.TouchImageView;
 
 public class ReadActivity extends AppCompatActivity {
@@ -56,20 +56,22 @@ public class ReadActivity extends AppCompatActivity {
     private boolean isRefreshing = false;
     private MenuItem fv_button;
 
+    private boolean isControllerShowing;
+
+    private int currentPage = 0;
+
     @Bind(R.id.viewPager) CustomViewPager viewPager;
     @Bind(R.id.toolbar) Toolbar toolbar;
     @Bind(R.id.seekBar) SeekBar seekBar;
     @Bind(R.id.progress) ProgressBar progressBar;
     @Bind(R.id.fullscreen_content_controls) View control;
     @Bind(R.id.indicator) TextView pageIndicator;
-    @Bind(R.id.next) ImageView next;
-    @Bind(R.id.previous) ImageView previous;
+    @Bind(R.id.next) TextView next;
+    @Bind(R.id.previous) TextView previous;
 
     @BindString(R.string.first_chapter) String first_chapter;
     @BindString(R.string.last_chapter) String last_chapter;
     @BindString(R.string.network_error) String network_error;
-    @BindString(R.string.chapter_fav) String chapter_fav;
-    @BindString(R.string.chapter_unfav) String chapter_unfav;
 
     private void hideSystemUI() {
         View decorView = getWindow().getDecorView();
@@ -88,15 +90,12 @@ public class ReadActivity extends AppCompatActivity {
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+
     }
 
     private Runnable hideControllerThread = new Runnable() {
         public void run() {
-            hideSystemUI();
-            anim.slideOutFromBottom(control);
-            anim.slideOutFromTop(toolbar);
-            if (progressBar.getVisibility() != ProgressBar.INVISIBLE)
-                anim.slideOutFromTop(progressBar);
+           hideControllers();
         }
     };
 
@@ -112,6 +111,7 @@ public class ReadActivity extends AppCompatActivity {
             anim.slideInFromTop(progressBar);
         mHideHandler.removeCallbacks(hideControllerThread);
         autoHideControllers();
+        isControllerShowing = true;
     }
 
     public void onClick(View v) {
@@ -129,6 +129,7 @@ public class ReadActivity extends AppCompatActivity {
         anim.slideOutFromTop(toolbar);
         if (progressBar.getVisibility() != ProgressBar.INVISIBLE)
             anim.slideOutFromTop(progressBar);
+        isControllerShowing = false;
     }
 
 
@@ -159,7 +160,7 @@ public class ReadActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                pageIndicator.setText("Page " + (position + 1) + "/" + viewPager.getAdapter().getCount());
+                pageIndicator.setText((position + 1) + "/" + viewPager.getAdapter().getCount());
 
                 seekBar.setProgress(position);
 
@@ -193,12 +194,12 @@ public class ReadActivity extends AppCompatActivity {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
+                mHideHandler.removeCallbacks(hideControllerThread);
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
+                autoHideControllers();
             }
         });
 
@@ -214,7 +215,8 @@ public class ReadActivity extends AppCompatActivity {
             public void onClick(View view) {
                 nextChapter();
                 mHideHandler.removeCallbacks(hideControllerThread);
-                autoHideControllers();
+                if (isControllerShowing)
+                    autoHideControllers();
             }
         });
 
@@ -223,7 +225,8 @@ public class ReadActivity extends AppCompatActivity {
             public void onClick(View view) {
                 prevChapter();
                 mHideHandler.removeCallbacks(hideControllerThread);
-                autoHideControllers();
+                if (isControllerShowing)
+                    autoHideControllers();
             }
         });
 
@@ -274,7 +277,7 @@ public class ReadActivity extends AppCompatActivity {
                 });
                 viewPager.setCurrentItem(0);
                 viewPager.setPageMargin(calculatedPixel);
-                pageIndicator.setText("Page 1/" + adapter.getCount());
+                pageIndicator.setText("1/" + adapter.getCount());
                 seekBar.setProgress(0);
                 seekBar.setMax(adapter.getCount() - 1);
                 getFavoriteStatus();
@@ -330,6 +333,7 @@ public class ReadActivity extends AppCompatActivity {
 
 
     public void nextChapter() {
+        currentPage = 0;
         if ((chapter_position - 1) != -1) {
             chapter_position_temp = chapter_position;
             chapter_position--;
@@ -340,6 +344,7 @@ public class ReadActivity extends AppCompatActivity {
     }
 
     public void prevChapter() {
+        currentPage = 0;
         if ((chapter_position + 1) != chapters.size()) {
             chapter_position_temp = chapter_position;
             chapter_position++;
@@ -398,14 +403,12 @@ public class ReadActivity extends AppCompatActivity {
                 ChapterFragment.getAdapter().getItem(chapter_position).setIsFav(false);
             chapters.get(chapter_position).setIsFav(false);
             fv_button.setIcon(ContextCompat.getDrawable(ReadActivity.this, R.drawable.ic_action_star_unfav));
-            Toast.makeText(ReadActivity.this, chapter_unfav, Toast.LENGTH_SHORT).show();
         } else {
             db.favChapter(chapters.get(chapter_position), manga.getName());
             if (ChapterFragment.getAdapter() != null)
                 ChapterFragment.getAdapter().getItem(chapter_position).setIsFav(true);
             chapters.get(chapter_position).setIsFav(true);
             fv_button.setIcon(ContextCompat.getDrawable(ReadActivity.this, R.drawable.ic_action_star_fav));
-            Toast.makeText(ReadActivity.this, chapter_fav, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -431,6 +434,7 @@ public class ReadActivity extends AppCompatActivity {
     }
 
     private void refresh() {
+        currentPage = viewPager.getCurrentItem();
         ChangeChapter task = new ChangeChapter(progressDialog);
         isRefreshing = true;
         task.execute(chapters.get(chapter_position).getUrl());
@@ -444,7 +448,7 @@ public class ReadActivity extends AppCompatActivity {
 
         public ArrayList<Page> doInBackground(String... params) {
             System.out.println(params[0]);
-            FetchingMachine download = new FetchingMachine(params[0]);
+            MangaLibrary download = new MangaLibrary(params[0]);
             ArrayList<Page> arr;
             try {
                 arr = download.GetPages();
@@ -483,7 +487,7 @@ public class ReadActivity extends AppCompatActivity {
                 viewPager.setCurrentItem(0);
                 viewPager.setOffscreenPageLimit(5);
                 viewPager.setPageMargin(calculatedPixel);
-                pageIndicator.setText("Page 1/" + adapter.getCount());
+                pageIndicator.setText("1/" + adapter.getCount());
                 progressBar.setProgress(0);
                 increment = 0;
                 progressBar.setMax(adapter.getCount());
@@ -513,13 +517,14 @@ public class ReadActivity extends AppCompatActivity {
         public void onPreExecute() {
             next.setVisibility(ImageView.INVISIBLE);
             previous.setVisibility(ImageView.INVISIBLE);
-            showControllers();
+            if (!isControllerShowing)
+                showControllers();
             if (dialog != null)
                 dialog.show();
         }
 
         public ArrayList<Page> doInBackground(String... params) {
-            FetchingMachine download = new FetchingMachine(params[0]);
+            MangaLibrary download = new MangaLibrary(params[0]);
             ArrayList<Page> arr;
             try {
                 arr = download.GetPages();
@@ -537,6 +542,7 @@ public class ReadActivity extends AppCompatActivity {
                 pages = result;
                 adapter = new FullScreenImageAdapter(ReadActivity.this, pages);
                 viewPager.setAdapter(adapter);
+                viewPager.setCurrentItem(currentPage);
                 viewPager.setOnSwipeOutListener(new CustomViewPager.OnSwipeOutListener() {
 
                     boolean callHappened = false;
@@ -553,17 +559,16 @@ public class ReadActivity extends AppCompatActivity {
                         }
                     }
                 });
-
-                viewPager.setCurrentItem(0);
                 viewPager.setOffscreenPageLimit(5);
                 viewPager.setPageMargin(calculatedPixel);
-                pageIndicator.setText("Page 1/" + adapter.getCount());
+                String text = currentPage == 0 ? "1/" + adapter.getCount() : (currentPage+1) + "/" + adapter.getCount();
+                pageIndicator.setText(text);
                 progressBar.setProgress(0);
                 increment = 0;
                 progressBar.setMax(adapter.getCount());
                 progressBar.setVisibility(View.VISIBLE);
 
-                seekBar.setProgress(0);
+                seekBar.setProgress(currentPage);
                 seekBar.setMax(adapter.getCount() - 1);
 
                 isRefreshing = false;

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Jet Reader</string>
+    <string name="app_name">Jump Manga</string>
 
     <string name="home">Home</string>
     <string name="favourite">Favourite</string>
@@ -33,7 +33,7 @@
     <string name="pref_download_summary">Lower this if you experience any issue</string>
     <string name="pref_show_notification_title">Show downloads on status bar</string>
     <string name="pref_show_notification_summary">Uncheck this if you don\'t want to flood the status bar with notifications</string>
-    <string name="pref_update_frequency_title">Check for new chapter frequency</string>
+    <string name="pref_update_frequency_title">Update interval</string>
     <string name="pref_update_frequency_summary">Recommend to leave it at the default value</string>
     <string name="no_fav_manga">No favorite manga</string>
     <string name="last_page">This is the last page!</string>
@@ -43,14 +43,14 @@
     <string name="chapter_unfav">Successfully unfavorited this chapter</string>
     <string name="info_retrieve_failed">Failed to retrieve manga info!</string>
     <string name="chapter_retrieve_failed">Failed to retrieve chapter list!</string>
-    <string name="no_fav_chapter">You have no favorite chapter for this manga!</string>
+    <string name="no_fav_chapter">No favorite chapter</string>
     <string name="refresh_list">Refreshing list, please wait…</string>
     <string name="info">Information</string>
     <string name="preparing_chapter">Picking up where you left off…</string>
     <string name="network_error">Please check your network!</string>
     <string name="first_chapter">This is the first chapter</string>
     <string name="last_chapter">This is the last chapter</string>
-    <string name="empty_fragment">There doesn\'t seem to be anything here</string>
+    <string name="empty_fragment">NO DATA</string>
     <string name="download_empty">You have to download something first</string>
     <string name="plot">Plot</string>
     <string name="chapter">Chapter</string>
@@ -75,14 +75,19 @@
     <string name="disclaimer">Disclaimer</string>
     <string name="disclaimer_content">Jet Reader is developed by me, an individual, who does not have any affliation with Manga24h or the content providers of the manga available in the application.</string>
     <string name="app_version">App version</string>
-    <string name="version_name">3.5.2</string>
+    <string name="version_name">3.6.0</string>
     <string name="background_progress">Background downloads in progress…</string>
     <string name="downloading">Downloading:</string>
     <string name="queuing">In queue:</string>
+    <string name="stop_download">Stop</string>
     <string name="download_completed">Download completed:</string>
     <string name="download_failed">Download failed:</string>
+    <string name="completed">Completed:</string>
+    <string name="failed">Failed:</string>
+
     <string name="background_completed">Background task completed</string>
     <string name="preload_title">Preload (Beta)</string>
     <string name="preload_summary">Whenever a new chapter of your favorite manga is found, it will be automatically downloaded for offline reading</string>
+
 
 </resources>

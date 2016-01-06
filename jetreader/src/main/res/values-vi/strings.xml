@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Jet Reader</string>
+    <string name="app_name">Jump Manga</string>
 
     <string name="home">Trang chính</string>
     <string name="favourite">Yêu thích</string>
@@ -75,12 +75,15 @@
     <string name="disclaimer">Lời phủ nhận</string>
     <string name="disclaimer_content">Jet Reader được phát triển bởi cá nhân tôi, không có bất kỳ liên hệ nào đến Manga24h cũng như những nguồn cung cấp truyện có trong ứng dụng.</string>
     <string name="app_version">Phiên bản phần mềm</string>
-    <string name="version_name">3.5.2</string>
+    <string name="version_name">3.5.3</string>
     <string name="background_progress">Đang tải về…</string>
     <string name="downloading">Đang tải:</string>
     <string name="queuing">Đang chờ:</string>
+    <string name="stop_download">Dừng tải</string>
     <string name="download_completed">Đã tải xuống:</string>
     <string name="download_failed">Lỗi tải xuống:</string>
+    <string name="completed">Hoàn thành:</string>
+    <string name="failed">Lỗi:</string>
     <string name="background_completed">Đã hoàn thành các mục tải xuống</string>
     <string name="preload_title">Tự động tải về (Thử nghiệm)</string>
     <string name="preload_summary">Bất cứ khi nào Jet Reader phát hiện chap mới từ danh sách theo dõi của bạn, nó sẽ tự động tải về để bạn có thể đọc offline</string>

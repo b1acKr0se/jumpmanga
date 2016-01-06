@@ -147,7 +147,7 @@ public class DownloadedReadActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                pageIndicator.setText("Page " + (position + 1) + "/" + viewPager.getAdapter().getCount());
+                pageIndicator.setText((position + 1) + "/" + viewPager.getAdapter().getCount());
 
                 seekBar.setProgress(position);
 
@@ -294,7 +294,7 @@ public class DownloadedReadActivity extends AppCompatActivity {
         });
         viewPager.setCurrentItem(0);
         viewPager.setPageMargin(calculatedPixel);
-        pageIndicator.setText("Page 1/" + adapter.getCount());
+        pageIndicator.setText("1/" + adapter.getCount());
         seekBar.setProgress(0);
         seekBar.setMax(adapter.getCount() - 1);
 
@@ -308,10 +308,15 @@ public class DownloadedReadActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }
-
 
     public int convertToPx(int dp) {
         // Get the screen's density scale

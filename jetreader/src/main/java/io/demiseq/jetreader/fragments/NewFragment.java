@@ -12,24 +12,22 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.jpardogo.android.googleprogressbar.library.GoogleProgressBar;
 
 import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.BindString;
 import butterknife.ButterKnife;
-import io.demiseq.jetreader.utils.OnLoadMoreListener;
 import io.demiseq.jetreader.R;
 import io.demiseq.jetreader.activities.DetailActivity;
+import io.demiseq.jetreader.activities.MainActivity;
 import io.demiseq.jetreader.adapters.MangaAdapter;
 import io.demiseq.jetreader.database.JumpDatabaseHelper;
-import io.demiseq.jetreader.manga24hbaseapi.FetchingMachine;
+import io.demiseq.jetreader.api.MangaLibrary;
 import io.demiseq.jetreader.model.Manga;
+import io.demiseq.jetreader.utils.OnLoadMoreListener;
 
 
 /**
@@ -44,8 +42,6 @@ public class NewFragment extends Fragment implements MangaAdapter.OnItemClickLis
     private MangaAdapter adapter;
     private int page = 2;
 
-    @Bind(R.id.progressBar)
-    GoogleProgressBar progressBar;
     @Bind(R.id.recycler)
     RecyclerView recyclerView;
     @Bind(R.id.empty)
@@ -87,7 +83,8 @@ public class NewFragment extends Fragment implements MangaAdapter.OnItemClickLis
     }
 
     public void setUpAdapter(Bundle savedInstanceState) {
-        progressBar.setVisibility(ProgressBar.GONE);
+        if(getActivity() != null)
+            ((MainActivity)getActivity()).hideProgress();
         recyclerView.setVisibility(RecyclerView.VISIBLE);
         mangas = savedInstanceState.getParcelableArrayList("list");
         page = savedInstanceState.getInt("page");
@@ -146,7 +143,7 @@ public class NewFragment extends Fragment implements MangaAdapter.OnItemClickLis
 
         @Override
         public ArrayList<Manga> doInBackground(String... params) {
-            FetchingMachine download = new FetchingMachine(params[0]);
+            MangaLibrary download = new MangaLibrary(params[0]);
             ArrayList<Manga> result = download.GetMangas(10);
             return result;
         }
@@ -176,12 +173,13 @@ public class NewFragment extends Fragment implements MangaAdapter.OnItemClickLis
         public void onPreExecute() {
             recyclerView.setVisibility(RecyclerView.GONE);
             empty.setVisibility(TextView.GONE);
-            progressBar.setVisibility(ProgressBar.VISIBLE);
+            if(getActivity() != null)
+                ((MainActivity)getActivity()).showProgress();
         }
 
         @Override
         public ArrayList<Manga> doInBackground(String... params) {
-            FetchingMachine download = new FetchingMachine(params[0]);
+            MangaLibrary download = new MangaLibrary(params[0]);
             ArrayList<Manga> arrayList = download.GetMangas(10);
             if (arrayList != null) {
                 for (Manga m : arrayList) {
@@ -194,7 +192,8 @@ public class NewFragment extends Fragment implements MangaAdapter.OnItemClickLis
 
         @Override
         public void onPostExecute(ArrayList<Manga> result) {
-            progressBar.setVisibility(ProgressBar.GONE);
+            if(getActivity() != null)
+                ((MainActivity)getActivity()).hideProgress();
 
             if (result != null) {
                 recyclerView.setVisibility(RecyclerView.VISIBLE);

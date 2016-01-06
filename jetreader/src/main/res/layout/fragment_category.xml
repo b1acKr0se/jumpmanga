@@ -2,7 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:gpb="http://schemas.android.com/apk/res-auto"
     tools:context="io.demiseq.jetreader.fragments.RecentFragment">
 
     <android.support.v7.widget.RecyclerView
@@ -22,12 +21,5 @@
         android:layout_centerInParent="true"
         android:text="@string/empty_fragment"
         android:visibility="gone" />
-
-    <com.jpardogo.android.googleprogressbar.library.GoogleProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_centerInParent="true"
-        gpb:type="nexus_rotation_cross" />
 
 </RelativeLayout>

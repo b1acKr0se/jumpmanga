@@ -1,7 +1,10 @@
 package io.demiseq.jetreader.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Handler;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,18 +14,14 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
-import io.demiseq.jetreader.utils.OnLoadMoreListener;
 import io.demiseq.jetreader.R;
 import io.demiseq.jetreader.model.Manga;
+import io.demiseq.jetreader.utils.OnLoadMoreListener;
 
-/**
- * Created by Thanh on 7/13/2015.
- */
 public class CategoryAdapter extends RecyclerView.Adapter implements View.OnClickListener {
     private final int VIEW_ITEM = 1;
     private final int VIEW_PROG = 0;
@@ -95,20 +94,10 @@ public class CategoryAdapter extends RecyclerView.Adapter implements View.OnClic
             ((MangaViewHolder) holder).image.setImageBitmap(null);
 
             if (!item.getImage().equals("")) {
-                Picasso.with(((MangaViewHolder) holder).image.getContext()).load(item.getImage()).placeholder(R.drawable.placeholder).error(R.drawable.error)
-                        .into(((MangaViewHolder) holder).image, new Callback() {
-                            @Override
-                            public void onSuccess() {
-
-                            }
-
-                            @Override
-                            public void onError() {
-
-                            }
-                        });
+                Glide.with(((MangaViewHolder) holder).image.getContext()).load(item.getImage()).placeholder(R.drawable.placeholder).error(R.drawable.error)
+                        .into(((MangaViewHolder) holder).image);
             } else {
-                ((MangaViewHolder) holder).image.setImageDrawable(context.getResources().getDrawable(R.drawable.error));
+                ((MangaViewHolder) holder).image.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.error));
             }
 
             holder.itemView.setTag(item);
@@ -164,7 +153,8 @@ public class CategoryAdapter extends RecyclerView.Adapter implements View.OnClic
 
         public ProgressViewHolder(View v) {
             super(v);
-            progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
+            progressBar = (ProgressBar) v.findViewById(R.id.progress_bar);
+            progressBar.getIndeterminateDrawable().setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_ATOP);
         }
     }
 

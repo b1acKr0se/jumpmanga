@@ -23,6 +23,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -42,6 +44,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import java.util.ArrayList;
 import butterknife.Bind;
@@ -96,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
     Toolbar toolbar;
     @Bind(R.id.drawer_layout)
     DrawerLayout drawerLayout;
+    @Bind(R.id.progress_bar)ProgressBar progressBar;
     @Bind(R.id.search_box)
     CustomAutoCompleteTextView searchBox;
     @BindString(R.string.app_name)
@@ -122,7 +126,10 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         db = new JumpDatabaseHelper(MainActivity.this);
 
         initToolbar();
+
         setupDrawerLayout();
+
+        progressBar.getIndeterminateDrawable().setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_ATOP);
 
         categories = db.getAllCategories();
 
@@ -212,6 +219,15 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         super.onResume();
         prefs.registerOnSharedPreferenceChangeListener(listener);
         setAlarmService();
+    }
+
+    public void showProgress() {
+        if (progressBar.getVisibility() != View.VISIBLE)
+            progressBar.setVisibility(View.VISIBLE);
+    }
+
+    public void hideProgress() {
+        progressBar.setVisibility(View.GONE);
     }
 
     private void setAlarmService() {
@@ -450,7 +466,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
                             public void run() {
                                 GetDownloaded();
                             }
-                        }, 200);
+                        }, 300);
                         break;
                     case R.id.drawer_settings:
                         new Handler().postDelayed(new Runnable() {

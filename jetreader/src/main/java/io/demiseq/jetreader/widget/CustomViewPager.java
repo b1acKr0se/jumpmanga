@@ -1,6 +1,7 @@
 package io.demiseq.jetreader.widget;
 
 import android.content.Context;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -8,9 +9,6 @@ import android.view.View;
 
 import io.demiseq.jetreader.R;
 
-/**
- * Created by Thanh on 7/4/2015.
- */
 public class CustomViewPager extends ViewPager {
 
     float mStartDragX;
@@ -31,33 +29,40 @@ public class CustomViewPager extends ViewPager {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        float x = ev.getX();
-        switch (ev.getAction()) {
+        switch (ev.getAction() & MotionEventCompat.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
-                mStartDragX = x;
-                break;
-            case MotionEvent.ACTION_MOVE:
-//                if (mStartDragX < x && getCurrentItem() == 0) {
-//                    View view = findViewWithTag(0);
-//                    if (view != null) {
-//                        TouchImageView img = (TouchImageView) view.findViewById(R.id.img);
-//                        if (!img.isZoomed()) {
-//                            mListener.onSwipeOutAtStart();
-//                        }
-//                    }
-//                } else
-                if (mStartDragX > x && getCurrentItem() == getAdapter().getCount() - 1) {
-                    View view = findViewWithTag(getAdapter().getCount() - 1);
-                    if (view != null) {
-                        TouchImageView img = (TouchImageView) view.findViewById(R.id.img);
-                        if (!img.isZoomed()) {
-                            mListener.onSwipeOutAtEnd();
-                        }
-                    }
-                }
+                mStartDragX = ev.getX();
                 break;
         }
         return super.onInterceptTouchEvent(ev);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        if(getAdapter() != null) {
+            if (getCurrentItem() == getAdapter().getCount() - 1) {
+                final int action = ev.getAction();
+                float x = ev.getX();
+                switch (action & MotionEventCompat.ACTION_MASK) {
+                    case MotionEvent.ACTION_MOVE:
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        if (getCurrentItem() == getAdapter().getCount() - 1 && x + 50 < mStartDragX) {
+                            View view = findViewWithTag(getAdapter().getCount() - 1);
+                            if (view != null) {
+                                TouchImageView img = (TouchImageView) view.findViewById(R.id.img);
+                                if (!img.isZoomed()) {
+                                    mListener.onSwipeOutAtEnd();
+                                }
+                            }
+                        }
+                        break;
+                }
+            } else {
+                mStartDragX = 0;
+            }
+        }
+        return super.onTouchEvent(ev);
     }
 
     public interface OnSwipeOutListener {

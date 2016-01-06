@@ -39,7 +39,7 @@ public class FileDownloader {
                 } finally {
                     output.close();
                 }
-            } finally {
+            }  finally {
                 input.close();
             }
         }

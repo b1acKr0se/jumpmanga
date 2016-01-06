@@ -34,34 +34,44 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="15dp">
-                <ImageView
+                android:weightSum="1.2">
+                <TextView
                     android:id="@+id/previous"
-                    android:layout_width="45dp"
+                    android:layout_width="0dp"
                     android:layout_height="45dp"
-                    android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
-                    android:background="@drawable/previous_selector"/>
+                    android:gravity="center"
+                    android:layout_weight="0.4"
+                    android:text="PREV"
+                    android:textSize="18sp"
+                    android:textColor="@android:color/white"
+                    android:fontFamily="sans-serif-smallcaps"
+                    android:background="?attr/selectableItemBackground"/>
                 <TextView
                     android:id="@+id/indicator"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="15sp"
-                    android:fontFamily="sans-serif-light"
+                    android:layout_height="match_parent"
+                    android:textSize="18sp"
+                    android:fontFamily="sans-serif-smallcaps"
                     android:textColor="@android:color/white"
-                    android:layout_centerInParent="true"/>
-                <ImageView
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:layout_weight="0.4"/>
+                <TextView
                     android:id="@+id/next"
-                    android:layout_width="45dp"
+                    android:layout_width="0dp"
                     android:layout_height="45dp"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:background="@drawable/next_selector"/>
+                    android:gravity="center"
+                    android:layout_weight="0.4"
+                    android:text="NEXT"
+                    android:textSize="18sp"
+                    android:textColor="@android:color/white"
+                    android:fontFamily="sans-serif-smallcaps"
+                    android:background="?attr/selectableItemBackground"/>
 
-            </RelativeLayout>
+            </LinearLayout>
 
         </LinearLayout>
     </FrameLayout>

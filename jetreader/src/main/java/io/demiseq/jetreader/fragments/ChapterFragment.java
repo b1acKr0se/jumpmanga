@@ -4,6 +4,8 @@ package io.demiseq.jetreader.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -23,11 +25,10 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import net.frakbot.jumpingbeans.JumpingBeans;
 
 import java.util.ArrayList;
 
@@ -40,7 +41,7 @@ import io.demiseq.jetreader.activities.DetailActivity;
 import io.demiseq.jetreader.activities.ReadActivity;
 import io.demiseq.jetreader.adapters.ChapterAdapter;
 import io.demiseq.jetreader.database.JumpDatabaseHelper;
-import io.demiseq.jetreader.manga24hbaseapi.FetchingMachine;
+import io.demiseq.jetreader.api.MangaLibrary;
 import io.demiseq.jetreader.model.Chapter;
 import io.demiseq.jetreader.model.Manga;
 import io.demiseq.jetreader.service.DownloadService;
@@ -62,8 +63,6 @@ public class ChapterFragment extends Fragment {
     private SwitchCompat switchCompat;
     private SearchView actionSearchView;
 
-    @Bind(R.id.loadingText)
-    TextView loadingText;
     @Bind(R.id.empty)
     TextView empty;
     @Bind(R.id.listView)
@@ -72,6 +71,7 @@ public class ChapterFragment extends Fragment {
     SwipeRefreshLayout refreshLayout;
     @Bind(R.id.reload)
     Button reload;
+    @Bind(R.id.progress_bar)ProgressBar progressBar;
 
     @BindString(R.string.chapter_retrieve_failed)
     String chapter_retrieve_failed;
@@ -85,8 +85,6 @@ public class ChapterFragment extends Fragment {
         new GetMangaDetails().execute(url);
     }
 
-
-    private JumpingBeans jumpingBeans;
 
     public ChapterFragment() {
         // Required empty public constructor
@@ -108,6 +106,8 @@ public class ChapterFragment extends Fragment {
         context = getActivity();
 
         db = new JumpDatabaseHelper(context);
+
+        progressBar.getIndeterminateDrawable().setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_ATOP);
 
         setHasOptionsMenu(true);
 
@@ -147,7 +147,6 @@ public class ChapterFragment extends Fragment {
             }
         });
 
-        jumpingBeans = JumpingBeans.with(loadingText).appendJumpingDots().build();
         listView.setVisibility(ListView.GONE);
         new GetMangaDetails().execute(url);
 
@@ -170,7 +169,7 @@ public class ChapterFragment extends Fragment {
             @Override
             public void onItemCheckedStateChanged(ActionMode actionMode, int i, long l, boolean b) {
                 final int checkedCount = listView.getCheckedItemCount();
-                actionMode.setTitle(checkedCount + " selected");
+                actionMode.setTitle(checkedCount + "/" + adapter.getCount());
                 adapter.toggleSelection(i);
             }
 
@@ -190,9 +189,11 @@ public class ChapterFragment extends Fragment {
                 switch (menuItem.getItemId()) {
                     case R.id.cab_download:
                         SparseBooleanArray selected = adapter.getSelectedItems();
-                        ArrayList<Chapter> chapters = new ArrayList<Chapter>();
+                        ArrayList<Chapter> chapters = new ArrayList<>();
+
                         for (int i = selected.size(); i >= 0; i--) {
                             if (selected.valueAt(i)) {
+                                System.out.println(i);
                                 Chapter c = adapter.getItem(selected.keyAt(i));
                                 chapters.add(c);
                             }
@@ -209,9 +210,11 @@ public class ChapterFragment extends Fragment {
 
                     case R.id.cab_select_all:
                         for (int i = 0; i < adapter.getCount(); i++) {
-                            System.out.println(i);
                             listView.setItemChecked(i, true);
                         }
+                        adapter.selectAll();
+                        System.out.println("Count: " + adapter.getCount());
+                        System.out.println("selected: " + adapter.getSelectedCount());
                         return true;
 
                     case R.id.cab_deselect_all:
@@ -269,14 +272,14 @@ public class ChapterFragment extends Fragment {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 isChecked = b;
                 if (isChecked && chapters != null) {
-                    ArrayList<Chapter> arr = new ArrayList<Chapter>();
+                    ArrayList<Chapter> arr = new ArrayList<>();
                     for (int i = chapters.size() - 1; i >= 0; i--) {
                         if (chapters.get(i).isFav())
                             arr.add(chapters.get(i));
                     }
 
                     if (arr.size() > 0) {
-                        chapters = new ArrayList<Chapter>(arr);
+                        chapters = new ArrayList<>(arr);
                         adapter = new ChapterAdapter(context, R.layout.chapter_list_item, chapters);
                         listView.setAdapter(adapter);
                     } else {
@@ -285,7 +288,7 @@ public class ChapterFragment extends Fragment {
                     }
                 } else if (chapters != null) {
                     compoundButton.setChecked(false);
-                    chapters = new ArrayList<Chapter>(temp);
+                    chapters = new ArrayList<>(temp);
                     adapter = new ChapterAdapter(context, R.layout.chapter_list_item, chapters);
                     listView.setAdapter(adapter);
                 } else compoundButton.setChecked(false);
@@ -324,11 +327,12 @@ public class ChapterFragment extends Fragment {
 
     public class GetMangaDetails extends AsyncTask<String, Void, ArrayList<Chapter>> {
         public void onPreExecute() {
+            progressBar.setVisibility(View.VISIBLE);
             reload.setVisibility(View.GONE);
         }
 
         public ArrayList<Chapter> doInBackground(String... params) {
-            FetchingMachine download = new FetchingMachine(params[0]);
+            MangaLibrary download = new MangaLibrary(params[0]);
             ArrayList<Chapter> arr = download.GetChapters();
             if (arr != null)
                 for (Chapter c : arr) {
@@ -344,9 +348,7 @@ public class ChapterFragment extends Fragment {
         public void onPostExecute(ArrayList<Chapter> arr) {
             refreshLayout.setRefreshing(false);
 
-            jumpingBeans.stopJumping();
-
-            loadingText.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
 
             if (arr != null) {
                 if (arr.size() > 0) {

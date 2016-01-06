@@ -6,14 +6,12 @@
     android:background="@color/grey_50"
     tools:context="io.demiseq.jetreader.fragments.ChapterFragment">
 
-    <TextView
-        android:id="@+id/loadingText"
+    <ProgressBar
+        android:id="@+id/progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:fontFamily="sans-serif-bold"
-        android:text="@string/loading"
-        android:textSize="22sp" />
+        android:visibility="gone"
+        android:layout_gravity="center"/>
 
     <TextView
         android:id="@+id/empty"

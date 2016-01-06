@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="io.demiseq.jetreader" >
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    />
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <service android:name="io.demiseq.jetreader.service.FetchLatestService" />
+        <service android:name="io.demiseq.jetreader.service.DownloadService" />
+
+        <activity
+            android:name="io.demiseq.jetreader.activities.MainActivity"
+            android:label="@string/app_name"
+            >
+        </activity>
+        <activity
+            android:name="io.demiseq.jetreader.activities.DetailActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/title_activity_detail"
+            android:parentActivityName="io.demiseq.jetreader.activities.MainActivity"
+            android:windowSoftInputMode="adjustPan" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="io.demiseq.jetreader.activities.MainActivity" />
+        </activity>
+        <activity
+            android:name="io.demiseq.jetreader.activities.ReadActivity"
+            android:label="@string/title_activity_read"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="io.demiseq.jetreader.activities.SplashScreenActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleInstance"
+            android:theme="@style/SplashTheme" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="io.demiseq.jetreader.activities.ExceptionActivity"
+            android:label="@string/title_activity_exception"
+            android:screenOrientation="portrait" >
+        </activity>
+
+        <receiver android:name="io.demiseq.jetreader.service.BootReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name="io.demiseq.jetreader.activities.DownloadedReadActivity"
+            android:parentActivityName="io.demiseq.jetreader.activities.MainActivity"
+            android:screenOrientation="portrait" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="io.demiseq.jetreader.activities.MainActivity" />
+        </activity>
+        <activity
+            android:name="io.demiseq.jetreader.activities.SettingActivity"
+            android:label="@string/title_activity_setting"
+            android:parentActivityName="io.demiseq.jetreader.activities.MainActivity"
+            android:theme="@style/SettingTheme" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="io.demiseq.jetreader.activities.MainActivity" />
+        </activity>
+        <activity
+            android:name="io.demiseq.jetreader.activities.AboutActivity"
+            android:theme="@style/SettingTheme"
+            android:label="@string/title_activity_about" >
+            <intent-filter>
+                <action android:name="io.wyrmise.jumpmanga.activities.AboutActivity" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="io.demiseq.jetreader.activities.SettingActivity" />
+        </activity>
+        <activity
+            android:name="io.demiseq.jetreader.activities.LicenseActivity"
+            android:theme="@style/SettingTheme"
+            android:label="@string/licenses" >
+            <intent-filter>
+                <action android:name="io.wyrmise.jumpmanga.activities.LicenseActivity" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="io.demiseq.jetreader.activities.SettingActivity" />
+        </activity>
+
+        <activity
+            android:name="io.demiseq.jetreader.activities.GeneralSettingsActivity"
+            android:theme="@style/SettingTheme"
+            android:label="@string/general_pref" >
+            <intent-filter>
+                <action android:name="io.wyrmise.jumpmanga.activities.General_Settings_Activity" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="io.demiseq.jetreader.activities.SettingActivity" />
+        </activity>
+    </application>
+
+</manifest>

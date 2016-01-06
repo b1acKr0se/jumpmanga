@@ -1,0 +1,1 @@
+CREATE TABLE subscription (_id INTEGER PRIMARY KEY AUTOINCREMENT, manga_name TEXT, manga_url TEXT, manga_image TEXT, chapter_name TEXT, chapter_url TEXT);

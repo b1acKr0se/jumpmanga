@@ -5,6 +5,8 @@ package io.demiseq.jetreader.adapters;
  */
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Handler;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,13 +17,13 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
-import io.demiseq.jetreader.utils.OnLoadMoreListener;
 import io.demiseq.jetreader.R;
 import io.demiseq.jetreader.model.Manga;
+import io.demiseq.jetreader.utils.OnLoadMoreListener;
 
 public class MangaAdapter extends RecyclerView.Adapter implements View.OnClickListener {
     private final int VIEW_ITEM = 1;
@@ -102,10 +104,10 @@ public class MangaAdapter extends RecyclerView.Adapter implements View.OnClickLi
             ((MangaViewHolder) holder).image.setImageBitmap(null);
 
             if (!item.getImage().equals("")) {
-                Picasso.with(((MangaViewHolder) holder).image.getContext()).load(item.getImage()).placeholder(R.drawable.placeholder).error(R.drawable.error)
+                Glide.with(((MangaViewHolder) holder).image.getContext()).load(item.getImage()).placeholder(R.drawable.placeholder).error(R.drawable.error)
                         .into(((MangaViewHolder) holder).image);
             } else {
-                Picasso.with(((MangaViewHolder) holder).image.getContext()).load(R.drawable.error)
+                Glide.with(((MangaViewHolder) holder).image.getContext()).load(R.drawable.error)
                         .into(((MangaViewHolder) holder).image);
             }
 
@@ -161,7 +163,8 @@ public class MangaAdapter extends RecyclerView.Adapter implements View.OnClickLi
 
         public ProgressViewHolder(View v) {
             super(v);
-            progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
+            progressBar = (ProgressBar) v.findViewById(R.id.progress_bar);
+            progressBar.getIndeterminateDrawable().setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_ATOP);
         }
     }
 

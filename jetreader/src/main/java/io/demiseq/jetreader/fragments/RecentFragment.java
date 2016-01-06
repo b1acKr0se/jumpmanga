@@ -26,7 +26,7 @@ import io.demiseq.jetreader.activities.ReadActivity;
 import io.demiseq.jetreader.adapters.MangaAdapter;
 import io.demiseq.jetreader.adapters.RecentAdapter;
 import io.demiseq.jetreader.database.JumpDatabaseHelper;
-import io.demiseq.jetreader.manga24hbaseapi.FetchingMachine;
+import io.demiseq.jetreader.api.MangaLibrary;
 import io.demiseq.jetreader.model.Chapter;
 import io.demiseq.jetreader.model.Manga;
 import io.demiseq.jetreader.utils.AsyncTaskCallback;
@@ -164,7 +164,7 @@ public class RecentFragment extends Fragment implements MangaAdapter.OnItemClick
 
         @Override
         public ArrayList<Chapter> doInBackground(String... params) {
-            FetchingMachine download = new FetchingMachine(params[0]);
+            MangaLibrary download = new MangaLibrary(params[0]);
             ArrayList<Chapter> arr = download.GetChapters();
             return arr;
         }
