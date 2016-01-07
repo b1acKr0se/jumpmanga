@@ -9,14 +9,22 @@ Mobile client for http://manga24h.com/
 <img src="http://i.imgur.com/cFrAF1E.png" alt="screenshot" title="screenshot" width="270" height="450"/>
 <img src="http://i.imgur.com/n2hFWUR.png" alt="screenshot" title="screenshot" width="270" height="450"/>
 
+
 Libraries used
 --------
 
-* [Picasso 2.5.2](https://github.com/square/picasso)
+* [Glide 3.6.1](https://github.com/bumptech/glide)
 * [Jsoup 1.7.3](https://github.com/jhy/jsoup/)
-* [Support library](http://developer.android.com/tools/support-library/index.html)
+* [Expandable RecyclerView 1.0.3](https://github.com/bignerdranch/expandable-recycler-view)
 * [SQLiteAssetHelper 2.0.1](https://github.com/jgilfelt/android-sqlite-asset-helper)
 * [TouchImageView](https://github.com/MikeOrtiz/TouchImageView)
+* [Butter Knife 7.0.1](https://github.com/JakeWharton/butterknife)
+
+
+Note
+--------
+
+* Some of you may experience image loading problem using cellular network. This is because of your carrier's default setup for DNS which prevents some sites - such as blogspot.com, which happens to be the most popular image hosting on Manga24h - to be accessed. The solution is to use apps that can change this value, most notable one is [Override DNS](https://play.google.com/store/apps/details?id=net.mx17.overridedns).
 
 
 License
