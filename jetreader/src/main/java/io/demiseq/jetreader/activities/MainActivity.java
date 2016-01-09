@@ -227,7 +227,8 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
     }
 
     public void hideProgress() {
-        progressBar.setVisibility(View.GONE);
+        if (progressBar.getVisibility() == View.VISIBLE)
+            progressBar.setVisibility(View.GONE);
     }
 
     private void setAlarmService() {
@@ -461,12 +462,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
                         GetSubscription();
                         break;
                     case R.id.drawer_downloaded:
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                GetDownloaded();
-                            }
-                        }, 300);
+                        GetDownloaded();
                         break;
                     case R.id.drawer_settings:
                         new Handler().postDelayed(new Runnable() {

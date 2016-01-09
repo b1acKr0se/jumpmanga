@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AlertDialog;
@@ -23,12 +24,12 @@ import com.bignerdranch.expandablerecyclerview.Model.ParentObject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.BindString;
 import butterknife.ButterKnife;
 import io.demiseq.jetreader.R;
+import io.demiseq.jetreader.activities.MainActivity;
 import io.demiseq.jetreader.adapters.ExpandableDownloadedAdapter;
 import io.demiseq.jetreader.database.JumpDatabaseHelper;
 import io.demiseq.jetreader.model.Chapter;
@@ -42,7 +43,6 @@ import io.demiseq.jetreader.utils.FileUtils;
  */
 public class DownloadedFragment extends Fragment {
 
-    private List<Wrapper> wrappers;
     private ExpandableDownloadedAdapter adapter;
     private Context context;
     public static boolean isProcessing = false;
@@ -89,64 +89,85 @@ public class DownloadedFragment extends Fragment {
 
         ButterKnife.bind(this, view);
 
-        JumpDatabaseHelper db = new JumpDatabaseHelper(getActivity());
+        new LoadLocalFiles().execute();
 
-        wrappers = new ArrayList<>();
+        return view;
+    }
 
-        ArrayList<ParentObject> parentObjects = new ArrayList<>();
 
-        File sdCard = Environment.getExternalStorageDirectory();
-        File dir = new File(sdCard.getAbsolutePath() + "/.Jump Manga/");
-        if (dir.exists() && dir.isDirectory() && dir.listFiles().length > 0) {
-            File[] mangaNames = dir.listFiles();
-            for (int i = mangaNames.length - 1; i >= 0; i--) {
-                if (mangaNames[i].isDirectory() && mangaNames[i].listFiles().length > 0) {
-                    File[] chapterNames = mangaNames[i].listFiles();
-                    Wrapper w = new Wrapper();
-                    w.setName(mangaNames[i].getName());
-                    ArrayList<Chapter> chapters = new ArrayList<>();
-                    for (File f : chapterNames) {
-                        if (f.isDirectory()) {
-                            Chapter c = new Chapter();
-                            c.setMangaName(mangaNames[i].getName());
-                            c.setName(f.getName());
-                            FileUtils fileUtils = new FileUtils();
-                            if (fileUtils.isChapterDownloaded(c.getMangaName(), c.getName())) {
-                                c.setPath(fileUtils.getFilePaths());
-                                c.setIsRead(db.isChapterRead(c, c.getMangaName()));
-                                chapters.add(c);
+    class LoadLocalFiles extends AsyncTask<Void, Void, ArrayList<ParentObject>> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            ((MainActivity)getActivity()).showProgress();
+        }
+
+        @Override
+        protected ArrayList<ParentObject> doInBackground(Void... voids) {
+
+            JumpDatabaseHelper db = new JumpDatabaseHelper(getActivity());
+
+            ArrayList<ParentObject> parentObjects = new ArrayList<>();
+
+            File sdCard = Environment.getExternalStorageDirectory();
+            File dir = new File(sdCard.getAbsolutePath() + "/.Jump Manga/");
+            if (dir.exists() && dir.isDirectory() && dir.listFiles().length > 0) {
+                File[] mangaNames = dir.listFiles();
+                for (int i = mangaNames.length - 1; i >= 0; i--) {
+                    if (mangaNames[i].isDirectory() && mangaNames[i].listFiles().length > 0) {
+                        File[] chapterNames = mangaNames[i].listFiles();
+                        Wrapper w = new Wrapper();
+                        w.setName(mangaNames[i].getName());
+                        ArrayList<Chapter> chapters = new ArrayList<>();
+                        for (File f : chapterNames) {
+                            if (f.isDirectory()) {
+                                Chapter c = new Chapter();
+                                c.setMangaName(mangaNames[i].getName());
+                                c.setName(f.getName());
+                                FileUtils fileUtils = new FileUtils();
+                                if (fileUtils.isChapterDownloaded(c.getMangaName(), c.getName())) {
+                                    c.setPath(fileUtils.getFilePaths());
+                                    c.setIsRead(db.isChapterRead(c, c.getMangaName()));
+                                    chapters.add(c);
+                                }
+                            } else if (f.isFile()) {
+                                w.setImagePath(f);
                             }
-                        } else if (f.isFile()) {
-                            w.setImagePath(f);
                         }
+                        Collections.sort(chapters, new ChapterNameComparator());
+                        ArrayList<Object> list = new ArrayList<>();
+                        for (Chapter c : chapters) list.add(c);
+                        w.setChildObjectList(list);
+                        parentObjects.add(w);
                     }
-                    Collections.sort(chapters, new ChapterNameComparator());
-                    ArrayList<Object> list = new ArrayList<>();
-                    for (Chapter c : chapters) list.add(c);
-                    w.setChildObjectList(list);
-                    parentObjects.add(w);
                 }
+                return parentObjects;
             }
+            return null;
+        }
 
-            if (parentObjects.size() > 0) {
-                adapter = new ExpandableDownloadedAdapter(getActivity(), parentObjects);
-                recyclerView.setVisibility(View.VISIBLE);
-                recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
-                recyclerView.setAdapter(adapter);
-                empty.setVisibility(View.GONE);
+        @Override
+        protected void onPostExecute(ArrayList<ParentObject> parentObjects) {
+            super.onPostExecute(parentObjects);
+            ((MainActivity)getActivity()).hideProgress();
+            if (parentObjects != null) {
+                if (parentObjects.size() > 0) {
+                    adapter = new ExpandableDownloadedAdapter(getActivity(), parentObjects);
+                    recyclerView.setVisibility(View.VISIBLE);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+                    recyclerView.setAdapter(adapter);
+                    empty.setVisibility(View.GONE);
+                } else {
+                    recyclerView.setVisibility(View.GONE);
+                    empty.setVisibility(View.VISIBLE);
+                }
             } else {
+                ((MainActivity)getActivity()).hideProgress();
                 recyclerView.setVisibility(View.GONE);
                 empty.setVisibility(View.VISIBLE);
             }
-        } else {
-            recyclerView.setVisibility(View.GONE);
-            empty.setVisibility(View.VISIBLE);
         }
-
-        if (savedInstanceState != null)
-            adapter.onRestoreInstanceState(savedInstanceState);
-
-        return view;
     }
 
 
@@ -161,7 +182,6 @@ public class DownloadedFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState = adapter.onSaveInstanceState(outState);
     }
 
     @Override

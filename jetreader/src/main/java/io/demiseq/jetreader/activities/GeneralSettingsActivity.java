@@ -10,7 +10,7 @@ import android.view.MenuItem;
 
 import io.demiseq.jetreader.R;
 
-public class GeneralSettingsActivity extends AppCompatActivity {
+public class GeneralSettingsActivity extends BaseActivity {
     public static final String KEY_DOWNLOAD_NUM = "pref_num_of_downloads";
     public static final String KEY_SHOW_NOTIFICATION = "pref_show_notification";
     public static final String KEY_UPDATE_FREQUENCY = "pref_update_frequency";
@@ -20,16 +20,6 @@ public class GeneralSettingsActivity extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getFragmentManager().beginTransaction().replace(android.R.id.content, new MyPreferenceFragment()).commit();
-    }
-
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     public static class MyPreferenceFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {

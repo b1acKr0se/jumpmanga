@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -36,6 +37,9 @@
             android:name="io.demiseq.jetreader.activities.ReadActivity"
             android:label="@string/title_activity_read"
             android:screenOrientation="portrait" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="io.demiseq.jetreader.activities.DetailActivity" />
         </activity>
         <activity
             android:name="io.demiseq.jetreader.activities.SplashScreenActivity"

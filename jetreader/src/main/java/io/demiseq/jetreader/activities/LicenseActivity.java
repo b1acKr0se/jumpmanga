@@ -7,22 +7,13 @@ import android.view.MenuItem;
 
 import io.demiseq.jetreader.R;
 
-public class LicenseActivity extends AppCompatActivity{
+public class LicenseActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getFragmentManager().beginTransaction().replace(android.R.id.content, new MyPreferenceFragment()).commit();
     }
 
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     public static class MyPreferenceFragment extends PreferenceFragment {
         @Override

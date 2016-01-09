@@ -5,9 +5,9 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PersistableBundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,9 +27,9 @@ import io.demiseq.jetreader.R;
 import io.demiseq.jetreader.adapters.DownloadedImageAdapter;
 import io.demiseq.jetreader.adapters.FullScreenImageAdapter;
 import io.demiseq.jetreader.animation.AnimationHelper;
+import io.demiseq.jetreader.api.MangaLibrary;
 import io.demiseq.jetreader.database.JumpDatabaseHelper;
 import io.demiseq.jetreader.fragments.ChapterFragment;
-import io.demiseq.jetreader.api.MangaLibrary;
 import io.demiseq.jetreader.model.Chapter;
 import io.demiseq.jetreader.model.Manga;
 import io.demiseq.jetreader.model.Page;
@@ -37,7 +37,7 @@ import io.demiseq.jetreader.utils.FileUtils;
 import io.demiseq.jetreader.widget.CustomViewPager;
 import io.demiseq.jetreader.widget.TouchImageView;
 
-public class ReadActivity extends AppCompatActivity {
+public class ReadActivity extends BaseActivity {
 
     private JumpDatabaseHelper db;
     private FullScreenImageAdapter adapter;
@@ -56,7 +56,7 @@ public class ReadActivity extends AppCompatActivity {
     private boolean isRefreshing = false;
     private MenuItem fv_button;
 
-    private boolean isControllerShowing;
+    private boolean isControllerShowing = true;
 
     private int currentPage = 0;
 
@@ -235,20 +235,45 @@ public class ReadActivity extends AppCompatActivity {
         manga = intent.getParcelableExtra("manga");
         name = manga.getName();
         img = manga.getImage();
-        String url = intent.getStringExtra("url");
+
         String name = intent.getStringExtra("name");
-        chapter_position = intent.getIntExtra("position", -1);
         chapters = intent.getParcelableArrayListExtra("list");
+        String url;
+
+//        if(savedInstanceState == null) {
+        chapter_position = intent.getIntExtra("position", -1);
+        url = intent.getStringExtra("url");
+//        } else {
+//            chapter_position = savedInstanceState.getInt("position");
+//            currentPage = savedInstanceState.getInt("page_num");
+//            url = chapters.get(chapter_position).getUrl();
+//            Toast.makeText(this, "restoreInstancestate at chapter " + chapter_position, Toast.LENGTH_LONG).show();
+//        }
 
         setTitle(name);
 
         getSupportActionBar().setSubtitle(this.name);
 
-        mHideHandler.postDelayed(hideControllerThread, 5000);
-
         getAppropriateChapter(url);
 
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+        outState.putInt("position", chapter_position);
+        outState.putInt("page_num", currentPage);
+        Toast.makeText(this, "savedinstancestate at chapter " + chapter_position, Toast.LENGTH_LONG).show();
+    }
+
+//    @Override
+//    public void onRestoreInstanceState(Bundle savedInstanceState, PersistableBundle persistentState) {
+//        super.onRestoreInstanceState(savedInstanceState, persistentState);
+//        chapter_position = savedInstanceState.getInt("position");
+//        currentPage = savedInstanceState.getInt("page_num");
+//        String url = chapters.get(chapter_position).getUrl();
+//        getAppropriateChapter(url);
+//    }
 
     public void getAppropriateChapter(String url) {
         FileUtils fileUtils = new FileUtils();
@@ -277,11 +302,13 @@ public class ReadActivity extends AppCompatActivity {
                 });
                 viewPager.setCurrentItem(0);
                 viewPager.setPageMargin(calculatedPixel);
-                pageIndicator.setText("1/" + adapter.getCount());
-                seekBar.setProgress(0);
+                String text = currentPage == 0 ? "1/" + adapter.getCount() : (currentPage+1) + "/" + adapter.getCount();
+                pageIndicator.setText(text);
+                seekBar.setProgress(currentPage);
                 seekBar.setMax(adapter.getCount() - 1);
                 getFavoriteStatus();
                 setRead();
+                getSupportActionBar().setTitle(chapters.get(chapter_position).getName());
             } else
                 new RetrieveAllPages().execute(url);
         } else
@@ -418,9 +445,6 @@ public class ReadActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
             case R.id.action_refresh:
                 refresh();
                 return true;
@@ -487,16 +511,19 @@ public class ReadActivity extends AppCompatActivity {
                 viewPager.setCurrentItem(0);
                 viewPager.setOffscreenPageLimit(5);
                 viewPager.setPageMargin(calculatedPixel);
-                pageIndicator.setText("1/" + adapter.getCount());
+                String text = currentPage == 0 ? "1/" + adapter.getCount() : (currentPage+1) + "/" + adapter.getCount();
+                pageIndicator.setText(text);
                 progressBar.setProgress(0);
                 increment = 0;
                 progressBar.setMax(adapter.getCount());
                 progressBar.setVisibility(View.VISIBLE);
 
-                seekBar.setProgress(0);
+                seekBar.setProgress(currentPage);
                 seekBar.setMax(adapter.getCount() - 1);
 
                 getFavoriteStatus();
+
+                mHideHandler.postDelayed(hideControllerThread, 5000);
 
             } else {
                 Toast.makeText(getApplicationContext(), network_error, Toast.LENGTH_SHORT).show();

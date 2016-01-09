@@ -22,6 +22,7 @@ import butterknife.Bind;
 import butterknife.BindString;
 import butterknife.ButterKnife;
 import io.demiseq.jetreader.R;
+import io.demiseq.jetreader.activities.MainActivity;
 import io.demiseq.jetreader.activities.ReadActivity;
 import io.demiseq.jetreader.adapters.MangaAdapter;
 import io.demiseq.jetreader.adapters.RecentAdapter;
@@ -102,6 +103,8 @@ public class RecentFragment extends Fragment implements MangaAdapter.OnItemClick
         ButterKnife.bind(this, view);
 
         db = new JumpDatabaseHelper(context);
+
+        ((MainActivity)getActivity()).hideProgress();
 
         return view;
     }

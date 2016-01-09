@@ -32,7 +32,7 @@ import io.demiseq.jetreader.utils.FileUtils;
 import io.demiseq.jetreader.widget.CustomViewPager;
 import io.demiseq.jetreader.widget.TouchImageView;
 
-public class DownloadedReadActivity extends AppCompatActivity {
+public class DownloadedReadActivity extends BaseActivity {
 
     private JumpDatabaseHelper db;
     Handler mHideHandler = new Handler();
@@ -306,17 +306,6 @@ public class DownloadedReadActivity extends AppCompatActivity {
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        switch (id) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     public int convertToPx(int dp) {
         // Get the screen's density scale
