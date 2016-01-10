@@ -73,9 +73,9 @@
     <string name="jsoup">jsoup</string>
     <string name="feedback">If you have any feedback or suggestion, please contact me via these addresses:</string>
     <string name="disclaimer">Disclaimer</string>
-    <string name="disclaimer_content">Jet Reader is developed by me, an individual, who does not have any affliation with Manga24h or the content providers of the manga available in the application.</string>
+    <string name="disclaimer_content">Jump Manga is developed by me, an individual, who does not have any affliation with Manga24h or the content providers of the manga available in the application.</string>
     <string name="app_version">App version</string>
-    <string name="version_name">3.6.0</string>
+    <string name="version_name">3.6.1</string>
     <string name="background_progress">Background downloads in progress…</string>
     <string name="downloading">Downloading:</string>
     <string name="queuing">In queue:</string>

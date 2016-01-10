@@ -1,14 +1,12 @@
 package io.demiseq.jetreader.activities;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -34,24 +32,21 @@ import io.demiseq.jetreader.widget.TouchImageView;
 
 public class DownloadedReadActivity extends BaseActivity {
 
-    private JumpDatabaseHelper db;
-    Handler mHideHandler = new Handler();
-    private AnimationHelper anim;
-    private int calculatedPixel;
     private ArrayList<Chapter> chapters;
-    private FileUtils fileUtils = new FileUtils();
-    private int position = -1;
 
-    @Bind(R.id.viewPager)
-    CustomViewPager viewPager;
-    @Bind(R.id.toolbar)
-    Toolbar toolbar;
-    @Bind(R.id.seekBar)
-    SeekBar seekBar;
-    @Bind(R.id.fullscreen_content_controls)
-    View control;
-    @Bind(R.id.indicator)
-    TextView pageIndicator;
+    private JumpDatabaseHelper db;
+    private Handler mHideHandler = new Handler();
+    private AnimationHelper anim;
+    private FileUtils fileUtils = new FileUtils();
+
+    private int position = -1;
+    private int calculatedPixel;
+
+    @Bind(R.id.viewPager)CustomViewPager viewPager;
+    @Bind(R.id.toolbar)Toolbar toolbar;
+    @Bind(R.id.seekBar)SeekBar seekBar;
+    @Bind(R.id.fullscreen_content_controls)View control;
+    @Bind(R.id.indicator)TextView pageIndicator;
 
     @BindString(R.string.first_chapter) String first_chapter;
     @BindString(R.string.last_chapter) String last_chapter;
@@ -273,7 +268,7 @@ public class DownloadedReadActivity extends BaseActivity {
     }
 
     private void setUpAdapter(String chapterName, ArrayList<String> path) {
-        getSupportActionBar().setTitle(chapterName);
+        setTitle(chapterName);
         DownloadedImageAdapter adapter = new DownloadedImageAdapter(DownloadedReadActivity.this, path, true);
         viewPager.setAdapter(adapter);
         viewPager.setOnSwipeOutListener(new CustomViewPager.OnSwipeOutListener() {
@@ -306,11 +301,4 @@ public class DownloadedReadActivity extends BaseActivity {
         return true;
     }
 
-
-    public int convertToPx(int dp) {
-        // Get the screen's density scale
-        final float scale = getResources().getDisplayMetrics().density;
-        // Convert the dps to pixels, based on density scale
-        return (int) (dp * scale + 0.5f);
-    }
 }

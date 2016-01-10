@@ -39,26 +39,25 @@ import io.demiseq.jetreader.widget.TouchImageView;
 
 public class ReadActivity extends BaseActivity {
 
-    private JumpDatabaseHelper db;
-    private FullScreenImageAdapter adapter;
-    private ArrayList<Page> pages;
-    private int increment = 0;
-    private int chapter_position;
-    private int chapter_position_temp;
     private Manga manga;
     private String name;
-    private String img;
     private ArrayList<Chapter> chapters;
-    Handler mHideHandler = new Handler();
-    private AnimationHelper anim;
-    private int calculatedPixel;
-    private ProgressDialog progressDialog;
-    private boolean isRefreshing = false;
-    private MenuItem fv_button;
 
+    private boolean isRefreshing = false;
     private boolean isControllerShowing = true;
 
+    private int chapter_position;
+    private int chapter_position_temp;
+    private int calculatedPixel;
     private int currentPage = 0;
+    private int increment = 0;
+
+    private JumpDatabaseHelper db;
+    private AnimationHelper anim;
+    private ProgressDialog progressDialog;
+    private MenuItem fv_button;
+
+    private Handler mHideHandler = new Handler();
 
     @Bind(R.id.viewPager) CustomViewPager viewPager;
     @Bind(R.id.toolbar) Toolbar toolbar;
@@ -95,7 +94,7 @@ public class ReadActivity extends BaseActivity {
 
     private Runnable hideControllerThread = new Runnable() {
         public void run() {
-           hideControllers();
+            hideControllers();
         }
     };
 
@@ -137,7 +136,6 @@ public class ReadActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
 
         setContentView(R.layout.activity_read);
 
@@ -234,15 +232,12 @@ public class ReadActivity extends BaseActivity {
 
         manga = intent.getParcelableExtra("manga");
         name = manga.getName();
-        img = manga.getImage();
 
         String name = intent.getStringExtra("name");
         chapters = intent.getParcelableArrayListExtra("list");
-        String url;
 
 //        if(savedInstanceState == null) {
         chapter_position = intent.getIntExtra("position", -1);
-        url = intent.getStringExtra("url");
 //        } else {
 //            chapter_position = savedInstanceState.getInt("position");
 //            currentPage = savedInstanceState.getInt("page_num");
@@ -254,7 +249,7 @@ public class ReadActivity extends BaseActivity {
 
         getSupportActionBar().setSubtitle(this.name);
 
-        getAppropriateChapter(url);
+        getChapter(true);
 
     }
 
@@ -275,47 +270,8 @@ public class ReadActivity extends BaseActivity {
 //        getAppropriateChapter(url);
 //    }
 
-    public void getAppropriateChapter(String url) {
-        FileUtils fileUtils = new FileUtils();
-        if (fileUtils.isChapterDownloaded(manga.getName(), chapters.get(chapter_position).getName())) {
-            ArrayList<String> filePath = fileUtils.getFilePaths();
-            if (filePath != null && filePath.size() > 0) {
-                progressBar.setVisibility(View.INVISIBLE);
-                DownloadedImageAdapter adapter = new DownloadedImageAdapter(ReadActivity.this, filePath,false);
-                viewPager.setAdapter(adapter);
-                viewPager.setOnSwipeOutListener(new CustomViewPager.OnSwipeOutListener() {
 
-                    boolean callHappened = false;
-
-                    @Override
-                    public void onSwipeOutAtEnd() {
-                        if (!callHappened) {
-                            callHappened = true;
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    nextChapter();
-                                }
-                            }, 500);
-                        }
-                    }
-                });
-                viewPager.setCurrentItem(0);
-                viewPager.setPageMargin(calculatedPixel);
-                String text = currentPage == 0 ? "1/" + adapter.getCount() : (currentPage+1) + "/" + adapter.getCount();
-                pageIndicator.setText(text);
-                seekBar.setProgress(currentPage);
-                seekBar.setMax(adapter.getCount() - 1);
-                getFavoriteStatus();
-                setRead();
-                getSupportActionBar().setTitle(chapters.get(chapter_position).getName());
-            } else
-                new RetrieveAllPages().execute(url);
-        } else
-            new RetrieveAllPages().execute(url);
-    }
-
-    public void changeDownloadedChapter() {
+    public void getChapter(boolean isFromList) {
         FileUtils fileUtils = new FileUtils();
         if (fileUtils.isChapterDownloaded(manga.getName(), chapters.get(chapter_position).getName())) {
             ArrayList<String> filePath = fileUtils.getFilePaths();
@@ -347,13 +303,13 @@ public class ReadActivity extends BaseActivity {
                 seekBar.setMax(adapter.getCount() - 1);
                 getFavoriteStatus();
                 setRead();
-                getSupportActionBar().setTitle(chapters.get(chapter_position).getName());
+                setTitle(chapters.get(chapter_position).getName());
             } else {
-                ChangeChapter task = new ChangeChapter(progressDialog);
+                LoadChapterTask task = new LoadChapterTask(isFromList, progressDialog);
                 task.execute(chapters.get(chapter_position).getUrl());
             }
         } else {
-            ChangeChapter task = new ChangeChapter(progressDialog);
+            LoadChapterTask task = new LoadChapterTask(isFromList, progressDialog);
             task.execute(chapters.get(chapter_position).getUrl());
         }
     }
@@ -364,7 +320,7 @@ public class ReadActivity extends BaseActivity {
         if ((chapter_position - 1) != -1) {
             chapter_position_temp = chapter_position;
             chapter_position--;
-            changeDownloadedChapter();
+            getChapter(false);
         } else {
             Toast.makeText(getApplicationContext(), last_chapter, Toast.LENGTH_SHORT).show();
         }
@@ -375,7 +331,7 @@ public class ReadActivity extends BaseActivity {
         if ((chapter_position + 1) != chapters.size()) {
             chapter_position_temp = chapter_position;
             chapter_position++;
-            changeDownloadedChapter();
+            getChapter(false);
         } else {
             Toast.makeText(getApplicationContext(), first_chapter, Toast.LENGTH_SHORT).show();
         }
@@ -420,7 +376,7 @@ public class ReadActivity extends BaseActivity {
     @Override
     public void onResume() {
         super.onResume();
-
+        if(!isControllerShowing) hideSystemUI();
     }
 
     private void setFavorite() {
@@ -459,19 +415,33 @@ public class ReadActivity extends BaseActivity {
 
     private void refresh() {
         currentPage = viewPager.getCurrentItem();
-        ChangeChapter task = new ChangeChapter(progressDialog);
+        LoadChapterTask task = new LoadChapterTask(false, progressDialog);
         isRefreshing = true;
         task.execute(chapters.get(chapter_position).getUrl());
     }
 
-    public class RetrieveAllPages extends AsyncTask<String, Void, ArrayList<Page>> {
+    public class LoadChapterTask extends AsyncTask<String, Void, ArrayList<Page>> {
+
+        private ProgressDialog dialog;
+        private boolean isFromList;
+
+        public LoadChapterTask(boolean fromList, ProgressDialog p) {
+            dialog = p;
+            isFromList = fromList;
+        }
+
         public void onPreExecute() {
             next.setVisibility(ImageView.INVISIBLE);
             previous.setVisibility(ImageView.INVISIBLE);
+            if (!isControllerShowing)
+                showControllers();
+            if (!isFromList) {
+                if (dialog != null)
+                    dialog.show();
+            }
         }
 
         public ArrayList<Page> doInBackground(String... params) {
-            System.out.println(params[0]);
             MangaLibrary download = new MangaLibrary(params[0]);
             ArrayList<Page> arr;
             try {
@@ -486,93 +456,18 @@ public class ReadActivity extends BaseActivity {
         public void onPostExecute(ArrayList<Page> result) {
             next.setVisibility(ImageView.VISIBLE);
             previous.setVisibility(ImageView.VISIBLE);
-            if (result != null) {
-                pages = result;
-                adapter = new FullScreenImageAdapter(ReadActivity.this, pages);
-                viewPager.setAdapter(adapter);
-
-                viewPager.setOnSwipeOutListener(new CustomViewPager.OnSwipeOutListener() {
-                    boolean callHappened = false;
-
-                    @Override
-                    public void onSwipeOutAtEnd() {
-                        if (!callHappened) {
-                            callHappened = true;
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    nextChapter();
-                                }
-                            }, 500);
-                        }
-                    }
-                });
-
-                viewPager.setCurrentItem(0);
-                viewPager.setOffscreenPageLimit(5);
-                viewPager.setPageMargin(calculatedPixel);
-                String text = currentPage == 0 ? "1/" + adapter.getCount() : (currentPage+1) + "/" + adapter.getCount();
-                pageIndicator.setText(text);
-                progressBar.setProgress(0);
-                increment = 0;
-                progressBar.setMax(adapter.getCount());
-                progressBar.setVisibility(View.VISIBLE);
-
-                seekBar.setProgress(currentPage);
-                seekBar.setMax(adapter.getCount() - 1);
-
-                getFavoriteStatus();
-
-                mHideHandler.postDelayed(hideControllerThread, 5000);
-
-            } else {
-                Toast.makeText(getApplicationContext(), network_error, Toast.LENGTH_SHORT).show();
-                finish();
+            if (!isFromList) {
+                if (dialog != null && dialog.isShowing())
+                    dialog.dismiss();
             }
-
-        }
-    }
-
-    public class ChangeChapter extends AsyncTask<String, Void, ArrayList<Page>> {
-
-        private ProgressDialog dialog;
-
-        public ChangeChapter(ProgressDialog p) {
-            dialog = p;
-        }
-
-        public void onPreExecute() {
-            next.setVisibility(ImageView.INVISIBLE);
-            previous.setVisibility(ImageView.INVISIBLE);
-            if (!isControllerShowing)
-                showControllers();
-            if (dialog != null)
-                dialog.show();
-        }
-
-        public ArrayList<Page> doInBackground(String... params) {
-            MangaLibrary download = new MangaLibrary(params[0]);
-            ArrayList<Page> arr;
-            try {
-                arr = download.GetPages();
-                return arr;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        public void onPostExecute(ArrayList<Page> result) {
-            if (dialog != null && dialog.isShowing())
-                dialog.dismiss();
             if (result != null) {
-                pages = result;
-                adapter = new FullScreenImageAdapter(ReadActivity.this, pages);
+                FullScreenImageAdapter adapter = new FullScreenImageAdapter(ReadActivity.this, result);
                 viewPager.setAdapter(adapter);
                 viewPager.setCurrentItem(currentPage);
                 viewPager.setOnSwipeOutListener(new CustomViewPager.OnSwipeOutListener() {
 
                     boolean callHappened = false;
+
                     @Override
                     public void onSwipeOutAtEnd() {
                         if (!callHappened) {
@@ -588,7 +483,7 @@ public class ReadActivity extends BaseActivity {
                 });
                 viewPager.setOffscreenPageLimit(5);
                 viewPager.setPageMargin(calculatedPixel);
-                String text = currentPage == 0 ? "1/" + adapter.getCount() : (currentPage+1) + "/" + adapter.getCount();
+                String text = currentPage == 0 ? "1/" + adapter.getCount() : (currentPage + 1) + "/" + adapter.getCount();
                 pageIndicator.setText(text);
                 progressBar.setProgress(0);
                 increment = 0;
@@ -602,41 +497,38 @@ public class ReadActivity extends BaseActivity {
 
                 getFavoriteStatus();
                 setRead();
-                getSupportActionBar().setTitle(chapters.get(chapter_position).getName());
+                setTitle(chapters.get(chapter_position).getName());
+
+                if(isFromList)  mHideHandler.postDelayed(hideControllerThread, 5000);
 
             } else {
-                Toast.makeText(getApplicationContext(), network_error, Toast.LENGTH_SHORT).show();
-                if (!isRefreshing)
-                    chapter_position = chapter_position_temp;
-                viewPager.setOnSwipeOutListener(new CustomViewPager.OnSwipeOutListener() {
+                if (!isFromList) {
+                    Toast.makeText(getApplicationContext(), network_error, Toast.LENGTH_SHORT).show();
+                    if (!isRefreshing)
+                        chapter_position = chapter_position_temp;
+                    viewPager.setOnSwipeOutListener(new CustomViewPager.OnSwipeOutListener() {
 
-                    boolean callHappened = false;
+                        boolean callHappened = false;
 
-                    @Override
-                    public void onSwipeOutAtEnd() {
-                        if (!callHappened) {
-                            callHappened = true;
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    nextChapter();
-                                }
-                            },500);
+                        @Override
+                        public void onSwipeOutAtEnd() {
+                            if (!callHappened) {
+                                callHappened = true;
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        nextChapter();
+                                    }
+                                }, 500);
 
+                            }
                         }
-                    }
-                });
+                    });
+                } else {
+                    Toast.makeText(getApplicationContext(), network_error, Toast.LENGTH_SHORT).show();
+                    finish();
+                }
             }
-            next.setVisibility(ImageView.VISIBLE);
-            previous.setVisibility(ImageView.VISIBLE);
         }
-    }
-
-
-    public int convertToPx(int dp) {
-        // Get the screen's density scale
-        final float scale = getResources().getDisplayMetrics().density;
-        // Convert the dps to pixels, based on density scale
-        return (int) (dp * scale + 0.5f);
     }
 }
