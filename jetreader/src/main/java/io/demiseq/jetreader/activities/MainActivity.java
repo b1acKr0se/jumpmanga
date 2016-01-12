@@ -35,7 +35,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -46,7 +45,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+
 import java.util.ArrayList;
+
 import butterknife.Bind;
 import butterknife.BindString;
 import butterknife.ButterKnife;
@@ -65,21 +66,25 @@ import io.demiseq.jetreader.model.Manga;
 import io.demiseq.jetreader.service.FetchLatestService;
 import io.demiseq.jetreader.widget.CustomAutoCompleteTextView;
 
-public class MainActivity extends AppCompatActivity implements Spinner.OnItemSelectedListener {
+public class MainActivity extends BaseActivity implements Spinner.OnItemSelectedListener {
 
     private ArrayList<Manga> mangas;
     private ArrayList<Manga> temp;
     private ArrayList<Category> categories;
+
     private int savedMenuId = -1;
-    private int category_position = -1;
-    private JumpDatabaseHelper db;
-    private SearchAdapter adapter;
+
+    private boolean isManuallySelected = true;
+
     private MenuItem toggle_btn;
     private Spinner spinner;
-    private SpinnerAdapter spinnerAdapter;
     private View spinnerContainer;
-    private boolean isManuallySelected = true;
+
+    private JumpDatabaseHelper db;
+    private SearchAdapter adapter;
+    private SpinnerAdapter spinnerAdapter;
     private SharedPreferences prefs;
+
     SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -88,37 +93,29 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
                     System.out.println("Setting alarm");
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.putBoolean("Alarm", false);
-                    editor.commit();
+                    editor.apply();
                     setAlarmService();
                     break;
             }
         }
     };
 
-    @Bind(R.id.toolbar)
-    Toolbar toolbar;
-    @Bind(R.id.drawer_layout)
-    DrawerLayout drawerLayout;
+    @Bind(R.id.toolbar)Toolbar toolbar;
+    @Bind(R.id.drawer_layout)DrawerLayout drawerLayout;
     @Bind(R.id.progress_bar)ProgressBar progressBar;
-    @Bind(R.id.search_box)
-    CustomAutoCompleteTextView searchBox;
-    @BindString(R.string.app_name)
-    String app_name;
-    @BindString(R.string.drawer_new)
-    String new_;
-    @BindString(R.string.downloaded)
-    String downloaded;
-    @BindString(R.string.recent)
-    String recent;
-    @BindString(R.string.feeds)
-    String feeds;
-    @BindString(R.string.favourite)
-    String favorite;
+    @Bind(R.id.search_box)CustomAutoCompleteTextView searchBox;
+
+    @BindString(R.string.app_name)String app_name;
+    @BindString(R.string.drawer_new)String new_;
+    @BindString(R.string.downloaded)String downloaded;
+    @BindString(R.string.recent)String recent;
+    @BindString(R.string.feeds)String feeds;
+    @BindString(R.string.favourite)String favorite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
+
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
@@ -154,13 +151,11 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
             }
         });
 
-
         boolean isOpenFromNotification = getIntent().getBooleanExtra("favorite", false);
 
         if (savedInstanceState == null && !isOpenFromNotification) {
             GetHotMangas();
             new getAllMangas().execute();
-
         } else if (isOpenFromNotification) {
             GetSubscription();
             new getAllMangas().execute();
@@ -174,8 +169,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
                 }
             }
         } else {
-            if (getSupportActionBar() != null)
-                getSupportActionBar().setTitle(savedInstanceState.getString("title"));
+            setTitle(savedInstanceState.getString("title"));
             mangas = savedInstanceState.getParcelableArrayList("list");
             if (mangas != null) temp = new ArrayList<>(mangas);
             adapter = new SearchAdapter(getApplicationContext(), R.layout.search_dropdown_item, mangas);
@@ -274,6 +268,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         bundle.putString("title", getSupportActionBar().getTitle().toString());
         bundle.putInt("menu", savedMenuId);
         bundle.putParcelableArrayList("list", mangas);
+        int category_position = -1;
         bundle.putInt("category", category_position);
         super.onSaveInstanceState(bundle);
     }
@@ -286,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         fragmentTransaction.replace(R.id.content_frame, fragment, "NEW");
         fragmentTransaction.commit();
         removeSpinner();
-        if (getSupportActionBar() != null) getSupportActionBar().setTitle(new_);
+        setTitle(new_);
     }
 
 
@@ -300,7 +295,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         fragmentTransaction.replace(R.id.content_frame, fragment, "HOT");
         fragmentTransaction.commit();
         removeSpinner();
-        if (getSupportActionBar() != null) getSupportActionBar().setTitle(app_name);
+        setTitle(app_name);
     }
 
     private void GetFavoriteMangas() {
@@ -313,7 +308,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         fragmentTransaction.replace(R.id.content_frame, fragment, "FAVOURITE");
         fragmentTransaction.commit();
         removeSpinner();
-        if (getSupportActionBar() != null) getSupportActionBar().setTitle(favorite);
+        setTitle(favorite);
     }
 
     private void GetRecentList() {
@@ -323,7 +318,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         fragmentTransaction.replace(R.id.content_frame, fragment, "RECENT");
         fragmentTransaction.commit();
         removeSpinner();
-        if (getSupportActionBar() != null) getSupportActionBar().setTitle(recent);
+        setTitle(recent);
     }
 
     private void GetCategories(Category c) {
@@ -348,7 +343,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         fragmentTransaction.replace(R.id.content_frame, fragment, "FEEDS");
         fragmentTransaction.commit();
         removeSpinner();
-        if (getSupportActionBar() != null) getSupportActionBar().setTitle(feeds);
+        setTitle(feeds);
     }
 
     public void GetDownloaded() {
@@ -358,7 +353,7 @@ public class MainActivity extends AppCompatActivity implements Spinner.OnItemSel
         fragmentTransaction.replace(R.id.content_frame, fragment, "DOWNLOADED");
         fragmentTransaction.commit();
         removeSpinner();
-        if (getSupportActionBar() != null) getSupportActionBar().setTitle(downloaded);
+        setTitle(downloaded);
     }
 
 //    @Override

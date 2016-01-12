@@ -39,3 +39,4 @@ public class BaseActivity extends AppCompatActivity {
         return (int) (dp * scale + 0.5f);
     }
 }
+
