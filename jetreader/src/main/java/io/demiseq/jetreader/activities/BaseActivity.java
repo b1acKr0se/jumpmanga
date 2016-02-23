@@ -15,12 +15,15 @@ public class BaseActivity extends AppCompatActivity {
         switch (id) {
             case android.R.id.home:
                 Intent intent = NavUtils.getParentActivityIntent(this);
-                if (NavUtils.shouldUpRecreateTask(this, intent))
-                    TaskStackBuilder.create(this).addNextIntentWithParentStack(intent).startActivities();
-                else {
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                    NavUtils.navigateUpTo(this, intent);
-                }
+                if (intent != null) {
+                    if (NavUtils.shouldUpRecreateTask(this, intent))
+                        TaskStackBuilder.create(this).addNextIntentWithParentStack(intent).startActivities();
+                    else {
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                        NavUtils.navigateUpTo(this, intent);
+                    }
+                } else
+                    NavUtils.navigateUpFromSameTask(this);
                 return true;
         }
 
